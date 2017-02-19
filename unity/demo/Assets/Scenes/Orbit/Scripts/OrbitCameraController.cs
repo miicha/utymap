@@ -69,7 +69,7 @@ namespace Assets.Scenes.Orbit.Scripts
 
             if (OrbitCalculator.IsCloseToSurface(_lastPosition))
             {
-                //SceneManager.LoadScene("Surface");
+                SceneManager.LoadScene("Surface");
                 return;
             }
 

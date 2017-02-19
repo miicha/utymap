@@ -22,7 +22,7 @@ namespace Assets.Scenes.Surface.Scripts
 
         /// <summary> Origin as GeoCoordinate. </summary>
         public static GeoCoordinate GeoOrigin = GeoUtils.QuadKeyToBoundingBox(
-            GeoUtils.CreateQuadKey(new GeoCoordinate(28.2684, -16.6432), MinLod)).Center();
+            GeoUtils.CreateQuadKey(new GeoCoordinate(52.53180, 13.38744), MinLod)).Center();
 
         /// <summary> Returns current LOD. </summary>
         public static int CurrentLevelOfDetails = MinLod;

@@ -5,20 +5,34 @@ area,relation|z14-16[man_made!=bridge][layer<0] {
     skip:true;
 }*/
 
-canvas|z9-12 {
+canvas|z9-16 {
     grid-cell-size: 5%;
 
-    max-area: 0.25%;
+    max-area: 0.1%;
     color-noise-freq: 0;
     ele-noise-freq: 0;
     color: gradient(#b5d0d0);
 	
-	road-highway-max-area: 0.5%;
-    road-highway-color-noise-freq: 0;
-    road-highway-ele-noise-freq: 0;
-    road-highway-color: gradient(#b5b4b1);
-	road-highway-sort-order: 1003;
-    road-highway-mesh-name: terrain_road_highway;
+	road-highway-secondary-max-area: 0.1%;
+    road-highway-secondary-color-noise-freq: 0;
+    road-highway-secondary-ele-noise-freq: 0;
+    road-highway-secondary-color: gradient(#a37b48);
+	road-highway-secondary-sort-order: 1005;
+    road-highway-secondary-mesh-name: terrain_road_highway_secondary;
+	
+	road-highway-primary-max-area: 0.1%;
+    road-highway-primary-color-noise-freq: 0;
+    road-highway-primary-ele-noise-freq: 0;
+    road-highway-primary-color: gradient(#8d4346);
+	road-highway-primary-sort-order: 1004;
+    road-highway-primary-mesh-name: terrain_road_highway_primary;
+	
+	railway-max-area: 0.1%;
+    railway-color-noise-freq: 0;
+    railway-ele-noise-freq: 0;
+    railway-color: gray;
+	railway-sort-order: 1003;
+    railway-mesh-name: terrain_railway;
 	
 	boundary-country-max-area: 10%;
     boundary-country-color-noise-freq: 0;
@@ -42,7 +56,7 @@ canvas|z9-12 {
 	water-sort-order: 1000;
     water-mesh-name: water;
 	
-	earth-max-area: 0.5%;
+	earth-max-area: 0.1%;
     earth-color-noise-freq: 0;
     earth-ele-noise-freq: 0;
     earth-color: gradient(#f2efe9);

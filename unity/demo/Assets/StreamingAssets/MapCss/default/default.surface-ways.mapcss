@@ -1,22 +1,37 @@
-way,relation|z9-12[kind=country][kind_detail=2] {
+/* zoom 9 */
+way,relation|z9-16[kind=country][kind_detail=2] {
     clip:true;
     builders: terrain;
     terrain-layer: boundary-country;
     width: 0.75%;
 }
 
-way,relation|z9-12[kind=region][kind_detail=4] {
+way,relation|z9-16[kind=region][kind_detail=4] {
     clip:true;
     builders: terrain;
     terrain-layer: boundary-region;
     width: 0.5%;
 }
 
-
-way,relation|z9-12[kind=major_road][kind_detail=primary],
-way,relation|z9-12[kind=highway][kind_detail=motorway] {
+way,relation|z9-16[kind=major_road][kind_detail=primary],
+way,relation|z9-16[kind=highway][kind_detail=motorway] {
     clip:true;
     builders: terrain;
-    terrain-layer: road-highway;
+    terrain-layer: road-highway-primary;
     width: 0.25%;
+}
+
+way,relation|z9-16[kind=train]{
+    clip:true;
+    builders: terrain;
+    terrain-layer: railway;
+    width: 0.25%;
+}
+
+/* zoom 11 */
+way,relation|z11-16[kind=major_road][kind_detail=secondary] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: road-highway-secondary;
+    width: 0.125%;
 }
