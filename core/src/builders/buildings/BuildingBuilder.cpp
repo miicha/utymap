@@ -158,7 +158,11 @@ namespace {
 
         void visitWay(const utymap::entities::Way& way) override { fail(way); }
 
-        void visitRelation(const utymap::entities::Relation& relation) override { fail(relation); }
+        void visitRelation(const utymap::entities::Relation& relation) override 
+        { 
+            for (const auto& element : relation.elements)
+                element->accept(*this);
+        }
 
         void visitArea(const utymap::entities::Area& area) override
         {
