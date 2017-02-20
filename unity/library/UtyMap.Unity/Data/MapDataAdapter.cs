@@ -163,7 +163,7 @@ namespace UtyMap.Unity.Data
             }
 
             id = long.Parse(match.Groups[2].Value);
-            return !_tile.Has(id);
+            return id == 0 || !_tile.Has(id);
         }
 
         private static TextureAtlasMapper CreateTextureAtlasMapper(Vector2[] unityUvs, Vector2[] unityUvs2, Vector2[] unityUvs3,
