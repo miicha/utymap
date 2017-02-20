@@ -150,7 +150,7 @@ private:
     utymap::entities::Relation parseRelation(std::uint32_t featureId, const ptree &geometry) const
     {
         utymap::entities::Relation relation;
-
+        relation.id = 0;
         for (const ptree::value_type &coordTree : geometry) {
             auto coordinates = parseCoordinates(coordTree.second);
             if (coordinates.size() > 3 && coordinates[0] == coordinates[coordinates.size() - 1])
