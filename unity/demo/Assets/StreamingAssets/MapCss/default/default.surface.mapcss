@@ -1,9 +1,7 @@
 /* Ignore all objects under surface. */
-/*node,area,way,relation|z14-16[level<0],
-node,area,way,relation|z14-16[layer<0],
-area,relation|z14-16[man_made!=bridge][layer<0] {
-    skip:true;
-}*/
+node,area,way,relation|z9-16[layer<0] {
+	skip:true;
+}
 
 canvas|z9-16 {
     grid-cell-size: 5%;
