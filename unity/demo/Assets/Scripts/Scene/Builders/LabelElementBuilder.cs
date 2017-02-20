@@ -58,9 +58,9 @@ namespace Assets.Scripts.Scene.Builders
         {
             var text = gameObject.AddComponent<TextMesh>();
 
-            var position2D = GeoUtils.ToMapCoordinate(SurfaceCalculator.GeoOrigin, element.Geometry[0]);
+            var position2D = GeoUtils.ToMapCoordinate(SurfaceCalculator.GeoOrigin, element.Geometry[0]) * SurfaceCalculator.Scale;
             // TODO determine correct height.
-            gameObject.transform.position = new Vector3(position2D.x, 1000, position2D.y);
+            gameObject.transform.position = new Vector3(position2D.x, 100, position2D.y);
             gameObject.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             var font = new FontWrapper(element.Styles);

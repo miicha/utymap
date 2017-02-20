@@ -51,7 +51,7 @@ namespace Assets.Scenes.Surface.Scripts
 
             _dataStore = appManager.GetService<IMapDataStore>();
             _stylesheet = appManager.GetService<Stylesheet>();
-            _projection = new CartesianProjection(SurfaceCalculator.GeoOrigin);
+            _projection = SurfaceCalculator.GetProjection();
         }
 
         void Start()
@@ -82,7 +82,7 @@ namespace Assets.Scenes.Surface.Scripts
             GUI.Label(new Rect(0, 0, Screen.width, Screen.height),
                 String.Format("Position:{0}\nGeo:{1}\nQuadKey: {2}\nLOD:{3}\nScreen: {4}:{5}\nFoV: {6}",
                     transform.position,
-                    GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(transform.position.x, transform.position.z)),
+                    GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(transform.position.x, transform.position.z) / SurfaceCalculator.Scale),
                     _currentQuadKey,
                     SurfaceCalculator.CurrentLevelOfDetails,
                     Screen.width, Screen.height,
@@ -100,7 +100,7 @@ namespace Assets.Scenes.Surface.Scripts
             Planet.transform.position += direction * -1;
 
             SurfaceCalculator.GeoOrigin = GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(direction.x, direction.z));
-            _projection = new CartesianProjection(SurfaceCalculator.GeoOrigin);
+            _projection = SurfaceCalculator.GetProjection();
         }
 
         /// <summary> Updates current lod level based on current position. </summary>
@@ -113,8 +113,7 @@ namespace Assets.Scenes.Surface.Scripts
         private void BuildIfNecessary()
         {
             var oldLod = _currentQuadKey.LevelOfDetail;
-            var currentPosition = GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(_lastPosition.x, _lastPosition.z));
-            _currentQuadKey = GeoUtils.CreateQuadKey(currentPosition, SurfaceCalculator.CurrentLevelOfDetails);
+            _currentQuadKey = SurfaceCalculator.GetQuadKey(_lastPosition);
 
             // zoom in/out
             if (oldLod != SurfaceCalculator.CurrentLevelOfDetails)

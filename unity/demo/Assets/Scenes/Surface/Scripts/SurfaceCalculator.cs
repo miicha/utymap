@@ -17,6 +17,9 @@ namespace Assets.Scenes.Surface.Scripts
         /// <summary> Maximal LOD. </summary>
         private const int MaxLod = 16;
 
+        /// <summary> World scale. </summary>
+        public const float Scale = 0.01f;
+
         /// <summary> Origin in world coordinates. </summary>
         public static readonly Vector3 Origin = Vector3.zero;
 
@@ -30,19 +33,26 @@ namespace Assets.Scenes.Surface.Scripts
         /// <summary> Checks whether position is far from origin. </summary>
         public static bool IsFar(Vector3 position)
         {
-            return Vector2.Distance(new Vector2(position.x, position.z), Origin) < MaxOriginDistance;
+            return Vector2.Distance(new Vector2(position.x, position.z), Origin) > MaxOriginDistance;
         }
 
         /// <summary> Gets zoom speed ratio. </summary>
         public static float GetZoomSpeedRatio(int lod)
         {
-            return Mathf.Pow(2, -(lod - MinLod));
+            return Mathf.Pow(2, -(lod - MinLod)) * Scale;
         }
 
         /// <summary> Gets pan speed ratio. </summary>
         public static float GetPanSpeedRatio(int lod)
         {
-            return Mathf.Pow(2, -(lod - MinLod));
+            return Mathf.Pow(2, -(lod - MinLod)) * Scale;
+        }
+
+        /// <summary> Gets quadkey for position. </summary>
+        public static QuadKey GetQuadKey(Vector3 position)
+        {
+            var currentPosition = GeoUtils.ToGeoCoordinate(GeoOrigin, new Vector2(position.x, position.z) / Scale);
+            return GeoUtils.CreateQuadKey(currentPosition, CurrentLevelOfDetails);
         }
 
         /// <summary> Gets range (interval) tree with LODs </summary>
@@ -73,7 +83,13 @@ namespace Assets.Scenes.Surface.Scripts
             return tree;
         }
 
-        /// <summary> Gets  height of camera's frustum. </summary>
+        /// <summary> Gets projection. </summary>
+        public static IProjection GetProjection()
+        {
+            return new ScaledProjection(new CartesianProjection(GeoOrigin), Scale);
+        }
+
+        /// <summary> Gets height of camera's frustum. </summary>
         private static float GetFrustumHeight(QuadKey quadKey, float aspectRatio)
         {
             return GetGridSize(quadKey) * aspectRatio;
@@ -92,7 +108,7 @@ namespace Assets.Scenes.Surface.Scripts
             var bboxWidth = bbox.MaxPoint.Longitude - bbox.MinPoint.Longitude;
             var minPoint = new GeoCoordinate(bbox.MinPoint.Latitude, bbox.MinPoint.Longitude - bboxWidth);
             var maxPoint = new GeoCoordinate(bbox.MinPoint.Latitude, bbox.MaxPoint.Longitude + bboxWidth);
-            return (float) GeoUtils.Distance(minPoint, maxPoint);
+            return (float) GeoUtils.Distance(minPoint, maxPoint) * Scale;
         }
     }
 }

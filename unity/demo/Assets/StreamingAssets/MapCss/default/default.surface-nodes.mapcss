@@ -5,5 +5,5 @@ node|z9-16[kind=locality][name] {
     font-name:Arial;
     font-size: 72;
     font-color: black;
-	font-scale: 200;
+	font-scale: 3;
 }
