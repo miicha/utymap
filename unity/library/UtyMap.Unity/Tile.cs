@@ -37,7 +37,8 @@ namespace UtyMap.Unity
         /// <param name="quadKey"></param>
         /// <param name="stylesheet"></param>
         /// <param name="projection"> Projection. </param>
-        /// <param name="parent"> Parent gameobject. </param>
+        /// <param name="elevationType"> Elevation type. </param>
+        /// <param name="gameObject"> Tile gameobject. </param>
         public Tile(QuadKey quadKey, Stylesheet stylesheet, IProjection projection, 
             ElevationDataType elevationType, GameObject gameObject = null)
         {
