@@ -42,6 +42,7 @@ namespace Assets.Scenes.Surface.Scripts
             appManager.GetService<IMapDataStore>()
                .SubscribeOn(Scheduler.ThreadPool)
                .ObserveOn(Scheduler.MainThread)
+               .Where(r => r.Item1.GameObject.activeInHierarchy)
                .Subscribe(r => r.Item2.Match(
                                e => modelBuilder.BuildElement(r.Item1, e),
                                m => modelBuilder.BuildMesh(r.Item1, m)),
@@ -174,7 +175,10 @@ namespace Assets.Scenes.Surface.Scripts
         {
             var go = GameObject.Find(name);
             if (go != null)
+            {
+                go.SetActive(false);
                 GameObject.Destroy(go);
+            }
         }
     }
 }
