@@ -1,16 +1,23 @@
-/* zoom 9 */
+/* from zoom 9 */
 way,relation|z9-16[kind=country][kind_detail=2] {
     clip:true;
     builders: terrain;
     terrain-layer: boundary-country;
-    width: 0.75%;
+    width: 0.5%;
 }
 
 way,relation|z9-16[kind=region][kind_detail=4] {
     clip:true;
     builders: terrain;
     terrain-layer: boundary-region;
-    width: 0.5%;
+    width: 0.25%;
+}
+
+way,relation|z9-16[kind=river] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: water;
+    width: 0.75%;
 }
 
 way,relation|z9-16[kind=major_road][kind_detail=primary],
@@ -21,17 +28,40 @@ way,relation|z9-16[kind=highway][kind_detail=motorway] {
     width: 0.25%;
 }
 
-way,relation|z9-16[kind=train]{
+way,relation|z9-16[kind=train] {
     clip:true;
     builders: terrain;
     terrain-layer: railway;
     width: 0.25%;
 }
 
-/* zoom 11 */
+/* from zoom 11 */
 way,relation|z11-16[kind=major_road][kind_detail=secondary] {
     clip:true;
     builders: terrain;
-    terrain-layer: road-highway-secondary;
+    terrain-layer: road-major-secondary;
     width: 0.125%;
+}
+
+/* from zoom 12 */
+way,relation|z12-16[kind=major_road][kind_detail=tertiary] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: road-major-tertiary;
+    width: 0.0675%;
+}
+
+/* from zoom 13 */
+way,relation|z12-16[kind=minor_road] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: road-minor;
+    width: 0.050625%;
+}
+
+way,relation|z12-16[kind=path][kind_detail=footway] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: path-footway;
+    width: 0.03375%;
 }

@@ -1,3 +1,4 @@
+/* from zoom 9 */
 node|z9-16[kind=locality][name] {
     builders: label;
 	type: flat;

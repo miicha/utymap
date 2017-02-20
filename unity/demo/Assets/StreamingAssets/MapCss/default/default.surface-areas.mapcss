@@ -1,4 +1,4 @@
-/* zoom 9 */
+/* from zoom 9 */
 area,relation|z9-16[kind=earth] {
     clip:true;
     builders: terrain;
@@ -55,7 +55,13 @@ area,relation|z11-16[kind=residential] {
     ele-noise-freq: 0;
 }
 
-/* zoom 11*/
+way,relation|z9-16[kind=riverbank] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: water;
+}
+
+/* from zoom 11 */
 area,relation|z11-16[kind=aerodrome] {
     color: gradient(#bbbbcc);
     mesh-name: aerodrome;
@@ -94,3 +100,7 @@ area,relation|z11-16[kind=commercial] {
     color: gradient(#efc8c8);
     mesh-name: commercial;
 }
+
+/* from zoom 14 */
+
+/* TODO add buildings. */
