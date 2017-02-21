@@ -54,7 +54,6 @@ namespace Assets.Scripts.Scene
             // TODO use TextureIndex to select proper material.
             gameObject.AddComponent<MeshRenderer>().sharedMaterial =
                 _materialProvider.GetSharedMaterial(@"Materials/SurfaceColored");
-            gameObject.AddComponent<MeshCollider>();
             gameObject.transform.parent = tile.GameObject.transform;
         }
     }

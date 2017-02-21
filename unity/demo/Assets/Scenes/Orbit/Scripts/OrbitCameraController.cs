@@ -43,6 +43,7 @@ namespace Assets.Scenes.Orbit.Scripts
             appManager.GetService<IMapDataStore>()
                .SubscribeOn(Scheduler.ThreadPool)
                .ObserveOn(Scheduler.MainThread)
+               .Where(r => r.Item1.GameObject != null)
                .Subscribe(r => r.Item2.Match(
                                e => modelBuilder.BuildElement(r.Item1, e),
                                m => modelBuilder.BuildMesh(r.Item1, m)),
@@ -81,10 +82,11 @@ namespace Assets.Scenes.Orbit.Scripts
         {
             if (ShowState)
             {
-                var labelText = String.Format("Position: {0} \n LOD: {1} \n Distance: {2:0.#}km",
-                    transform.position,
-                    OrbitCalculator.CalculateLevelOfDetail(transform.position),
-                    OrbitCalculator.DistanceToSurface(transform.position));
+                var orientation = transform.rotation.eulerAngles;
+                var labelText = String.Format("Position: {0}\nDistance: {1:0.#}km\nLOD: {2}",
+                    OrbitCalculator.GetCoordinate(orientation),
+                    OrbitCalculator.DistanceToSurface(transform.position),
+                    OrbitCalculator.CalculateLevelOfDetail(transform.position));
 
                 GUI.Label(new Rect(0, 0, Screen.width, Screen.height), labelText);
             }
@@ -119,33 +121,30 @@ namespace Assets.Scenes.Orbit.Scripts
         /// <summary> Builds quadkeys if necessary. Decision is based on visible quadkey and lod level. </summary>
         private void BuildIfNecessary()
         {
-            RaycastHit hit;
-            if (!Physics.Raycast(transform.position, (OrbitCalculator.Origin - transform.position).normalized, out hit))
+            var orientation = transform.rotation.eulerAngles;
+            var actualGameObject = GetActual(OrbitCalculator.GetCoordinate(orientation));
+            if (actualGameObject == Planet)
                 return;
 
-            // get parent which should have name the same as quadkey string representation
-            var hitGameObject = hit.transform.parent.transform.gameObject;
-            // skip "cap"
-            if (hitGameObject == Planet) return;
-            var hitName = hitGameObject.name;
-            var hitQuadKey = QuadKey.FromString(hitName);
+            var actualQuadKey = QuadKey.FromString(actualGameObject.name);
+            var actualName = actualGameObject.name;
 
             var parent = Planet;
             var quadKeys = new List<QuadKey>();
 
             // zoom in
-            if (hitQuadKey.LevelOfDetail < _currentLod)
+            if (actualQuadKey.LevelOfDetail < _currentLod)
             {
-                quadKeys.AddRange(GetChildren(hitQuadKey));
+                quadKeys.AddRange(GetChildren(actualQuadKey));
                 // create empty parent and destroy old quadkey.
-                parent = new GameObject(hitGameObject.name);
-                parent.transform.parent = hitGameObject.transform.parent;
-                GameObject.Destroy(hitGameObject.gameObject);
+                parent = new GameObject(actualName);
+                parent.transform.parent = actualGameObject.transform.parent;
+                GameObject.Destroy(actualGameObject.gameObject);
             }
             // zoom out
-            else if (hitQuadKey.LevelOfDetail > _currentLod)
+            else if (actualQuadKey.LevelOfDetail > _currentLod)
             {
-                string name = hitName.Substring(0, hitName.Length - 1);
+                string name = actualName.Substring(0, actualName.Length - 1);
                 var quadKey = QuadKey.FromString(name);
                 // destroy all siblings
                 foreach (var child in GetChildren(quadKey))
@@ -189,11 +188,22 @@ namespace Assets.Scenes.Orbit.Scripts
             yield return QuadKey.FromString(quadKeyName + "3");
         }
 
+        /// <summary> Gets actual loaded quadkey's gameobject for given coordinate. </summary>
+        private GameObject GetActual(GeoCoordinate coordinate)
+        {
+            var expectedQuadKey = GeoUtils.CreateQuadKey(coordinate, _currentLod);
+            var expectedGameObject = GameObject.Find(expectedQuadKey.ToString());
+
+            return expectedGameObject == null
+                ? GetParent(expectedQuadKey)  // zoom in
+                : GetLastParent(expectedGameObject); // zoom out or pan
+        }
+
         /// <summary> Gets parent game object for given quadkey. Creates hierarchy if necessary. </summary>
         private GameObject GetParent(QuadKey quadKey)
         {
             // recursion end
-            if (quadKey.LevelOfDetail == OrbitCalculator.MinLod)
+            if (quadKey.LevelOfDetail <= OrbitCalculator.MinLod)
                 return Planet;
 
             string quadKeyName = quadKey.ToString();
@@ -202,6 +212,14 @@ namespace Assets.Scenes.Orbit.Scripts
             return parent != null
                 ? parent
                 : GetParent(QuadKey.FromString(parentName));
+        }
+
+        /// <summary> Gets the last descendant game object with children. </summary>
+        private GameObject GetLastParent(GameObject go)
+        {
+            return go.transform.childCount == 0
+                ? go.transform.parent.gameObject
+                : GetLastParent(go.transform.GetChild(0).gameObject);
         }
     }
 }

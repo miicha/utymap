@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UtyMap.Unity;
 
 namespace Assets.Scenes.Orbit.Scripts
 {
@@ -43,6 +44,18 @@ namespace Assets.Scenes.Orbit.Scripts
         public static bool IsCloseToSurface(Vector3 position)
         {
             return Vector3.Distance(position, Origin) < MinDistance;
+        }
+
+        /// <summary> Gets coordinate from given rotation in euler angles. </summary>
+        public static GeoCoordinate GetCoordinate(Vector3 eulerAngles)
+        {
+            var latitude = eulerAngles.x;
+            var longitude = (-90 - eulerAngles.y) % 360;
+
+            if (latitude > 90) latitude -= 360;
+            if (longitude < -180) longitude += 360;
+
+            return new GeoCoordinate(latitude, longitude);
         }
     }
 }
