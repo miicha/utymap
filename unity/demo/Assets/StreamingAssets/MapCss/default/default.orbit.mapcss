@@ -10,7 +10,7 @@ canvas|z1-7 {
 	road-highway-max-area: 0.5%;
     road-highway-color-noise-freq: 0;
     road-highway-ele-noise-freq: 0;
-    road-highway-color: gradient(#b5b4b1);
+    road-highway-color: gradient(#8d4346);
     road-highway-height-offset: 10.5m;
 	road-sort-order: 1003;
     road-highway-mesh-name: terrain_road_highway;
@@ -41,7 +41,7 @@ canvas|z1-7 {
     earth-max-area: 0.5%;
     earth-color-noise-freq: 0;
     earth-ele-noise-freq: 0;
-    earth-color: gradient(#f2efe9);
+    earth-color: gradient(#f1eee8);
     earth-height-offset: 10m;
 	earth-sort-order: -1;
     earth-mesh-name: terrain_earth;
