@@ -38,7 +38,7 @@ namespace UtyMap.Unity.Tests.Data
         public void CanAddNode()
         {
             // ARRANGE
-            var quadKey = GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, 6);
+            var quadKey = new QuadKey(0, 0, 6);
             var levelOfDetails = new Range<int>(quadKey.LevelOfDetail, quadKey.LevelOfDetail);
             var node = new Element(7,
                 new [] { GeoUtils.QuadKeyToBoundingBox(quadKey).Center() },

@@ -25,7 +25,7 @@ namespace Assets.Scenes.Surface.Scripts
         public GameObject Pivot;
         public GameObject Planet;
 
-        private HashSet<QuadKey> _loadedQuadKeys = new HashSet<QuadKey>();
+        private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
 
         private IMapDataStore _dataStore;
         private IProjection _projection;
@@ -42,7 +42,7 @@ namespace Assets.Scenes.Surface.Scripts
             appManager.GetService<IMapDataStore>()
                .SubscribeOn<MapData>(Scheduler.ThreadPool)
                .ObserveOn(Scheduler.MainThread)
-               .Where(r => r.Tile.GameObject != null)
+               .Where(r => !r.Tile.IsDisposed)
                .Subscribe(r => r.Variant.Match(
                                e => modelBuilder.BuildElement(r.Tile, e),
                                m => modelBuilder.BuildMesh(r.Tile, m)),
@@ -118,32 +118,30 @@ namespace Assets.Scenes.Surface.Scripts
             // zoom in/out
             if (oldLod != SurfaceCalculator.CurrentLevelOfDetails)
             {
-                foreach (var quadKey in _loadedQuadKeys)
-                    SafeDestroy(quadKey.ToString());
+                foreach (var tile in _loadedQuadKeys.Values)
+                    tile.Dispose();
 
                 _loadedQuadKeys.Clear();
 
                 foreach (var quadKey in GetNeighbours(_currentQuadKey))
-                    BuildQuadKey(Planet, quadKey);
+                    _loadedQuadKeys.Add(quadKey, BuildQuadKey(Planet, quadKey));
             }
             // pan
             else
             {
                 var quadKeys = new HashSet<QuadKey>(GetNeighbours(_currentQuadKey));
+                var newlyLoadedQuadKeys = new Dictionary<QuadKey, Tile>();
 
                 foreach (var quadKey in quadKeys)
-                {
-                    if (_loadedQuadKeys.Contains(quadKey))
-                        continue;
+                    newlyLoadedQuadKeys.Add(quadKey, _loadedQuadKeys.ContainsKey(quadKey) 
+                        ? _loadedQuadKeys[quadKey] 
+                        : BuildQuadKey(Planet, quadKey));
 
-                    BuildQuadKey(Planet, quadKey);
-                }
+                foreach (var quadKeyPair in _loadedQuadKeys)
+                    if (!quadKeys.Contains(quadKeyPair.Key))
+                        quadKeyPair.Value.Dispose();
 
-                foreach (var quadKey in _loadedQuadKeys)
-                    if (!quadKeys.Contains(quadKey))
-                        SafeDestroy(quadKey.ToString());
-
-                _loadedQuadKeys = quadKeys;
+                _loadedQuadKeys = newlyLoadedQuadKeys;
             }
         }
 
@@ -161,20 +159,13 @@ namespace Assets.Scenes.Surface.Scripts
             yield return new QuadKey(quadKey.TileX - 1, quadKey.TileY - 1, quadKey.LevelOfDetail);
         }
 
-        private void BuildQuadKey(GameObject parent, QuadKey quadKey)
+        private Tile BuildQuadKey(GameObject parent, QuadKey quadKey)
         {
             var tileGameObject = new GameObject(quadKey.ToString());
             tileGameObject.transform.parent = parent.transform;
-            _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Grid, tileGameObject));
-            //QuadTreeSystem.BuildQuadTree(tileGameObject, quadKey, _projection);
-            _loadedQuadKeys.Add(quadKey);
-        }
-
-        private static void SafeDestroy(string name)
-        {
-            var go = GameObject.Find(name);
-            if (go != null)
-                GameObject.Destroy(go);
+            var tile = new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Grid, tileGameObject);
+            _dataStore.OnNext(tile);
+            return tile;
         }
     }
 }

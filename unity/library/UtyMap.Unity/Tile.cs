@@ -33,6 +33,9 @@ namespace UtyMap.Unity
         /// <summary> Sets game object which holds all children objects. </summary>
         public GameObject GameObject { get; private set; }
 
+        /// <summary> True if tile was disposed. </summary>
+        public bool IsDisposed { get; private set; }
+
         /// <summary> Creates <see cref="Tile"/>. </summary>
         /// <param name="quadKey"></param>
         /// <param name="stylesheet"></param>
@@ -85,6 +88,11 @@ namespace UtyMap.Unity
             foreach (var id in _localIds)
                 GlobalIds.Remove(id);
             _localIds.Clear();
+
+            if (GameObject != null)
+                GameObject.Destroy(GameObject);
+
+            IsDisposed = true;
         }
 
         #endregion

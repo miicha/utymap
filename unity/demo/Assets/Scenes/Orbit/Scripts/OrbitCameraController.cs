@@ -172,6 +172,7 @@ namespace Assets.Scenes.Orbit.Scripts
         /// <summary> Destroys gameobject by its name if it exists. </summary>
         private void SafeDestroy(string name)
         {
+            // TODO Ideally, tile should be disposed to free element ids stored in global hashmap
             var go = GameObject.Find(name);
             if (go != null)
                 GameObject.Destroy(go);
