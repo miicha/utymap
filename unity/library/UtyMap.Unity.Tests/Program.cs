@@ -35,14 +35,14 @@ namespace UtyMap.Unity.Tests
             // 2. start listening for processed data
             store
                 // limiting speed of element processing
-                .ThrottleFirst(TimeSpan.FromMilliseconds(300))
+                .ThrottleFirst<MapData>(TimeSpan.FromMilliseconds(300))
                 // move extensive processing away from main thread
                 .SubscribeOn(Scheduler.ThreadPool)
                 // but process results on main thread
                 .ObserveOn(Scheduler.MainThread)
                 // convert element or mesh into your specific representation
-                .Subscribe(r=> r.Item2.Match(e => Console.WriteLine("Element: {0}", e.Id),
-                                             m => Console.WriteLine("Mesh: {0}", m.Name)),
+                .Subscribe(r=> r.Variant.Match(e => Console.WriteLine("Element: {0}", e.Id),
+                                            m => Console.WriteLine("Mesh: {0}", m.Name)),
                            ex => Console.WriteLine("Error: {0}", ex));
 
             // 3. start loading of specific region

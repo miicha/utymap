@@ -10,6 +10,8 @@ namespace UtyMap.Unity.Data
     /// <summary> Loads data from core library. </summary>
     internal class MapDataLoader : ISubject<Tile, MapData>, IObservable<Tile>, IConfigurable
     {
+        private const string TraceCategory = "mapdata.loader";
+
         private readonly List<IObserver<MapData>> _dataObservers = new List<IObserver<MapData>>();
         private readonly List<IObserver<Tile>> _tileObservers = new List<IObserver<Tile>>();
 
@@ -39,14 +41,19 @@ namespace UtyMap.Unity.Data
         /// <inheritdoc />
         public void OnNext(Tile tile)
         {
+            var stylesheetPathResolved = _pathResolver.Resolve(tile.Stylesheet.Path);
+
+            _trace.Info(TraceCategory, "loading tile: {0} using style: {1}", tile.ToString(), stylesheetPathResolved);
+
             var adapter = new MapDataAdapter(tile, _dataObservers, _trace);
             CoreLibrary.LoadQuadKey(
-                _pathResolver.Resolve(tile.Stylesheet.Path),
+                stylesheetPathResolved,
                 tile.QuadKey,
                 tile.ElevationType,
                 adapter.AdaptMesh,
                 adapter.AdaptElement,
                 adapter.AdaptError);
+            _trace.Info(TraceCategory, "tile loaded: {0}", tile.ToString());
 
             _tileObservers.ForEach(o => o.OnNext(tile));
         }
