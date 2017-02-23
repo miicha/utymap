@@ -7,7 +7,6 @@ using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 using UtyRx;
-using Return = UtyRx.Tuple<UtyMap.Unity.Tile, UtyMap.Unity.Infrastructure.Primitives.Union<UtyMap.Unity.Element, UtyMap.Unity.Mesh>>;
 
 namespace UtyMap.Unity.Data
 {
@@ -19,12 +18,12 @@ namespace UtyMap.Unity.Data
         private const string TraceCategory = "mapdata.loader";
 
         private readonly Tile _tile;
-        private readonly List<IObserver<Return>> _observers = new List<IObserver<Return>>();
+        private readonly List<IObserver<MapData>> _observers;
         private readonly ITrace _trace;
 
         private static Regex ElementNameRegex = new Regex("^(building):([0-9]*)");
 
-        public MapDataAdapter(Tile tile, List<IObserver<Return>> observers, ITrace trace)
+        public MapDataAdapter(Tile tile, List<IObserver<MapData>> observers, ITrace trace)
         {
             _tile = tile;
             _observers = observers;
@@ -125,7 +124,7 @@ namespace UtyMap.Unity.Data
             }
 
             Element element = new Element(id, geometry, heights, ReadDict(tags), ReadDict(styles));
-            _observers.ForEach(o => o.OnNext(new Return(_tile, new Union<Element, Mesh>(element))));
+            _observers.ForEach(o => o.OnNext(new MapData(_tile, new Union<Element, Mesh>(element))));
         }
 
         /// <summary> Adapts error message </summary>
@@ -203,7 +202,7 @@ namespace UtyMap.Unity.Data
             if (worldPoints.Length < VertexLimit)
             {
                 Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
-                _observers.ForEach(o => o.OnNext(new Return(_tile, new Union<Element, Mesh>(mesh))));
+                _observers.ForEach(o => o.OnNext(new MapData(_tile, new Union<Element, Mesh>(mesh))));
                 return;
             }
 
@@ -230,7 +229,7 @@ namespace UtyMap.Unity.Data
                     unityUvs.Skip(start).Take(end - start).ToArray(),
                     unityUvs2.Skip(start).Take(end - start).ToArray(),
                     unityUvs3.Skip(start).Take(end - start).ToArray());
-                _observers.ForEach(o => o.OnNext(new Return(_tile, new Union<Element, Mesh>(mesh))));
+                _observers.ForEach(o => o.OnNext(new MapData(_tile, new Union<Element, Mesh>(mesh))));
             }
         }
 

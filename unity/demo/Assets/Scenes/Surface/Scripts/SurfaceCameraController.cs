@@ -40,12 +40,12 @@ namespace Assets.Scenes.Surface.Scripts
             var trace = appManager.GetService<ITrace>();
             var modelBuilder = appManager.GetService<UnityModelBuilder>();
             appManager.GetService<IMapDataStore>()
-               .SubscribeOn(Scheduler.ThreadPool)
+               .SubscribeOn<MapData>(Scheduler.ThreadPool)
                .ObserveOn(Scheduler.MainThread)
-               .Where(r => r.Item1.GameObject != null)
-               .Subscribe(r => r.Item2.Match(
-                               e => modelBuilder.BuildElement(r.Item1, e),
-                               m => modelBuilder.BuildMesh(r.Item1, m)),
+               .Where(r => r.Tile.GameObject != null)
+               .Subscribe(r => r.Variant.Match(
+                               e => modelBuilder.BuildElement(r.Tile, e),
+                               m => modelBuilder.BuildMesh(r.Tile, m)),
                           ex => trace.Error(TraceCategory, ex, "cannot process mapdata."),
                           () => trace.Warn(TraceCategory, "stop listening mapdata."));
 

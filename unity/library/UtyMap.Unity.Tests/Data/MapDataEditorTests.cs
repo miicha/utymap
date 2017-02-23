@@ -38,11 +38,11 @@ namespace UtyMap.Unity.Tests.Data
         public void CanAddNode()
         {
             // ARRANGE
-            var quadKey = new QuadKey(0, 0, 6);
+            var quadKey = GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, 6);
             var levelOfDetails = new Range<int>(quadKey.LevelOfDetail, quadKey.LevelOfDetail);
             var node = new Element(7,
-                new GeoCoordinate[] { GeoUtils.QuadKeyToBoundingBox(quadKey).Center() },
-                new double[] { 0 },
+                new [] { GeoUtils.QuadKeyToBoundingBox(quadKey).Center() },
+                new [] { 0.0 },
                 // NOTE must be corresponding rule in mapcss.
                 new Dictionary<string, string>() { { "kind", "locality" }, {"name", "secret place"} },
                 new Dictionary<string, string>());
@@ -52,7 +52,7 @@ namespace UtyMap.Unity.Tests.Data
 
             // ASSERT
             var result = _dataStore.GetResultSync(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat));
-            result.Item2.Match(
+            result.Variant.Match(
                 e => CompareElements(node, e),
                 mesh => { throw new ArgumentException(); });
         }

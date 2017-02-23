@@ -7,12 +7,11 @@ using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyRx;
-using Return = UtyRx.Tuple<UtyMap.Unity.Tile, UtyMap.Unity.Infrastructure.Primitives.Union<UtyMap.Unity.Element, UtyMap.Unity.Mesh>>;
 
 namespace UtyMap.Unity.Data
 {
     /// <summary> Defines behavior of class responsible of mapdata processing. </summary>
-    public interface IMapDataStore : ISubject<Tile, Return>
+    public interface IMapDataStore : IObserver<Tile>, IObservable<MapData>, IObservable<Tile>
     {
         /// <summary> Adds mapdata to the specific dataStorage. </summary>
         /// <param name="dataStorage"> Storage type. </param>
@@ -46,7 +45,8 @@ namespace UtyMap.Unity.Data
         
         private MapDataStorageType _mapDataStorageType;
 
-        private readonly List<IObserver<Return>> _observers = new List<IObserver<Return>>();
+        private readonly List<IObserver<MapData>> _dataObservers = new List<IObserver<MapData>>();
+        private readonly List<IObserver<Tile>> _tileObservers = new List<IObserver<Tile>>();
 
         [Dependency]
         public MapDataStore(IMapDataProvider mapDataProvider, IPathResolver pathResolver, ITrace trace)
@@ -68,7 +68,8 @@ namespace UtyMap.Unity.Data
                             .Subscribe(progress => { }, () => _mapDataLoader.OnNext(value.Item1));
                 });
 
-            _mapDataLoader.Subscribe(u => _observers.ForEach(o => o.OnNext(u)));
+            _mapDataLoader.Subscribe<MapData>(u => _dataObservers.ForEach(o => o.OnNext(u)));
+            _mapDataLoader.Subscribe<Tile>(t => _tileObservers.ForEach(o => o.OnNext(t)));
         }
 
         #region Interface implementations
@@ -101,13 +102,15 @@ namespace UtyMap.Unity.Data
         /// <inheritdoc />
         public virtual void OnCompleted()
         {
-            _observers.ForEach(o => o.OnCompleted());
+            _dataObservers.ForEach(o => o.OnCompleted());
+            _tileObservers.ForEach(o => o.OnCompleted());
         }
 
         /// <inheritdoc />
         public virtual void OnError(Exception error)
         {
-            _observers.ForEach(o => o.OnError(error));
+            _dataObservers.ForEach(o => o.OnError(error));
+            _tileObservers.ForEach(o => o.OnError(error));
         }
 
         /// <inheritdoc />
@@ -116,11 +119,19 @@ namespace UtyMap.Unity.Data
             _mapDataProvider.OnNext(tile);
         }
 
-        /// <inheritdoc />
-        public IDisposable Subscribe(IObserver<Return> observer)
+        /// <summary> Subscribes on mesh/element data loaded events. </summary>
+        public IDisposable Subscribe(IObserver<MapData> observer)
         {
             // TODO handle unsubscribe
-            _observers.Add(observer);
+            _dataObservers.Add(observer);
+            return Disposable.Empty;
+        }
+
+        /// <summary> Subscribes on tile fully load event. </summary>
+        public IDisposable Subscribe(IObserver<Tile> observer)
+        {
+            // TODO handle unsubscribe
+            _tileObservers.Add(observer);
             return Disposable.Empty;
         }
 

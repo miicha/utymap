@@ -7,7 +7,6 @@ using UtyDepend;
 using UtyDepend.Config;
 using UtyMap.Unity.Data;
 using UtyRx;
-using Return = UtyRx.Tuple<UtyMap.Unity.Tile, UtyMap.Unity.Infrastructure.Primitives.Union<UtyMap.Unity.Element, UtyMap.Unity.Mesh>>;
 
 namespace UtyMap.Unity.Tests.Helpers
 {
@@ -55,23 +54,23 @@ namespace UtyMap.Unity.Tests.Helpers
                 .Setup();
         }
 
-        public static Return GetResultSync(this IMapDataStore store, Tile tile)
+        public static MapData GetResultSync(this IMapDataStore store, Tile tile, int waitTimeInSeconds = 10)
         {
-            return GetResultSyncImpl(store, tile);
+            MapData mapData = null;
+            var manualResetEvent = new ManualResetEvent(false);
+
+            store.Subscribe<Tile>(_ => manualResetEvent.Set());
+            store.Subscribe<MapData>(r => mapData = r);
+            store.OnNext(tile);
+            manualResetEvent.WaitOne(TimeSpan.FromSeconds(waitTimeInSeconds));
+            return mapData;
         }
 
         public static Tuple<Tile, string> GetResultSync(this ISubject<Tile, Tuple<Tile, string>> source, Tile tile)
         {
-            return GetResultSyncImpl(source, tile);
-        }
-
-        private static T GetResultSyncImpl<T>(this ISubject<Tile, T> source, Tile tile)
-        {
-            var result = default(T);
+            var result = default(Tuple<Tile, string>);
             var manualResetEvent = new ManualResetEvent(false);
             source
-                .SubscribeOn(Scheduler.ThreadPool)
-                .ObserveOn(Scheduler.ThreadPool)
                 .Subscribe(r =>
                 {
                     result = r;
