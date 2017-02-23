@@ -36,12 +36,12 @@ namespace UtyMap.Unity.Tests.Data
         }
 
         [Test(Description = "This test loads 4 tiles at zoom level 16.")]
-        public void CanLoadMultipleTilesAtDetailedLevelOfDetails()
+        public void CanLoadTilesAtDetailedLevelOfDetails()
         {
             // ARRANGE
             int lod = 16;
             SetupMapData(TestHelper.BerlinPbfData, lod);
-            var count = 1;
+            var count = 2;
             var centerQuadKey = new QuadKey(35205, 21489, lod);
 
             // ACT & ASSERT
@@ -49,12 +49,12 @@ namespace UtyMap.Unity.Tests.Data
         }
 
         [Test(Description = "This test loads 4 tiles at zoom level 14.")]
-        public void CanLoadAtBirdEyeLevelOfDetails()
+        public void CanLoadTilesAtBirdEyeLevelOfDetails()
         {
             // ARRANGE
             int lod = 14;
             SetupMapData(TestHelper.BerlinXmlData, lod);
-            var count = 1;
+            var count = 2;
             var centerQuadKey = GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, lod);
 
             // ACT & ASSERT

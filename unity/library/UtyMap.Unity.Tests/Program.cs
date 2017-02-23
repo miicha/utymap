@@ -42,7 +42,7 @@ namespace UtyMap.Unity.Tests
                 .ObserveOn(Scheduler.MainThread)
                 // convert element or mesh into your specific representation
                 .Subscribe(r=> r.Variant.Match(e => Console.WriteLine("Element: {0}", e.Id),
-                                            m => Console.WriteLine("Mesh: {0}", m.Name)),
+                                               m => Console.WriteLine("Mesh: {0}", m.Name)),
                            ex => Console.WriteLine("Error: {0}", ex));
 
             // 3. start loading of specific region
