@@ -22,7 +22,7 @@ namespace Assets.Scenes.Orbit.Scripts
         public bool FreezeLod = false;
 
         private int _currentLod;
-
+        private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
         private Vector3 _lastPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
         private IMapDataStore _dataStore;
@@ -62,7 +62,7 @@ namespace Assets.Scenes.Orbit.Scripts
 
         void Update()
         {
-            // no movements
+            // TODO add some sensivity parameter
             if (_lastPosition == transform.position)
                 return;
 
@@ -136,21 +136,22 @@ namespace Assets.Scenes.Orbit.Scripts
             if (actualQuadKey.LevelOfDetail < _currentLod)
             {
                 quadKeys.AddRange(GetChildren(actualQuadKey));
-                // create empty parent and destroy old quadkey.
+                var oldParent = actualGameObject.transform.parent;
+                SafeDestroy(actualName, actualQuadKey);
+
                 parent = new GameObject(actualName);
-                parent.transform.parent = actualGameObject.transform.parent;
-                GameObject.Destroy(actualGameObject.gameObject);
+                parent.transform.parent = oldParent;
             }
-            // zoom out
+             // zoom out
             else if (actualQuadKey.LevelOfDetail > _currentLod)
             {
                 string name = actualName.Substring(0, actualName.Length - 1);
                 var quadKey = QuadKey.FromString(name);
                 // destroy all siblings
                 foreach (var child in GetChildren(quadKey))
-                    SafeDestroy(child.ToString());
+                    SafeDestroy(child.ToString(), child);
                 // destroy current as it might be just placeholder.
-                SafeDestroy(name);
+                SafeDestroy(name, actualQuadKey);
                 parent = GetParent(quadKey);
                 quadKeys.Add(quadKey);
             }
@@ -163,16 +164,27 @@ namespace Assets.Scenes.Orbit.Scripts
         {
             foreach (var quadKey in quadKeys)
             {
+                if (_loadedQuadKeys.ContainsKey(quadKey))
+                    continue;
+
                 var tileGameObject = new GameObject(quadKey.ToString());
                 tileGameObject.transform.parent = parent.transform;
+                var tile = new Tile(quadKey, _stylesheet, _projection, _elevationDataType, tileGameObject);
                 _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, _elevationDataType, tileGameObject));
+                _loadedQuadKeys.Add(quadKey, tile);
             }
         }
 
         /// <summary> Destroys gameobject by its name if it exists. </summary>
-        private void SafeDestroy(string name)
+        private void SafeDestroy(string name, QuadKey quadKey)
         {
-            // TODO Ideally, tile should be disposed to free element ids stored in global hashmap
+            if (_loadedQuadKeys.ContainsKey(quadKey))
+            {
+                _loadedQuadKeys[quadKey].Dispose();
+                _loadedQuadKeys.Remove(quadKey);
+                return;
+            }
+
             var go = GameObject.Find(name);
             if (go != null)
                 GameObject.Destroy(go);
@@ -193,8 +205,11 @@ namespace Assets.Scenes.Orbit.Scripts
         private GameObject GetActual(GeoCoordinate coordinate)
         {
             var expectedQuadKey = GeoUtils.CreateQuadKey(coordinate, _currentLod);
-            var expectedGameObject = GameObject.Find(expectedQuadKey.ToString());
 
+            if (_loadedQuadKeys.ContainsKey(expectedQuadKey))
+                return _loadedQuadKeys[expectedQuadKey].GameObject;
+
+            var expectedGameObject = GameObject.Find(expectedQuadKey.ToString());
             return expectedGameObject == null
                 ? GetParent(expectedQuadKey)  // zoom in
                 : GetLastParent(expectedGameObject); // zoom out or pan
