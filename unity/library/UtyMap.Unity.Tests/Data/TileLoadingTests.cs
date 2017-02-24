@@ -48,13 +48,13 @@ namespace UtyMap.Unity.Tests.Data
             TestQuadKeys(centerQuadKey, count, lod);
         }
 
-        [Test(Description = "This test loads 4 tiles at zoom level 14.")]
+        [Test(Description = "This test loads 1 tile at zoom level 14.")]
         public void CanLoadTilesAtBirdEyeLevelOfDetails()
         {
             // ARRANGE
             int lod = 14;
             SetupMapData(TestHelper.BerlinXmlData, lod);
-            var count = 2;
+            var count = 1;
             var centerQuadKey = GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, lod);
 
             // ACT & ASSERT
