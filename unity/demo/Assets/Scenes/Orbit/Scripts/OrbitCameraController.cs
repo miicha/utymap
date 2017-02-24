@@ -17,14 +17,15 @@ namespace Assets.Scenes.Orbit.Scripts
     internal sealed class OrbitCameraController : MonoBehaviour
     {
         private const string TraceCategory = "scene.orbit";
+        private const float RotationSensivity = 5f;
 
         public GameObject Planet;
         public bool ShowState = true;
         public bool FreezeLod = false;
 
         private int _currentLod;
+        private Vector3 _lastOrientation;
         private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
-        private Vector3 _lastPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
         private IMapDataStore _dataStore;
         private IProjection _projection;
@@ -63,15 +64,14 @@ namespace Assets.Scenes.Orbit.Scripts
 
         void Update()
         {
-            // TODO add some sensivity parameter
-            if (_lastPosition == transform.position)
+            if (Vector3.Distance(_lastOrientation, transform.rotation.eulerAngles) < RotationSensivity)
                 return;
 
-            _lastPosition = transform.position;
+            _lastOrientation = transform.rotation.eulerAngles;
 
-            if (OrbitCalculator.IsCloseToSurface(_lastPosition))
+            if (OrbitCalculator.IsCloseToSurface(transform.position))
             {
-                SurfaceCalculator.GeoOrigin = OrbitCalculator.GetCoordinate(transform.rotation.eulerAngles);
+                SurfaceCalculator.GeoOrigin = OrbitCalculator.GetCoordinate(_lastOrientation);
                 SceneManager.LoadScene("Surface");
                 return;
             }
