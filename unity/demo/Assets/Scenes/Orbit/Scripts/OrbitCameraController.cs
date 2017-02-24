@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scenes.Surface.Scripts;
 using Assets.Scripts;
 using Assets.Scripts.Scene;
 using UnityEngine;
@@ -70,6 +71,7 @@ namespace Assets.Scenes.Orbit.Scripts
 
             if (OrbitCalculator.IsCloseToSurface(_lastPosition))
             {
+                SurfaceCalculator.GeoOrigin = OrbitCalculator.GetCoordinate(transform.rotation.eulerAngles);
                 SceneManager.LoadScene("Surface");
                 return;
             }
