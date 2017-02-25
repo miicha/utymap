@@ -58,9 +58,14 @@ namespace UtyMap.Unity.Tests.Helpers
         {
             MapData mapData = null;
             var manualResetEvent = new ManualResetEvent(false);
-
-            store.Subscribe<Tile>(_ => manualResetEvent.Set());
-            store.Subscribe<MapData>(r => mapData = r);
+            store
+                .ObserveOn<Tile>(Scheduler.CurrentThread)
+                .SubscribeOn(Scheduler.CurrentThread)
+                .Subscribe(_ => manualResetEvent.Set());
+            store
+                .ObserveOn<MapData>(Scheduler.CurrentThread)
+                .SubscribeOn(Scheduler.CurrentThread)
+                .Subscribe(r => mapData = r);
             store.OnNext(tile);
             manualResetEvent.WaitOne(TimeSpan.FromSeconds(waitTimeInSeconds));
             return mapData;
