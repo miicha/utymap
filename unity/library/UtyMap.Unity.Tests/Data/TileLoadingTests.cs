@@ -35,13 +35,13 @@ namespace UtyMap.Unity.Tests.Data
             _compositionRoot.Dispose();
         }
 
-        [Test(Description = "This test loads 4 tiles at zoom level 16.")]
+        [Test(Description = "This test loads 1 tile at zoom level 16.")]
         public void CanLoadTilesAtDetailedLevelOfDetails()
         {
             // ARRANGE
             int lod = 16;
             SetupMapData(TestHelper.BerlinPbfData, lod);
-            var count = 2;
+            var count = 1;
             var centerQuadKey = new QuadKey(35205, 21489, lod);
 
             // ACT & ASSERT
