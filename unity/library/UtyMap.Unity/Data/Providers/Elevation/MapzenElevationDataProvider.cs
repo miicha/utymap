@@ -19,6 +19,8 @@ namespace UtyMap.Unity.Data.Providers.Elevation
         private int _eleGrid;
         private string _mapDataFormatExtension;
 
+        private bool _hasRequestLimit = true;
+
         [Dependency]
         public MapzenElevationDataProvider(IFileSystemService fileSystemService, INetworkService networkService, ITrace trace) :
             base(fileSystemService, networkService, trace)
@@ -39,7 +41,7 @@ namespace UtyMap.Unity.Data.Providers.Elevation
         }
 
         /// <inheritdoc />
-        protected override bool LimitRequests { get { return true; } }
+        protected override bool LimitRequests { get { return _hasRequestLimit; } }
 
         /// <inheritdoc />
         protected override void WriteBytes(Stream stream, byte[] bytes)
@@ -125,6 +127,8 @@ namespace UtyMap.Unity.Data.Providers.Elevation
             // TODO this parameter depends on height data precision and tile size
             _eleGrid = configSection.GetInt(@"data/mapzen/ele_grid", 25);
             _elePath = configSection.GetString(@"data/elevation/local", null);
+
+            _hasRequestLimit = configSection.GetBool(@"data/mapzen/limit", true);
         }
     }
 }

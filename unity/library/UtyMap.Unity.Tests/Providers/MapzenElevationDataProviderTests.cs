@@ -41,6 +41,7 @@ namespace UtyMap.Unity.Tests.Providers
             _config.Setup(c => c.GetString("data/mapzen/ele_server", It.IsAny<string>())).Returns("elevation.mapzen.com/height?json={0}&api_key={1}");
             _config.Setup(c => c.GetString("data/mapzen/api_key", It.IsAny<string>())).Returns("ggg");
             _config.Setup(c => c.GetString("data/mapzen/ele_format", It.IsAny<string>())).Returns("ele");
+            _config.Setup(c => c.GetBool("data/mapzen/limit", It.IsAny<bool>())).Returns(false);
             _config.Setup(c => c.GetInt("data/mapzen/ele_grid", It.IsAny<int>())).Returns(2);
             _config.Setup(c => c.GetString("data/elevation/local", It.IsAny<string>())).Returns("Cache");
 
