@@ -5,9 +5,11 @@ using Assets.Scripts.Environment.Reactive;
 using Assets.Scripts.Scene;
 using UnityEngine;
 using UtyMap.Unity;
+using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
+using UtyRx;
 using IContainer = UtyDepend.IContainer;
 using Container = UtyDepend.Container;
 using Component = UtyDepend.Component;
@@ -23,8 +25,7 @@ namespace Assets.Scripts
         private IContainer _container;
         private DebugConsoleTrace _trace;
         private CompositionRoot _compositionRoot;
-
-        public bool IsInitialized { get; private set; }
+        private bool _isInitialized;
 
         #region Singleton implementation
 
@@ -47,13 +48,16 @@ namespace Assets.Scripts
 
         #region Initialization logic
 
-        public void InitializeFramework(ConfigBuilder configBuilder, Action<CompositionRoot> initAction)
+        public void InitializeFramework(ConfigBuilder configBuilder, Action<CompositionRoot> initAction = null)
         {
-            IsInitialized = false;
-
-            // Need to dispose all previously used components as we're going to create new ones.
-            if (_container != null)
-                _container.Dispose();
+            if (_isInitialized)
+            {
+                if (initAction != null)
+                    _trace.Error(FatalCategoryName,
+                        new InvalidOperationException("Attemp to initialize framework with init action when it is already initialized."),
+                        "Invalid operation!");
+                return;
+            }
 
             // create default container which should not be exposed outside to avoid Service Locator pattern.
             _container = new Container();
@@ -90,13 +94,16 @@ namespace Assets.Scripts
                     // register default mapcss
                     .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"MapCss/default/default.mapcss")));
 
-                // this is the way to insert custom extensions from outside. You may need to do it for some scenes.
-                initAction(_compositionRoot);
+                // this is the way to insert custom extensions or override existing ones from outside.
+                if (initAction != null)
+                    initAction(_compositionRoot);
 
                 // setup object graph
                 _compositionRoot.Setup();
 
-                IsInitialized = true;
+                _isInitialized = true;
+
+                SubscribeOnMapData();
             }
             catch (Exception ex)
             {
@@ -119,6 +126,22 @@ namespace Assets.Scripts
             // that is not nice, but we need to use commands registered in DI with their dependencies
             console.SetContainer(_container);
             console.IsOpen = isOpen;
+        }
+
+        /// <summary> Subscribe on mapdata updates. </summary>
+        private void SubscribeOnMapData()
+        {
+            const string traceCategory = "mapdata";
+            var modelBuilder = GetService<UnityModelBuilder>();
+            GetService<IMapDataStore>()
+               .SubscribeOn<MapData>(Scheduler.ThreadPool)
+               .ObserveOn(Scheduler.MainThread)
+               .Where(r => r.Tile.GameObject != null)
+               .Subscribe(r => r.Variant.Match(
+                               e => modelBuilder.BuildElement(r.Tile, e),
+                               m => modelBuilder.BuildMesh(r.Tile, m)),
+                          ex => _trace.Error(traceCategory, ex, "cannot process mapdata."),
+                          () => _trace.Warn(traceCategory, "stop listening mapdata."));
         }
 
         #endregion

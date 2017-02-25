@@ -2,21 +2,17 @@
 using System.Collections.Generic;
 using Assets.Scenes.Surface.Scripts;
 using Assets.Scripts;
-using Assets.Scripts.Scene;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
-using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Utils;
-using UtyRx;
 
 namespace Assets.Scenes.Orbit.Scripts
 {
     internal sealed class OrbitCameraController : MonoBehaviour
     {
-        private const string TraceCategory = "scene.orbit";
         private const float RotationSensivity = 5f;
         private const float HeightSensivity = 100f;
 
@@ -40,19 +36,7 @@ namespace Assets.Scenes.Orbit.Scripts
         void Awake()
         {
             var appManager = ApplicationManager.Instance;
-            appManager.InitializeFramework(ConfigBuilder.GetDefault(), init => { });
-
-            var trace = appManager.GetService<ITrace>();
-            var modelBuilder = appManager.GetService<UnityModelBuilder>();
-            appManager.GetService<IMapDataStore>()
-               .SubscribeOn<MapData>(Scheduler.ThreadPool)
-               .ObserveOn(Scheduler.MainThread)
-               .Where(r => r.Tile.GameObject != null)
-               .Subscribe(r => r.Variant.Match(
-                               e => modelBuilder.BuildElement(r.Tile, e),
-                               m => modelBuilder.BuildMesh(r.Tile, m)),
-                          ex => trace.Error(TraceCategory, ex, "cannot process mapdata."),
-                          () => trace.Warn(TraceCategory, "stop listening mapdata."));
+            appManager.InitializeFramework(ConfigBuilder.GetDefault());
 
             _dataStore = appManager.GetService<IMapDataStore>();
             _stylesheet = appManager.GetService<Stylesheet>();

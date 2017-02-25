@@ -2,22 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts;
-using Assets.Scripts.Scene;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
-using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
-using UtyRx;
 
 namespace Assets.Scenes.Surface.Scripts
 {
     class SurfaceCameraController : MonoBehaviour
     {
-        private const string TraceCategory = "scene.surface";
-
         private QuadKey _currentQuadKey;
         private Vector3 _lastPosition = Vector3.zero;
         private RangeTree<float, int> _lodTree;
@@ -35,19 +30,7 @@ namespace Assets.Scenes.Surface.Scripts
         void Awake()
         {
             var appManager = ApplicationManager.Instance;
-            appManager.InitializeFramework(ConfigBuilder.GetDefault(), init => { });
-
-            var trace = appManager.GetService<ITrace>();
-            var modelBuilder = appManager.GetService<UnityModelBuilder>();
-            appManager.GetService<IMapDataStore>()
-               .SubscribeOn<MapData>(Scheduler.ThreadPool)
-               .ObserveOn(Scheduler.MainThread)
-               .Where(r => !r.Tile.IsDisposed)
-               .Subscribe(r => r.Variant.Match(
-                               e => modelBuilder.BuildElement(r.Tile, e),
-                               m => modelBuilder.BuildMesh(r.Tile, m)),
-                          ex => trace.Error(TraceCategory, ex, "cannot process mapdata."),
-                          () => trace.Warn(TraceCategory, "stop listening mapdata."));
+            appManager.InitializeFramework(ConfigBuilder.GetDefault());
 
             _dataStore = appManager.GetService<IMapDataStore>();
             _stylesheet = appManager.GetService<Stylesheet>();
