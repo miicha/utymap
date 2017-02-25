@@ -18,12 +18,14 @@ namespace Assets.Scenes.Orbit.Scripts
     {
         private const string TraceCategory = "scene.orbit";
         private const float RotationSensivity = 5f;
+        private const float HeightSensivity = 100f;
 
         public GameObject Planet;
         public bool ShowState = true;
         public bool FreezeLod = false;
 
         private int _currentLod;
+        private float _lastHeight = float.MaxValue;
         private Vector3 _lastOrientation;
         private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
 
@@ -64,12 +66,18 @@ namespace Assets.Scenes.Orbit.Scripts
 
         void Update()
         {
-            if (Vector3.Distance(_lastOrientation, transform.rotation.eulerAngles) < RotationSensivity)
+            var trans = transform;
+            var position = trans.position;
+            var rotation = trans.rotation;
+
+            if (Vector3.Distance(_lastOrientation, rotation.eulerAngles) < RotationSensivity &&
+                Math.Abs(_lastHeight - position.y) < HeightSensivity)
                 return;
 
-            _lastOrientation = transform.rotation.eulerAngles;
+            _lastHeight = position.y;
+            _lastOrientation = rotation.eulerAngles;
 
-            if (OrbitCalculator.IsCloseToSurface(transform.position))
+            if (OrbitCalculator.IsCloseToSurface(position))
             {
                 SurfaceCalculator.GeoOrigin = OrbitCalculator.GetCoordinate(_lastOrientation);
                 SceneManager.LoadScene("Surface");
