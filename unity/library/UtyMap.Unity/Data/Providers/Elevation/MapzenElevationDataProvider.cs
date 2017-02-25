@@ -39,6 +39,9 @@ namespace UtyMap.Unity.Data.Providers.Elevation
         }
 
         /// <inheritdoc />
+        protected override bool LimitRequests { get { return true; } }
+
+        /// <inheritdoc />
         protected override void WriteBytes(Stream stream, byte[] bytes)
         {
             var content = Encoding.UTF8.GetString(bytes);
