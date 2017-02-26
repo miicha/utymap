@@ -107,7 +107,7 @@ namespace Assets.Scenes.Surface.Scripts
                 _loadedQuadKeys.Clear();
 
                 foreach (var quadKey in GetNeighbours(_currentQuadKey))
-                    _loadedQuadKeys.Add(quadKey, BuildQuadKey(Planet, quadKey));
+                    BuildQuadKey(Planet, quadKey);
             }
             // pan
             else
@@ -147,6 +147,7 @@ namespace Assets.Scenes.Surface.Scripts
             var tileGameObject = new GameObject(quadKey.ToString());
             tileGameObject.transform.parent = parent.transform;
             var tile = new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Grid, tileGameObject);
+            _loadedQuadKeys.Add(quadKey, tile);
             _dataStore.OnNext(tile);
             return tile;
         }
