@@ -11,6 +11,7 @@ using namespace utymap::utils;
 namespace {
     const char* InMemoryStoreKey = "InMemory";
     const char* NaturalEarthMapcss = TEST_MAPCSS_PATH "natural_earth.z1.mapcss";
+    const utymap::CancellationToken cancellationToken;
 
     // Use global variable as it is used inside lambda which is passed as function.
     bool isCalled;
@@ -49,8 +50,7 @@ namespace {
                     },
                         [](const char* message) {
                         BOOST_FAIL(message);
-                    }
-                    );
+                    }, *cancellationToken);
                 }
             }
             BOOST_CHECK(isCalled);

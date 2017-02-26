@@ -89,7 +89,7 @@ bool InMemoryElementStore::hasData(const utymap::QuadKey& quadKey) const
     return pimpl_->hasData(quadKey);
 }
 
-void InMemoryElementStore::search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor)
+void InMemoryElementStore::search(const utymap::QuadKey& quadKey, utymap::entities::ElementVisitor& visitor, const utymap::CancellationToken& cancelToken)
 {
     auto it = pimpl_->begin(quadKey);
 
@@ -98,6 +98,9 @@ void InMemoryElementStore::search(const utymap::QuadKey& quadKey, utymap::entiti
         return;
 
     for (const auto& element : it->second) {
+        if (cancelToken.isCancelled()) 
+            break;
+
         element->accept(visitor);
     }
 }

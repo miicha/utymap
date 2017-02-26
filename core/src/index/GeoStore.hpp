@@ -2,6 +2,7 @@
 #define INDEX_GEOSTORE_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "CancellationToken.hpp"
 #include "GeoCoordinate.hpp"
 #include "LodRange.hpp"
 #include "QuadKey.hpp"
@@ -55,13 +56,15 @@ public:
     /// Searches for elements inside quadkey.
     void search(const QuadKey& quadKey,
                 const utymap::mapcss::StyleProvider& styleProvider,
-                utymap::entities::ElementVisitor& visitor);
+                utymap::entities::ElementVisitor& visitor,
+                const utymap::CancellationToken& cancelToken);
 
     /// Searches for elements inside circle with given parameters.
     void search(const GeoCoordinate& coordinate,
                 double radius,
                 const utymap::mapcss::StyleProvider& styleProvider,
-                utymap::entities::ElementVisitor& visitor);
+                utymap::entities::ElementVisitor& visitor,
+                const utymap::CancellationToken& cancelToken);
 
     /// Checks whether there is data for given quadkey.
     bool hasData(const QuadKey& quadKey) const;

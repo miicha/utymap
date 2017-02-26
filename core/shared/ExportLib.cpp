@@ -142,11 +142,12 @@ extern "C"
                                 int eleDataType,                         // elevation data type
                                 OnMeshBuilt* meshCallback,               // mesh callback
                                 OnElementLoaded* elementCallback,        // element callback
-                                OnError* errorCallback)                  // completion callback
+                                OnError* errorCallback,                  // completion callback
+                                utymap::CancellationToken* cancellationToken)    // cancellation token
     {
         utymap::QuadKey quadKey(levelOfDetail, tileX, tileY);
         applicationPtr->loadQuadKey(styleFile, quadKey, static_cast<Application::ElevationDataType>(eleDataType),
-            meshCallback, elementCallback, errorCallback);
+            meshCallback, elementCallback, errorCallback, cancellationToken);
     }
 
     /// Checks whether there is data for given quadkey.

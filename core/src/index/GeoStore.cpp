@@ -137,17 +137,17 @@ public:
         }
     }
 
-    void search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor)
+    void search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor, const utymap::CancellationToken& cancelToken)
     {
         FilterElementVisitor filter(quadKey, styleProvider, visitor);
         for (const auto& pair : storeMap_) {
             // Search only if store has data
             if (pair.second->hasData(quadKey))
-                pair.second->search(quadKey, filter);
+                pair.second->search(quadKey, filter, cancelToken);
         }
     }
 
-    void search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor) const
+    void search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor, const utymap::CancellationToken& cancelToken) const
     {
         throw std::domain_error("Not implemented.");
     }
@@ -213,14 +213,14 @@ void utymap::index::GeoStore::add(const std::string &storeKey, const std::string
     pimpl_->add(storeKey, path, bbox, range, styleProvider);
 }
 
-void utymap::index::GeoStore::search(const QuadKey& quadKey, const StyleProvider& styleProvider, ElementVisitor& visitor)
+void utymap::index::GeoStore::search(const QuadKey& quadKey, const StyleProvider& styleProvider, ElementVisitor& visitor, const utymap::CancellationToken& cancelToken)
 {
-    pimpl_->search(quadKey, styleProvider, visitor);
+    pimpl_->search(quadKey, styleProvider, visitor, cancelToken);
 }
 
-void utymap::index::GeoStore::search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor)
+void utymap::index::GeoStore::search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor, const utymap::CancellationToken& cancelToken)
 {
-    pimpl_->search(coordinate, radius, styleProvider, visitor);
+    pimpl_->search(coordinate, radius, styleProvider, visitor, cancelToken);
 }
 
 bool utymap::index::GeoStore::hasData(const QuadKey& quadKey) const

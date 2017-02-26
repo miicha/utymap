@@ -113,12 +113,13 @@ public:
                const StyleProvider& styleProvider,
                const ElevationProvider& eleProvider,
                const MeshCallback& meshFunc,
-               const ElementCallback& elementFunc)
+               const ElementCallback& elementFunc,
+               const utymap::CancellationToken& cancelToken)
     {
         AggregateElementVisitor elementVisitor(quadKey, styleProvider, stringTable_,
             eleProvider, meshFunc, elementFunc, builderFactory_, builderKeyId_);
 
-        geoStore_.search(quadKey, styleProvider, elementVisitor);
+        geoStore_.search(quadKey, styleProvider, elementVisitor, cancelToken);
         elementVisitor.complete();
     }
 
@@ -135,9 +136,9 @@ void QuadKeyBuilder::registerElementBuilder(const std::string& name, ElementBuil
 }
 
 void QuadKeyBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvider, const ElevationProvider& eleProvider, 
-    MeshCallback meshFunc, ElementCallback elementFunc)
+    MeshCallback meshFunc, ElementCallback elementFunc, const utymap::CancellationToken& cancelToken)
 {
-    pimpl_->build(quadKey, styleProvider, eleProvider, meshFunc, elementFunc);
+    pimpl_->build(quadKey, styleProvider, eleProvider, meshFunc, elementFunc, cancelToken);
 }
 
 QuadKeyBuilder::QuadKeyBuilder(GeoStore& geoStore, StringTable& stringTable) :

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
@@ -36,6 +38,9 @@ namespace UtyMap.Unity
         /// <summary> True if tile was disposed. </summary>
         public bool IsDisposed { get; private set; }
 
+        /// <summary> Used to cancel tile loading in native code. </summary>
+        internal CancellationToken CancelationToken;
+
         /// <summary> Creates <see cref="Tile"/>. </summary>
         /// <param name="quadKey"></param>
         /// <param name="stylesheet"></param>
@@ -52,6 +57,8 @@ namespace UtyMap.Unity
             GameObject = gameObject;
 
             BoundingBox = GeoUtils.QuadKeyToBoundingBox(quadKey);
+
+            CancelationToken = new CancellationToken();
         }
 
         /// <summary> Checks whether element with specific id is registered. </summary>
@@ -84,6 +91,9 @@ namespace UtyMap.Unity
         /// <inheritdoc />
         public void Dispose()
         {
+            // notify native code.
+            CancelationToken.SetCancelled(true);
+
             // remove all registered ids from global list if they are in current registry
             foreach (var id in _localIds)
                 GlobalIds.Remove(id);

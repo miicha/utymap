@@ -18,6 +18,7 @@ using namespace utymap::tests;
 
 namespace {
     const std::string stylesheet = "area|z1[any],way|z1[any],node|z1[any] { clip: true; }";
+    const CancellationToken cancelToken;
 
     struct Index_InMemoryElementStoreFixture
     {
@@ -62,7 +63,7 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_ThenAllFound)
     QuadKey quadKey(1, 0, 0);
     ElementCounter counter;
 
-    elementStore.search(quadKey, counter);
+    elementStore.search(quadKey, counter, cancelToken);
 
     BOOST_CHECK_EQUAL(counter.times, 3);
 }
@@ -72,7 +73,7 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_ThenAllSkipped)
     QuadKey quadKey(2, 0, 0);
     ElementCounter counter;
 
-    elementStore.search(quadKey, counter);
+    elementStore.search(quadKey, counter, cancelToken);
 
     BOOST_CHECK_EQUAL(counter.times, 0);
 }

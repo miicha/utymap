@@ -6,6 +6,18 @@ using UtyMap.Unity.Infrastructure.Primitives;
 
 namespace UtyMap.Unity.Data
 {
+    /// <summary> Cancellation token to cancel processing in native code. </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal class CancellationToken
+    {
+        public int IsCancelled;
+
+        public void SetCancelled(bool isCancelled)
+        {
+            IsCancelled = (byte) (isCancelled ? 1 : 0);
+        }
+    }
+
     /// <summary> Provides the way to build tile encapsulating Utymap implementation. </summary>
     internal static class CoreLibrary
     {
@@ -115,14 +127,22 @@ namespace UtyMap.Unity.Data
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="quadKey"> QuadKey</param>
         /// <param name="elevationDataType"> Elevation data type.</param>
-        /// <param name="onMeshBuilt"></param>
-        /// <param name="onElementLoaded"></param>
-        /// <param name="onError"></param>
+        /// <param name="onMeshBuilt"> Mesh callback. </param>
+        /// <param name="onElementLoaded"> Element callback. </param>
+        /// <param name="onError"> Error callback. </param>
+        /// <param name="cancelToken"> Cancellation token. </param>
         public static void LoadQuadKey(string stylePath, QuadKey quadKey, ElevationDataType elevationDataType,
-            OnMeshBuilt onMeshBuilt, OnElementLoaded onElementLoaded, OnError onError)
+            OnMeshBuilt onMeshBuilt, OnElementLoaded onElementLoaded, OnError onError, CancellationToken cancelToken)
         {
-            loadQuadKey(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
-                 (int)elevationDataType, onMeshBuilt, onElementLoaded, onError);
+            // TODO make native call completely thread safe
+            lock (__lockObj)
+            {
+                GCHandle cancelTokenHandle = GCHandle.Alloc(cancelToken, GCHandleType.Pinned);
+                loadQuadKey(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
+                    (int) elevationDataType, onMeshBuilt, onElementLoaded, onError,
+                    cancelTokenHandle.AddrOfPinnedObject());
+                cancelTokenHandle.Free();
+            }
         }
 
         /// <summary> Frees resources. Should be called before application stops. </summary>
@@ -188,7 +208,7 @@ namespace UtyMap.Unity.Data
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void loadQuadKey(string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,
-            OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler);
+            OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
         private static extern void cleanup();

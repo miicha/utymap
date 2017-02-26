@@ -2,6 +2,7 @@
 #define APPLICATION_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "CancellationToken.hpp"
 #include "QuadKey.hpp"
 #include "LodRange.hpp"
 #include "builders/BuilderContext.hpp"
@@ -124,12 +125,13 @@ public:
     }
 
     /// Loads given quadKey.
-    void loadQuadKey(const char* styleFile, 
-                     const utymap::QuadKey& quadKey, 
+    void loadQuadKey(const char* styleFile,
+                     const utymap::QuadKey& quadKey,
                      const ElevationDataType& eleDataType,
                      OnMeshBuilt* meshCallback,
-                     OnElementLoaded* elementCallback, 
-                     OnError* errorCallback)
+                     OnElementLoaded* elementCallback,
+                     OnError* errorCallback,
+                     utymap::CancellationToken* cancellationToken)
     {
         safeExecute([&]() {
             auto& styleProvider = getStyleProvider(styleFile);
@@ -148,7 +150,7 @@ public:
                 }
             }, [&elementVisitor](const utymap::entities::Element& element) {
                 element.accept(elementVisitor);
-            });
+            }, *cancellationToken);
         }, errorCallback);
     }
 

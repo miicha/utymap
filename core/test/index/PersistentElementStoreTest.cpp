@@ -19,8 +19,8 @@ using namespace utymap::tests;
 
 namespace {
     const std::string TestZoomDirectory = "1";
-
     const std::string stylesheet = "node|z1[any], way|z1[any], area|z1[any], relation|z1[any] { clip: false; }";
+    const CancellationToken cancelToken;
 
     struct Index_PersistentElementStoreFixture 
     {
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(GivenNode_WhenStoreAndSearch_ThenItIsStoredAndReadBack)
     ElementCounter counter;
 
     elementStore.store(node, range, *styleProvider);
-    elementStore.search(quadKey, counter);
+    elementStore.search(quadKey, counter, cancelToken);
 
     assertNode(node, *std::dynamic_pointer_cast<Node>(counter.element));
 }
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreAndSearch_ThenItIsStoredAndReadBack)
     ElementCounter counter;
 
     elementStore.store(way, range, *styleProvider);
-    elementStore.search(quadKey, counter);
+    elementStore.search(quadKey, counter, cancelToken);
 
     assertWayOrArea(way, *std::dynamic_pointer_cast<Way>(counter.element));
 }
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(GivenArea_WhenStoreAndSearch_ThenItIsStoredAndReadBack)
     ElementCounter counter;
 
     elementStore.store(area, range, *styleProvider);
-    elementStore.search(quadKey, counter);
+    elementStore.search(quadKey, counter, cancelToken);
 
     assertWayOrArea(area, *std::dynamic_pointer_cast<Area>(counter.element));
 }
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(GivenRelationWithDifferentElements_WhenStoreAndSearch_ThenI
     ElementCounter counter;
 
     elementStore.store(relation, range, *styleProvider);
-    elementStore.search(quadKey, counter);
+    elementStore.search(quadKey, counter, cancelToken);
 
     BOOST_CHECK_EQUAL(counter.times, 1);
     Relation result = *std::dynamic_pointer_cast<Relation>(counter.element);
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(GivenTwoAreas_WhenStoreAndSearchOnce_ThenTheyStoredTwiceAnd
 
     elementStore.store(area1, range, *styleProvider);
     elementStore.store(area2, range, *styleProvider);
-    elementStore.search(quadKey, counter);
+    elementStore.search(quadKey, counter, cancelToken);
 
     BOOST_CHECK_EQUAL(counter.times, 2);
     assertWayOrArea(area2, *std::dynamic_pointer_cast<Area>(counter.element));

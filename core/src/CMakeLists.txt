@@ -11,6 +11,7 @@ set(HEADER_FILES
         ${LIB_SOURCE}/triangle/triangle.h
         ${LIB_SOURCE}/shapefile/shapefil.h
         BoundingBox.hpp
+        CancellationToken.hpp
         Exceptions.hpp
         GeoCoordinate.hpp
         LodRange.hpp

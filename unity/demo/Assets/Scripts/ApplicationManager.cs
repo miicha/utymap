@@ -136,7 +136,7 @@ namespace Assets.Scripts
             GetService<IMapDataStore>()
                .SubscribeOn<MapData>(Scheduler.ThreadPool)
                .ObserveOn(Scheduler.MainThread)
-               .Where(r => r.Tile.GameObject != null)
+               .Where(r => !r.Tile.IsDisposed)
                .Subscribe(r => r.Variant.Match(
                                e => modelBuilder.BuildElement(r.Tile, e),
                                m => modelBuilder.BuildMesh(r.Tile, m)),

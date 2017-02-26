@@ -294,7 +294,7 @@ public:
         quadKeyData.indexFile->write(reinterpret_cast<const char*>(&offset), sizeof(offset));
     }
 
-    void search(const QuadKey& quadKey, ElementVisitor& visitor)
+    void search(const QuadKey& quadKey, ElementVisitor& visitor, const utymap::CancellationToken& cancelToken)
     {
         const auto& quadKeyData = getQuadKeyData(quadKey);
 
@@ -305,6 +305,9 @@ public:
 
         quadKeyData.indexFile->seekg(0, std::ios::beg);
         for (std::uint32_t i = 0; i < count; ++i) {
+            if (cancelToken.isCancelled())
+                break;
+
             std::uint64_t id;
             std::uint32_t offset;
             quadKeyData.indexFile->read(reinterpret_cast<char*>(&id), sizeof(id));
@@ -362,9 +365,9 @@ void PersistentElementStore::storeImpl(const Element& element, const QuadKey& qu
     pimpl_->store(element, quadKey);
 }
 
-void PersistentElementStore::search(const QuadKey& quadKey, ElementVisitor& visitor)
+void PersistentElementStore::search(const QuadKey& quadKey, ElementVisitor& visitor, const utymap::CancellationToken& cancelToken)
 {
-    pimpl_->search(quadKey, visitor);
+    pimpl_->search(quadKey, visitor, cancelToken);
 }
 
 bool PersistentElementStore::hasData(const QuadKey& quadKey) const

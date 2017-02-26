@@ -18,7 +18,8 @@ public:
     virtual ~InMemoryElementStore();
 
     void search(const utymap::QuadKey& quadKey, 
-                utymap::entities::ElementVisitor& visitor) override;
+                utymap::entities::ElementVisitor& visitor,
+                const utymap::CancellationToken& cancelToken) override;
 
     bool hasData(const utymap::QuadKey& quadKey) const override;
 

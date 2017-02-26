@@ -32,7 +32,7 @@ namespace {
         {
         }
 
-        void search(const QuadKey&, ElementVisitor&) override { }
+        void search(const QuadKey&, ElementVisitor&, const CancellationToken&) override { }
 
         bool hasData(const QuadKey&) const override { return true; }
 

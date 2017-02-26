@@ -2,6 +2,7 @@
 #define INDEX_ELEMENTSTORE_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "CancellationToken.hpp"
 #include "LodRange.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
@@ -20,7 +21,8 @@ public:
 
     /// Searches for elements for given quadKey
     virtual void search(const utymap::QuadKey& quadKey,
-                        utymap::entities::ElementVisitor& visitor) = 0;
+                        utymap::entities::ElementVisitor& visitor,
+                        const utymap::CancellationToken& cancelToken) = 0;
 
     /// Checks whether there is data for given quadkey.
     virtual bool hasData(const utymap::QuadKey& quadKey) const = 0;

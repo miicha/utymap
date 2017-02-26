@@ -52,7 +52,8 @@ namespace UtyMap.Unity.Data
                 tile.ElevationType,
                 adapter.AdaptMesh,
                 adapter.AdaptElement,
-                adapter.AdaptError);
+                adapter.AdaptError,
+                tile.CancelationToken);
             _trace.Info(TraceCategory, "tile loaded: {0}", tile.ToString());
 
             _tileObservers.ForEach(o => o.OnNext(tile));

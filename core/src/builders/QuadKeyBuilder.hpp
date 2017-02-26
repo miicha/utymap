@@ -1,6 +1,7 @@
 #ifndef BUILDERS_QUADKEYBUILDER_HPP_DEFINED
 #define BUILDERS_QUADKEYBUILDER_HPP_DEFINED
 
+#include "CancellationToken.hpp"
 #include "QuadKey.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/ElementBuilder.hpp"
@@ -37,7 +38,8 @@ public:
                const utymap::mapcss::StyleProvider& styleProvider,
                const utymap::heightmap::ElevationProvider& eleProvider,
                MeshCallback meshFunc,
-               ElementCallback elementFunc);
+               ElementCallback elementFunc,
+               const utymap::CancellationToken& cancelToken);
 
 private:
     class QuadKeyBuilderImpl;
