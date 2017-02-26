@@ -168,7 +168,7 @@ namespace Assets.Scenes.Orbit.Scripts
                 tileGameObject.transform.parent = parent.transform;
                 var tile = new Tile(quadKey, _stylesheet, _projection, _elevationDataType, tileGameObject);
                 _loadedQuadKeys.Add(quadKey, tile);
-                _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, _elevationDataType, tileGameObject));
+                _dataStore.OnNext(tile);
             }
         }
 

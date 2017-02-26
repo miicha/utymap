@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
@@ -9,7 +7,7 @@ using UtyMap.Unity.Utils;
 namespace UtyMap.Unity
 {
     /// <summary> Represents map tile. </summary>
-    public class Tile : IDisposable
+    public sealed class Tile : IDisposable
     {
         /// <summary> Stores element ids loaded in this tile. </summary>
         private readonly SafeHashSet<long> _localIds = new SafeHashSet<long>();
@@ -93,6 +91,7 @@ namespace UtyMap.Unity
         {
             // notify native code.
             CancelationToken.SetCancelled(true);
+            IsDisposed = true;
 
             // remove all registered ids from global list if they are in current registry
             foreach (var id in _localIds)
@@ -101,8 +100,6 @@ namespace UtyMap.Unity
 
             if (GameObject != null)
                 GameObject.Destroy(GameObject);
-
-            IsDisposed = true;
         }
 
         #endregion
