@@ -64,6 +64,9 @@ namespace Assets.Scenes.Orbit.Scripts
             if (OrbitCalculator.IsCloseToSurface(position))
             {
                 SurfaceCalculator.GeoOrigin = OrbitCalculator.GetCoordinate(_lastOrientation);
+                foreach (var quadkey in _loadedQuadKeys.Keys)
+                    SafeDestroy(quadkey);
+
                 SceneManager.LoadScene("Surface");
                 return;
             }
@@ -131,7 +134,7 @@ namespace Assets.Scenes.Orbit.Scripts
             {
                 quadKeys.AddRange(GetChildren(actualQuadKey));
                 var oldParent = actualGameObject.transform.parent;
-                SafeDestroy(actualName, actualQuadKey);
+                SafeDestroy(actualQuadKey, actualName);
 
                 parent = new GameObject(actualName);
                 parent.transform.parent = oldParent;
@@ -143,9 +146,9 @@ namespace Assets.Scenes.Orbit.Scripts
                 var quadKey = QuadKey.FromString(name);
                 // destroy all siblings
                 foreach (var child in GetChildren(quadKey))
-                    SafeDestroy(child.ToString(), child);
+                    SafeDestroy(child, child.ToString());
                 // destroy current as it might be just placeholder.
-                SafeDestroy(name, actualQuadKey);
+                SafeDestroy(actualQuadKey, name);
                 parent = GetParent(quadKey);
                 quadKeys.Add(quadKey);
             }
@@ -164,13 +167,13 @@ namespace Assets.Scenes.Orbit.Scripts
                 var tileGameObject = new GameObject(quadKey.ToString());
                 tileGameObject.transform.parent = parent.transform;
                 var tile = new Tile(quadKey, _stylesheet, _projection, _elevationDataType, tileGameObject);
-                _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, _elevationDataType, tileGameObject));
                 _loadedQuadKeys.Add(quadKey, tile);
+                _dataStore.OnNext(new Tile(quadKey, _stylesheet, _projection, _elevationDataType, tileGameObject));
             }
         }
 
         /// <summary> Destroys gameobject by its name if it exists. </summary>
-        private void SafeDestroy(string name, QuadKey quadKey)
+        private void SafeDestroy(QuadKey quadKey, string name = null)
         {
             if (_loadedQuadKeys.ContainsKey(quadKey))
             {
