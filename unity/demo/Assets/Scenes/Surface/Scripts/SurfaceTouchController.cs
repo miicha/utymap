@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scenes.Surface.Scripts
 {
-    class SurfaceTouchController : MonoBehaviour
+    internal sealed class SurfaceTouchController : MonoBehaviour
     {
         public ScreenTransformGesture TwoFingerMoveGesture;
         public ScreenTransformGesture ManipulationGesture;

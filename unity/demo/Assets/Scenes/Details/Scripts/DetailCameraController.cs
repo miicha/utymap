@@ -12,7 +12,7 @@ using UtyMap.Unity.Infrastructure.Primitives;
 
 namespace Assets.Scenes.Details.Scripts
 {
-    class DetailCameraController : TileGridBehaviour
+    internal sealed class DetailCameraController : TileGridBehaviour
     {
         /// <summary> Max distance from origin before moving back. </summary>
         private const float MaxDistance = 3000;

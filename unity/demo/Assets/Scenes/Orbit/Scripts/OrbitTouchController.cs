@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Assets.Scenes.Orbit.Scripts
 {
-    class OrbitTouchController : MonoBehaviour
+    internal sealed class OrbitTouchController : MonoBehaviour
     {
         /// <summary> Value depends on radius and camera settings. </summary>
         private const float MagicAngleLimitCoeff = 2;
