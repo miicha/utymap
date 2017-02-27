@@ -1,6 +1,7 @@
 ﻿using System;
 using Assets.Scenes.Details.Scripts;
 using Assets.Scripts;
+using Assets.Scripts.Scene.Behaviours;
 using Assets.Scripts.Scene.Controllers;
 using UnityEngine;
 using UnityEngine.SceneManagement;

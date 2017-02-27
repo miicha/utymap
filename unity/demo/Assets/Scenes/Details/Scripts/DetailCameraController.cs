@@ -1,7 +1,10 @@
 ﻿using System;
+using Assets.Scenes.Surface.Scripts;
 using Assets.Scripts;
+using Assets.Scripts.Scene.Behaviours;
 using Assets.Scripts.Scene.Controllers;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
@@ -40,20 +43,35 @@ namespace Assets.Scenes.Details.Scripts
             }
         }
 
+        /// <inheritdoc />
         protected override bool OnPositionUpdated(Vector3 position)
         {
-            // TODO check scene transitions
+            if (IsCloseToSurface(position))
+            {
+                SurfaceCameraController.TileController.GeoOrigin = _tileController.GeoOrigin;
+                TileController.Dispose();
+                SceneManager.LoadScene("Surface");
+                return false;
+            }
             return true;
         }
 
+        /// <inheritdoc />
         protected override float MaxOriginDistance()
         {
             return MaxDistance;
         }
 
+        /// <inheritdoc />
         protected override TileGridController GetTileController()
         {
             return TileController;
+        }
+
+        /// <summary> Checks whether position is close to surface scene. </summary>
+        private bool IsCloseToSurface(Vector3 position)
+        {
+            return false;
         }
     }
 }

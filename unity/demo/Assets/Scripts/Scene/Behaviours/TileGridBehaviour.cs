@@ -1,8 +1,10 @@
 ﻿using System;
+using Assets.Scripts.Scene.Controllers;
 using UnityEngine;
 
-namespace Assets.Scripts.Scene.Controllers
+namespace Assets.Scripts.Scene.Behaviours
 {
+    /// <summary> Encapsulates behaviour with TileGridController for moving camera. </summary>
     internal abstract class TileGridBehaviour : MonoBehaviour
     {
         public GameObject Pivot;
