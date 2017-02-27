@@ -79,13 +79,14 @@ namespace Assets.Scenes.Orbit.Scripts
 
         private float CalculateLimit()
         {
-            var pole = new Vector3(0, OrbitCalculator.Radius, 0);
+            var radius = OrbitCameraController.TileController.Radius;
+            var pole = new Vector3(0, radius, 0);
             var center = Vector3.zero;
             var position = new Vector3(0, 0, Vector3.Distance(_cam.transform.position, center));
 
             var a = Vector3.Distance(position, center);
             var b = Vector3.Distance(position, pole);
-            var c = OrbitCalculator.Radius;
+            var c = radius;
 
             var cosine = (a * a + b * b - c * c) / (2 * a * b);
             return (float) Math.Acos(cosine) * Mathf.Rad2Deg * MagicAngleLimitCoeff;

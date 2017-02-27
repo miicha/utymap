@@ -1,47 +1,58 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts;
+using Assets.Scripts.Scene.Controllers;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Primitives;
-using UtyMap.Unity.Utils;
 
 namespace Assets.Scenes.Surface.Scripts
 {
     class SurfaceCameraController : MonoBehaviour
     {
-        private QuadKey _currentQuadKey;
-        private Vector3 _lastPosition = Vector3.zero;
-        private RangeTree<float, int> _lodTree;
+        /// <summary> Max distance from origin before moving back. </summary>
+        private const float MaxOriginDistance = 2000;
+        private const float Scale = 0.01f;
+        private const int MinLod = 9;
+        private const int MaxLod = 15;
+
+        private static TileGridController _tileController;
+        /// <summary> Gets controller responsible for tile loading. </summary>
+        public static TileGridController TileController
+        {
+            get
+            {
+                if (_tileController == null)
+                {
+                    var appManager = ApplicationManager.Instance;
+                    appManager.InitializeFramework(ConfigBuilder.GetDefault());
+                    _tileController = new TileGridController(
+                        appManager.GetService<IMapDataStore>(),
+                        appManager.GetService<Stylesheet>(),
+                        ElevationDataType.Grid,
+                        new Range<int>(MinLod, MaxLod),
+                        Scale);
+                    _tileController.GeoOrigin = new GeoCoordinate(52.53171, 13.38721);
+                }
+
+                return _tileController;
+            }
+        }
 
         public GameObject Pivot;
         public GameObject Planet;
 
-        private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
-
-        private IMapDataStore _dataStore;
-        private IProjection _projection;
-        private Stylesheet _stylesheet;
+        private Camera _camera;
+        
+        private Vector3 _lastPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
         /// <summary> Performs framework initialization once, before any Start() is called. </summary>
         void Awake()
         {
-            var appManager = ApplicationManager.Instance;
-            appManager.InitializeFramework(ConfigBuilder.GetDefault());
-
-            _dataStore = appManager.GetService<IMapDataStore>();
-            _stylesheet = appManager.GetService<Stylesheet>();
-            _projection = SurfaceCalculator.GetProjection();
-        }
-
-        void Start()
-        {
-            _lodTree = SurfaceCalculator.GetLodTree(GetComponent<Camera>(), transform.position);
-
-            UpdateLod();
+            _camera = GetComponent<Camera>();
+            TileController.UpdateCamera(_camera, transform.position);
+            TileController.MoveOrigin(Vector3.zero);
         }
 
         void Update()
@@ -52,9 +63,8 @@ namespace Assets.Scenes.Surface.Scripts
 
             _lastPosition = transform.position;
 
-            UpdateLod();
-
-            BuildIfNecessary();
+            TileController.UpdateCamera(_camera, _lastPosition);
+            TileController.Build(Planet, _lastPosition);
 
             KeepOrigin();
         }
@@ -65,93 +75,29 @@ namespace Assets.Scenes.Surface.Scripts
             GUI.Label(new Rect(0, 0, Screen.width, Screen.height),
                 String.Format("Position:{0}\nGeo:{1}\nQuadKey: {2}\nLOD:{3}\nScreen: {4}:{5}\nFoV: {6}",
                     transform.position,
-                    GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(transform.position.x, transform.position.z) / SurfaceCalculator.Scale),
-                    _currentQuadKey,
-                    SurfaceCalculator.CurrentLevelOfDetails,
+                    TileController.Projection.Project(transform.position),
+                    TileController.CurrentQuadKey,
+                    TileController.CurrentLevelOfDetail,
                     Screen.width, Screen.height,
-                    GetComponent<Camera>().fieldOfView));
+                    _camera.fieldOfView));
         }
 
         private void KeepOrigin()
         {
-            if (!SurfaceCalculator.IsFar(transform.position))
+            var position = transform.position;
+            if (!IsFar(position))
                 return;
 
-            Vector3 direction = new Vector3(transform.position.x, 0, transform.position.z) - SurfaceCalculator.Origin;
+            Pivot.transform.position = TileController.WorldOrigin;
+            Planet.transform.position += new Vector3(position.x, 0, position.z) * -1;
+            _lastPosition = transform.position;
 
-            Pivot.transform.position = SurfaceCalculator.Origin;
-            Planet.transform.position += direction * -1;
-
-            SurfaceCalculator.GeoOrigin = GeoUtils.ToGeoCoordinate(SurfaceCalculator.GeoOrigin, new Vector2(direction.x, direction.z));
-            _projection = SurfaceCalculator.GetProjection();
+            TileController.MoveOrigin(position);
         }
 
-        /// <summary> Updates current lod level based on current position. </summary>
-        private void UpdateLod()
+        public bool IsFar(Vector3 position)
         {
-            SurfaceCalculator.CurrentLevelOfDetails = _lodTree[transform.position.y].First().Value;
-        }
-
-        /// <summary> Builds quadkeys if necessary. Decision is based on current position and lod level. </summary>
-        private void BuildIfNecessary()
-        {
-            var oldLod = _currentQuadKey.LevelOfDetail;
-            _currentQuadKey = SurfaceCalculator.GetQuadKey(_lastPosition);
-
-            // zoom in/out
-            if (oldLod != SurfaceCalculator.CurrentLevelOfDetails)
-            {
-                foreach (var tile in _loadedQuadKeys.Values)
-                    tile.Dispose();
-
-                Resources.UnloadUnusedAssets();
-                _loadedQuadKeys.Clear();
-
-                foreach (var quadKey in GetNeighbours(_currentQuadKey))
-                    BuildQuadKey(Planet, quadKey);
-            }
-            // pan
-            else
-            {
-                var quadKeys = new HashSet<QuadKey>(GetNeighbours(_currentQuadKey));
-                var newlyLoadedQuadKeys = new Dictionary<QuadKey, Tile>();
-
-                foreach (var quadKey in quadKeys)
-                    newlyLoadedQuadKeys.Add(quadKey, _loadedQuadKeys.ContainsKey(quadKey) 
-                        ? _loadedQuadKeys[quadKey] 
-                        : BuildQuadKey(Planet, quadKey));
-
-                foreach (var quadKeyPair in _loadedQuadKeys)
-                    if (!quadKeys.Contains(quadKeyPair.Key))
-                        quadKeyPair.Value.Dispose();
-
-                Resources.UnloadUnusedAssets();
-                _loadedQuadKeys = newlyLoadedQuadKeys;
-            }
-        }
-
-        private IEnumerable<QuadKey> GetNeighbours(QuadKey quadKey)
-        {
-            yield return new QuadKey(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail);
-
-            yield return new QuadKey(quadKey.TileX - 1, quadKey.TileY, quadKey.LevelOfDetail);
-            yield return new QuadKey(quadKey.TileX - 1, quadKey.TileY + 1, quadKey.LevelOfDetail);
-            yield return new QuadKey(quadKey.TileX, quadKey.TileY + 1, quadKey.LevelOfDetail);
-            yield return new QuadKey(quadKey.TileX + 1, quadKey.TileY + 1, quadKey.LevelOfDetail);
-            yield return new QuadKey(quadKey.TileX + 1, quadKey.TileY, quadKey.LevelOfDetail);
-            yield return new QuadKey(quadKey.TileX + 1, quadKey.TileY - 1, quadKey.LevelOfDetail);
-            yield return new QuadKey(quadKey.TileX, quadKey.TileY - 1, quadKey.LevelOfDetail);
-            yield return new QuadKey(quadKey.TileX - 1, quadKey.TileY - 1, quadKey.LevelOfDetail);
-        }
-
-        private Tile BuildQuadKey(GameObject parent, QuadKey quadKey)
-        {
-            var tileGameObject = new GameObject(quadKey.ToString());
-            tileGameObject.transform.parent = parent.transform;
-            var tile = new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Grid, tileGameObject);
-            _loadedQuadKeys.Add(quadKey, tile);
-            _dataStore.OnNext(tile);
-            return tile;
+            return Vector2.Distance(new Vector2(position.x, position.z), TileController.WorldOrigin) > MaxOriginDistance;
         }
     }
 }

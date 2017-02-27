@@ -5,8 +5,6 @@ using Assets.Scenes.Orbit.Scripts;
 using Assets.Scenes.Surface.Scripts;
 using Assets.Scripts.UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using UtyMap.Unity;
 using UtyMap.Unity.Utils;
 
@@ -41,7 +39,7 @@ namespace Assets.Scripts.Scene.Builders
 
             sphereText.Coordinate = element.Geometry[0];
             // NOTE should be in sync with sphere size and offsetted polygons
-            sphereText.Radius = OrbitCalculator.Radius + 25;
+            sphereText.Radius = OrbitCameraController.TileController.Radius + 25;
 
             var font = new FontWrapper(element.Styles);
             sphereText.font = font.Font;
@@ -58,9 +56,8 @@ namespace Assets.Scripts.Scene.Builders
         {
             var text = gameObject.AddComponent<TextMesh>();
 
-            var position2D = GeoUtils.ToMapCoordinate(SurfaceCalculator.GeoOrigin, element.Geometry[0]) * SurfaceCalculator.Scale;
-            // TODO determine correct height.
-            gameObject.transform.position = new Vector3(position2D.x, 100, position2D.y);
+            // TODO determine correct height and tile controller.
+            gameObject.transform.position = SurfaceCameraController.TileController.Projection.Project(element.Geometry[0], 100);
             gameObject.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             var font = new FontWrapper(element.Styles);

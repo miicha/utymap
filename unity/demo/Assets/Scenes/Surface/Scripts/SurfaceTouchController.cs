@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Scene.Controllers;
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 
@@ -42,12 +43,12 @@ namespace Assets.Scenes.Surface.Scripts
         void Update()
         {
             // update gesture speed based on current LOD.
-            if (_lastLevelOfDetails != SurfaceCalculator.CurrentLevelOfDetails)
+            if (_lastLevelOfDetails != GetController().CurrentLevelOfDetail)
             {
-                _panSpeed = InitialPanSpeed * SurfaceCalculator.GetPanSpeedRatio(SurfaceCalculator.CurrentLevelOfDetails);
-                _zoomSpeed = InitialZoomSpeed * SurfaceCalculator.GetZoomSpeedRatio(SurfaceCalculator.CurrentLevelOfDetails);
+                _panSpeed = InitialPanSpeed * GetController().GetPanSpeedRatio(GetController().CurrentLevelOfDetail);
+                _zoomSpeed = InitialZoomSpeed * GetController().GetZoomSpeedRatio(GetController().CurrentLevelOfDetail);
 
-                _lastLevelOfDetails = SurfaceCalculator.CurrentLevelOfDetails;
+                _lastLevelOfDetails = GetController().CurrentLevelOfDetail;
             }
         }
 
@@ -64,6 +65,11 @@ namespace Assets.Scenes.Surface.Scripts
         private void twoFingerTransformHandler(object sender, EventArgs e)
         {
             _pivot.localPosition += new Vector3(TwoFingerMoveGesture.DeltaPosition.x, 0, TwoFingerMoveGesture.DeltaPosition.y) * _panSpeed;
+        }
+
+        private TileGridController GetController()
+        {
+            return SurfaceCameraController.TileController;
         }
     }
 }
