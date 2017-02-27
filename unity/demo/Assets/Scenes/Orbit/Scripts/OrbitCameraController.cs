@@ -138,6 +138,7 @@ namespace Assets.Scenes.Orbit.Scripts
 
                 parent = new GameObject(actualName);
                 parent.transform.parent = oldParent;
+                Resources.UnloadUnusedAssets();
             }
              // zoom out
             else if (actualQuadKey.LevelOfDetail > _currentLod)
@@ -151,6 +152,7 @@ namespace Assets.Scenes.Orbit.Scripts
                 SafeDestroy(actualQuadKey, name);
                 parent = GetParent(quadKey);
                 quadKeys.Add(quadKey);
+                Resources.UnloadUnusedAssets();
             }
 
             BuildQuadKeys(parent, quadKeys);

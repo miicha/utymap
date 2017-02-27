@@ -99,7 +99,13 @@ namespace UtyMap.Unity
             _localIds.Clear();
 
             if (GameObject != null)
+            {
+                var transform = GameObject.transform;
+                for (int i = transform.childCount - 1; i >= 0; --i)
+                    GameObject.Destroy(transform.GetChild(i).gameObject);
+    
                 GameObject.Destroy(GameObject);
+            }
         }
 
         #endregion

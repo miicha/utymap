@@ -104,6 +104,7 @@ namespace Assets.Scenes.Surface.Scripts
                 foreach (var tile in _loadedQuadKeys.Values)
                     tile.Dispose();
 
+                Resources.UnloadUnusedAssets();
                 _loadedQuadKeys.Clear();
 
                 foreach (var quadKey in GetNeighbours(_currentQuadKey))
@@ -124,6 +125,7 @@ namespace Assets.Scenes.Surface.Scripts
                     if (!quadKeys.Contains(quadKeyPair.Key))
                         quadKeyPair.Value.Dispose();
 
+                Resources.UnloadUnusedAssets();
                 _loadedQuadKeys = newlyLoadedQuadKeys;
             }
         }
