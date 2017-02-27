@@ -1,7 +1,9 @@
 ﻿using System;
+using Assets.Scenes.Details.Scripts;
 using Assets.Scripts;
 using Assets.Scripts.Scene.Controllers;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
@@ -63,6 +65,22 @@ namespace Assets.Scenes.Surface.Scripts
 
             _lastPosition = transform.position;
 
+            if (IsCloseToDetail(_lastPosition))
+            {
+                DetailCameraController.TileController.GeoOrigin = _tileController.GeoOrigin;
+                _tileController.Dispose();
+                SceneManager.LoadScene("Detail");
+                return;
+            }
+
+            if (IsCloseToOrbit(_lastPosition))
+            {
+                // TODO set proper orientation and position.
+                _tileController.Dispose();
+                SceneManager.LoadScene("Orbit");
+                return;
+            }
+
             TileController.UpdateCamera(_camera, _lastPosition);
             TileController.Build(Planet, _lastPosition);
 
@@ -95,9 +113,27 @@ namespace Assets.Scenes.Surface.Scripts
             TileController.MoveOrigin(position);
         }
 
-        public bool IsFar(Vector3 position)
+        private bool IsFar(Vector3 position)
         {
             return Vector2.Distance(new Vector2(position.x, position.z), TileController.WorldOrigin) > MaxOriginDistance;
+        }
+
+        private bool IsCloseToOrbit(Vector3 position)
+        {
+            if (_tileController.CurrentLevelOfDetail == MinLod)
+            {
+                var range = _tileController.GetHeightRange(new Vector3(position.x, float.MaxValue, position.z));
+                var threshold = range.Minimum * 1.2f;
+                return position.y > threshold;
+            }
+            return false;
+
+        }
+
+        private bool IsCloseToDetail(Vector3 position)
+        {
+            // TODO
+            return false;
         }
     }
 }

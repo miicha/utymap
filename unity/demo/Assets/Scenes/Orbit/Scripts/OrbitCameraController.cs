@@ -77,7 +77,6 @@ namespace Assets.Scenes.Orbit.Scripts
             {
                 SurfaceCameraController.TileController.GeoOrigin = _tileController.GetCoordinate(_lastOrientation);
                 _tileController.Dispose();
-
                 SceneManager.LoadScene("Surface");
                 return;
             }

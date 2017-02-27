@@ -124,6 +124,13 @@ namespace Assets.Scripts.Scene.Controllers
             return Mathf.Pow(2, -(lod - _lodRange.Minimum)) * Scale;
         }
 
+        /// <summary> Gets height range for given position. </summary>
+        public Range<float> GetHeightRange(Vector3 position)
+        {
+            var heightRange = _lodTree[position.y].First();
+            return new Range<float>(heightRange.From, heightRange.To);
+        }
+
         /// <summary> Get tiles surrounding given. </summary>
         private IEnumerable<QuadKey> GetNeighbours(QuadKey quadKey)
         {
