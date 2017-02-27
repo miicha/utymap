@@ -11,10 +11,10 @@ using UtyMap.Unity.Infrastructure.Primitives;
 
 namespace Assets.Scenes.Surface.Scripts
 {
-    class SurfaceCameraController : MonoBehaviour
+    class SurfaceCameraController : TileGridBehaviour
     {
         /// <summary> Max distance from origin before moving back. </summary>
-        private const float MaxOriginDistance = 2000;
+        private const float MaxDistance = 2000;
         private const float Scale = 0.01f;
         private const int MinLod = 9;
         private const int MaxLod = 15;
@@ -42,80 +42,38 @@ namespace Assets.Scenes.Surface.Scripts
             }
         }
 
-        public GameObject Pivot;
-        public GameObject Planet;
-
-        private Camera _camera;
-        
-        private Vector3 _lastPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-
-        /// <summary> Performs framework initialization once, before any Start() is called. </summary>
-        void Awake()
+        /// <inheritdoc />
+        protected override bool OnPositionUpdated(Vector3 position)
         {
-            _camera = GetComponent<Camera>();
-            TileController.UpdateCamera(_camera, transform.position);
-            TileController.MoveOrigin(Vector3.zero);
-        }
-
-        void Update()
-        {
-            // no movements
-            if (_lastPosition == transform.position)
-                return;
-
-            _lastPosition = transform.position;
-
-            if (IsCloseToDetail(_lastPosition))
+            if (IsCloseToDetail(position))
             {
                 DetailCameraController.TileController.GeoOrigin = _tileController.GeoOrigin;
-                _tileController.Dispose();
+                TileController.Dispose();
                 SceneManager.LoadScene("Detail");
-                return;
+                return false;
             }
 
-            if (IsCloseToOrbit(_lastPosition))
+            if (IsCloseToOrbit(position))
             {
                 // TODO set proper orientation and position.
-                _tileController.Dispose();
+                TileController.Dispose();
                 SceneManager.LoadScene("Orbit");
-                return;
+                return false;
             }
 
-            TileController.UpdateCamera(_camera, _lastPosition);
-            TileController.Build(Planet, _lastPosition);
-
-            KeepOrigin();
+            return true;
         }
 
-        void OnGUI()
+        /// <inheritdoc />
+        protected override float MaxOriginDistance()
         {
-            GUI.contentColor = Color.red;
-            GUI.Label(new Rect(0, 0, Screen.width, Screen.height),
-                String.Format("Position:{0}\nGeo:{1}\nQuadKey: {2}\nLOD:{3}\nScreen: {4}:{5}\nFoV: {6}",
-                    transform.position,
-                    TileController.Projection.Project(transform.position),
-                    TileController.CurrentQuadKey,
-                    TileController.CurrentLevelOfDetail,
-                    Screen.width, Screen.height,
-                    _camera.fieldOfView));
+            return MaxDistance;
         }
 
-        private void KeepOrigin()
+        /// <inheritdoc />
+        protected override TileGridController GetTileController()
         {
-            var position = transform.position;
-            if (!IsFar(position))
-                return;
-
-            Pivot.transform.position = TileController.WorldOrigin;
-            Planet.transform.position += new Vector3(position.x, 0, position.z) * -1;
-            _lastPosition = transform.position;
-
-            TileController.MoveOrigin(position);
-        }
-
-        private bool IsFar(Vector3 position)
-        {
-            return Vector2.Distance(new Vector2(position.x, position.z), TileController.WorldOrigin) > MaxOriginDistance;
+            return TileController;
         }
 
         private bool IsCloseToOrbit(Vector3 position)
@@ -127,7 +85,6 @@ namespace Assets.Scenes.Surface.Scripts
                 return position.y > threshold;
             }
             return false;
-
         }
 
         private bool IsCloseToDetail(Vector3 position)
