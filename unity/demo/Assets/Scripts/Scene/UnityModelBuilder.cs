@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Assets.Scripts.Scene.Builders;
 using UnityEngine;
 using UtyDepend;
@@ -52,8 +53,11 @@ namespace Assets.Scripts.Scene
             gameObject.isStatic = true;
             gameObject.AddComponent<MeshFilter>().mesh = uMesh;
             // TODO use TextureIndex to select proper material.
-            gameObject.AddComponent<MeshRenderer>().sharedMaterial =
-                _materialProvider.GetSharedMaterial(@"Materials/SurfaceColored");
+            string texture = tile.QuadKey.LevelOfDetail == 16
+                ? @"Materials/SurfaceTexturedColored"
+                : @"Materials/SurfaceColored";
+
+            gameObject.AddComponent<MeshRenderer>().sharedMaterial = _materialProvider.GetSharedMaterial(texture);
             gameObject.transform.parent = tile.GameObject.transform;
         }
     }

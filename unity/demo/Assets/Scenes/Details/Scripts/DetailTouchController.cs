@@ -11,8 +11,8 @@ namespace Assets.Scenes.Surface.Scripts
         public ScreenTransformGesture TwoFingerMoveGesture;
         public ScreenTransformGesture ManipulationGesture;
 
-        public float InitialPanSpeed = 50f;
-        public float InitialZoomSpeed = 1000f;
+        public float InitialPanSpeed = 5f;
+        public float InitialZoomSpeed = 100f;
         public float InitialRotationSpeed = 1f;
         
         private float _panSpeed;
@@ -55,11 +55,11 @@ namespace Assets.Scenes.Surface.Scripts
 
         private void manipulationTransformedHandler(object sender, EventArgs e)
         {
-            /*var rotation = Quaternion.Euler(
+            var rotation = Quaternion.Euler(
                 ManipulationGesture.DeltaPosition.y / Screen.height * InitialRotationSpeed,
-                -ManipulationGesture.DeltaPosition.x / Screen.width * InitialRotationSpeed,
-                ManipulationGesture.DeltaRotation);
-            _pivot.localRotation *= rotation;*/
+                ManipulationGesture.DeltaRotation,
+                -ManipulationGesture.DeltaPosition.x / Screen.width * InitialRotationSpeed);
+            _pivot.localRotation *= rotation;
             _cam.transform.localPosition += Vector3.up * (ManipulationGesture.DeltaScale - 1f) * _zoomSpeed;
         }
 
