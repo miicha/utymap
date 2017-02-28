@@ -1,7 +1,6 @@
-/* Ignore all objects under surface. */
-node,area,way,relation|z9-16[layer<0] {
-	skip:true;
-}
+@import url("default.surface-nodes.mapcss");
+@import url("default.surface-ways.mapcss");
+@import url("default.surface-areas.mapcss");
 
 canvas|z9-16 {
     grid-cell-size: 5%;

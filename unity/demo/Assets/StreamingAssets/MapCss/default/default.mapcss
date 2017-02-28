@@ -1,18 +1,9 @@
-@import url("default.orbit-nodes.mapcss");
-@import url("default.orbit-ways.mapcss");
-@import url("default.orbit-areas.mapcss");
 @import url("default.orbit.mapcss");
-
-@import url("default.z14.mapcss");
-@import url("default.z16.mapcss");
-
-@import url("default.surface-nodes.mapcss");
-@import url("default.surface-ways.mapcss");
-@import url("default.surface-areas.mapcss");
 @import url("default.surface.mapcss");
+@import url("default.detail.mapcss");
 
-@texture url("default.z16.txt");
+/* Ignore all objects under surface. */
+node,area,way,relation|z9-16[layer<0] {
+	skip:true;
+}
 
-@lsystem url("tree.lsys");
-@lsystem url("conifer.lsys");
-@lsystem url("lamp.lsys");

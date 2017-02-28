@@ -1,0 +1,12 @@
+@import url("default.detail-poi.mapcss");
+@import url("default.detail-terrain.mapcss");
+@import url("default.detail-roads.mapcss");
+@import url("default.detail-water.mapcss");
+@import url("default.detail-buildings.mapcss");
+@import url("default.detail-misc.mapcss");
+
+@texture url("default.detail.txt");
+
+@lsystem url("tree.lsys");
+@lsystem url("conifer.lsys");
+@lsystem url("lamp.lsys");

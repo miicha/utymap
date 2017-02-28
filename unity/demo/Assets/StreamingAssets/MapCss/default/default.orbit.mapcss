@@ -1,4 +1,7 @@
-/* Contains properties shared between different LOD for orbit view. */
+@import url("default.orbit-nodes.mapcss");
+@import url("default.orbit-ways.mapcss");
+@import url("default.orbit-areas.mapcss");
+
 canvas|z1-7 {
     grid-cell-size: 10%;
 
