@@ -38,18 +38,24 @@ namespace Assets.Scripts.Environment
             return new List<string>()
             {
                 "mapcss",
-                "z1.mapcss",
-                "z14.mapcss",
-                "z14-lines.mapcss",
-                "z14-polygons.mapcss",
-                "z16.txt",
-                "z16.mapcss",
-                "z16-buildings.mapcss",
-                "z16-misc.mapcss",
-                "z16-poi.mapcss",
-                "z16-roads.mapcss",
-                "z16-terrain.mapcss",
-                "z16-water.mapcss"
+                "orbit.mapcss",
+                "orbit-nodes.mapcss",
+                "orbit-ways.mapcss",
+                "orbit-areas.mapcss",
+
+                "surface.mapcss",
+                "surface-nodes.mapcss",
+                "surface-ways.mapcss",
+                "surface-areas.mapcss",
+
+                "detail.txt",
+                "detail.mapcss",
+                "detail-buildings.mapcss",
+                "detail-misc.mapcss",
+                "detail-poi.mapcss",
+                "detail-roads.mapcss",
+                "detail-terrain.mapcss",
+                "detail-water.mapcss"
             }.Select(f => "MapCss/default/default." + f);
         }
 
@@ -67,12 +73,7 @@ namespace Assets.Scripts.Environment
         {
             return new List<string>()
             {
-                "ne_110m_admin_0_boundary_lines_land",
-                "ne_110m_admin_0_scale_rank",
-                "ne_110m_lakes",
-                "ne_110m_land",
-                "ne_110m_populated_places_simple",
-                "ne_110m_rivers_lake_centerlines"
+                // NOTE use mapzen data so far
             }.SelectMany(f => new List<string>()
             {
                 String.Format("{0}.dbf",Path.Combine("NaturalEarth", f)),
