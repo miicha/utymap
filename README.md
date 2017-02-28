@@ -1,5 +1,3 @@
-<a href="https://play.google.com/store/apps/details?id=com.utymap.demo&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"><img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="" height="64" /></a>
-
 [![experimental](https://img.shields.io/badge/stability-experimental-orange.svg?style=flat)](https://github.com/reinterpretcat/utymap)
 [![Build Status](https://travis-ci.org/reinterpretcat/utymap.svg?branch=master)](https://travis-ci.org/reinterpretcat/utymap)
 [![Coverity](https://scan.coverity.com/projects/10159/badge.svg)](https://scan.coverity.com/projects/reinterpretcat-utymap)
@@ -9,6 +7,10 @@
 <h2> Description </h2>
 
 UtyMap is a library which provides highly customizable API for procedural world generation based on real vector map data, e.g. OpenStreetMap, NaturalEarth. Core logic is written on C++11 and can be used on many platforms as it has no dependency to specific game engine or application framework. It is designed for interactive world creation at different zoom levels, including globe and ground.
+
+<h2> Status </h2>
+
+Current master branch has very experimental version. It is recommended to use the latest release.
 
 <h2> Features </h2>
 
@@ -100,14 +102,14 @@ Map data is encapsulated via Element class which provides access to raw geometry
 You can build your own objects (buildings, roads, etc.) on top of generated objects:
 
 ```C#
-IElementEditor elementEditor = _compositionRoot.GetService<IElementEditor>();
+IMapDataEditor editor = _compositionRoot.GetService<IMapDataEditor>();
 var node = new Element(7,
     new GeoCoordinate[] { new GeoCoordinate(52.53182, 13.38762) },
     new double[] { 0 }, 
     new Dictionary<string, string>() { { "name", "Near me" } }, 
     new Dictionary<string, string>());
 
-elementEditor.Add(MapStorageType.InMemory, node, levelOfDetails);
+editor.Add(MapStorageType.InMemory, node, new Range<int>(minLevelOfDetail, maxLevelOfDetail));
 ```
         
 This data can be stored in multiple data storages located on disk or memory to keep original map data untouched.
