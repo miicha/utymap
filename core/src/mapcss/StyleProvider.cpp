@@ -277,7 +277,8 @@ private:
         });
 
         for (int i = selector.zoom.start; i <= selector.zoom.end; ++i) {
-            filters.elements[i] = filter;
+            for (const auto& filterPair : filter)
+                filters.elements[i].emplace(filterPair);
         }
     }
 
