@@ -31,8 +31,11 @@ namespace Assets.Scripts.Scene
         {
             foreach (var pair in _elementBuilders)
             {
-                if (element.Styles["builders"].Contains(pair.Key))
-                    pair.Value.Build(tile, element);
+                if (!element.Styles["builders"].Contains(pair.Key))
+                    continue;
+
+                var gameObject = pair.Value.Build(tile, element);
+                gameObject.transform.parent = tile.GameObject.transform;
             }
         }
 
