@@ -1,25 +1,3 @@
-canvas|z16 {
-    drive-mesh-name: terrain_drive;
-    drive-max-area: 5%;
-    drive-color-noise-freq: 0.1;
-    drive-ele-noise-freq: 0;
-    drive-color: gradient(#4d4d4d);
-    drive-height-offset:-0.2m;
-    drive-texture-index: 0;
-    drive-texture-type: drive;
-    drive-texture-scale: 10;
-
-    pedestrian-mesh-name: terrain_pedestrian;
-    pedestrian-max-area: 5%;
-    pedestrian-color-noise-freq: 0.1;
-    pedestrian-ele-noise-freq: 0.05;
-    pedestrian-color: gradient(#636363);
-    pedestrian-height-offset:0.05m;
-    pedestrian-texture-index: 0;
-    pedestrian-texture-type: pedestrian;
-    pedestrian-texture-scale: 200;
-}
-
 way|z16[highway] {
     clip:true;
     builders: terrain,lamp;
