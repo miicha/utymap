@@ -23,6 +23,7 @@ namespace Assets.Scripts.Scene
             // register custom builders here.
             _elementBuilders.Add("info", new PlaceElementBuilder(_materialProvider));
             _elementBuilders.Add("label", new LabelElementBuilder());
+            _elementBuilders.Add("import", new ImportElementBuilder());
         }
 
         /// <inheritdoc />
