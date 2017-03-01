@@ -53,9 +53,9 @@ namespace UtyMap.Unity.Tests.Data
         {
             // ARRANGE
             int lod = 14;
-            SetupMapData(TestHelper.BerlinXmlData, lod);
+            SetupMapData(TestHelper.MoscowJsonData, lod);
             var count = 1;
-            var centerQuadKey = GeoUtils.CreateQuadKey(TestHelper.WorldZeroPoint, lod);
+            var centerQuadKey = GeoUtils.CreateQuadKey(new GeoCoordinate(55.75363, 37.62027), lod);
 
             // ACT & ASSERT
             TestQuadKeys(centerQuadKey, count, lod);

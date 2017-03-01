@@ -22,6 +22,7 @@ namespace UtyMap.Unity.Tests.Helpers
         
         public const string BerlinXmlData = TestAssetsFolder + @"/Osm/berlin.osm.xml";
         public const string BerlinPbfData = TestAssetsFolder + @"/Osm/berlin.osm.pbf";
+        public const string MoscowJsonData = TestAssetsFolder + @"/Osm/moscow.osm.json";
         public const string DefaultMapCss = TestAssetsFolder + @"/MapCss/default/default.mapcss";
 
         #endregion
