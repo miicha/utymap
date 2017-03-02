@@ -100,7 +100,8 @@ MultipolygonProcessor::MultipolygonProcessor(Relation& relation,
 void MultipolygonProcessor::process()
 {
     bool allClosed = true;
-
+    // NOTE do not count multipolygon tag itself
+    bool hasNoTags = relation_.tags.size() < 2;
     Ints outerIndecies;
     Ints innerIndecies;
     CoordinateSequences sequences;
@@ -123,7 +124,9 @@ void MultipolygonProcessor::process()
                 coordinates.push_back(coordinates[0]);
 
                 // NOTE merge tags to relation
-                if (member.role == "outer")
+                // hasNoTags prevents the case where relation has members with their own tags
+                // which should be processed independently (geometry reusage)
+                if (member.role == "outer" && hasNoTags)
                     mergeTags(areaPair->second->tags);
             }
             else {
