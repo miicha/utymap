@@ -65,13 +65,12 @@ private:
             ctags.push_back(tagStrings_[tagStrings_.size() - 1].c_str());
         }
         // convert geometry
-        std::vector<double> vertices;
-        vertices.reserve(coordinates.size() * 3);
+        vertices_.reserve(coordinates.size() * 3);
         for (std::size_t i = 0; i < coordinates.size(); ++i) {
             const utymap::GeoCoordinate coordinate = coordinates[i];
-            vertices.push_back(coordinate.longitude);
-            vertices.push_back(coordinate.latitude);
-            vertices.push_back(eleProvider_.getElevation(quadKey_, coordinate));
+            vertices_.push_back(coordinate.longitude);
+            vertices_.push_back(coordinate.latitude);
+            vertices_.push_back(eleProvider_.getElevation(quadKey_, coordinate));
         }
         // convert style
         utymap::mapcss::Style style = styleProvider_.forElement(element, quadKey_.levelOfDetail);
@@ -88,10 +87,11 @@ private:
 
         elementCallback_(element.id,
             ctags.data(), static_cast<int>(ctags.size()),
-            vertices.data(), static_cast<int>(vertices.size()),
+            vertices_.data(), static_cast<int>(vertices_.size()),
             cstyles.data(), static_cast<int>(cstyles.size()));
 
         // NOTE clear vectors after raw array data is consumed by external code
+        vertices_.clear();
         tagStrings_.clear();
         styleStrings_.clear();
     }
@@ -101,6 +101,7 @@ private:
     const utymap::mapcss::StyleProvider& styleProvider_;
     const utymap::heightmap::ElevationProvider& eleProvider_;
     OnElementLoaded* elementCallback_;
+    std::vector<double> vertices_;
     std::vector<std::string> tagStrings_;   // holds temporary tag strings
     std::vector<std::string> styleStrings_; // holds temporary style strings
 };

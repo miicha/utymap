@@ -117,7 +117,7 @@ namespace UtyMap.Unity.Data
 
             var geometry = new GeoCoordinate[vertexCount / 3];
             var heights = new double[vertexCount/3];
-            for (int i = 0; i < vertexCount/3; i += 3)
+            for (int i = 0; i < vertexCount; i += 3)
             {
                 geometry[i/3] = new GeoCoordinate(vertices[i + 1], vertices[i]);
                 heights[i / 3] = vertices[i + 2];
