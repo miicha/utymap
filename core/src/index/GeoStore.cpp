@@ -42,7 +42,7 @@ class GeoStore::GeoStoreImpl final
 
         void visitIfNecessary(const Element& element)
         {
-            if (element.id == 0 || ids_.find(element.id) == ids_.end() ||
+            if ((element.id == 0 || ids_.find(element.id) == ids_.end()) &&
                     styleProvider_.hasStyle(element, quadKey_.levelOfDetail)) {
                 element.accept(visitor_);
                 ids_.insert(element.id);
