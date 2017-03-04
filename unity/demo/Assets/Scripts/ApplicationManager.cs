@@ -22,6 +22,9 @@ namespace Assets.Scripts
     {
         private const string FatalCategoryName = "Fatal";
 
+        /// <summary> Default coordinate which will be used in scenes. </summary>
+        public readonly GeoCoordinate DefaultCoordinate = new GeoCoordinate(52.53171, 13.38721);
+
         private IContainer _container;
         private DebugConsoleTrace _trace;
         private CompositionRoot _compositionRoot;

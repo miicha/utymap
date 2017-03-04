@@ -20,6 +20,7 @@ namespace Assets.Scenes.Surface.Scripts
         private const int MinLod = 9;
         private const int MaxLod = 15;
 
+        /// NOTE static to access it from different scene in advance.
         private static TileGridController _tileController;
         /// <summary> Gets controller responsible for tile loading. </summary>
         public static TileGridController TileController
@@ -36,7 +37,7 @@ namespace Assets.Scenes.Surface.Scripts
                         ElevationDataType.Grid,
                         new Range<int>(MinLod, MaxLod),
                         Scale);
-                    _tileController.GeoOrigin = new GeoCoordinate(52.53171, 13.38721);
+                    _tileController.GeoOrigin = appManager.DefaultCoordinate;
                 }
 
                 return _tileController;
