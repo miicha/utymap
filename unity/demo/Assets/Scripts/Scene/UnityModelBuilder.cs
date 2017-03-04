@@ -35,7 +35,8 @@ namespace Assets.Scripts.Scene
                     continue;
 
                 var gameObject = pair.Value.Build(tile, element);
-                gameObject.transform.parent = tile.GameObject.transform;
+                if (gameObject.transform.parent == null)
+                    gameObject.transform.parent = tile.GameObject.transform;
             }
         }
 
