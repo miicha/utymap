@@ -23,14 +23,12 @@ namespace Assets.Scenes.Orbit.Scripts
         /// <summary> Maximal supported LOD. </summary>
         private const int MaxLod = 8;
 
-        /// <summary> Closest distance to sphere's surface. </summary>
-        private const float MinDistance = Radius * 1.1f;
-
         private const float RotationSensivity = 5f;
         private const float HeightSensivity = 100f;
 
         public GameObject Planet;
         public bool ShowState = true;
+        public bool FreezeLod = false;
 
         private float _lastHeight = float.MaxValue;
         private Vector3 _lastOrientation;
@@ -50,8 +48,7 @@ namespace Assets.Scenes.Orbit.Scripts
                         appManager.GetService<Stylesheet>(),
                         ElevationDataType.Flat,
                         new Range<int>(MinLod, MaxLod),
-                        Radius,
-                        MinDistance);
+                        Radius);
                 }
 
                 return _tileController;
@@ -62,6 +59,9 @@ namespace Assets.Scenes.Orbit.Scripts
 
         void Update()
         {
+            if (FreezeLod)
+                return;
+
             var trans = transform;
             var position = trans.position;
             var rotation = trans.rotation;
@@ -75,13 +75,13 @@ namespace Assets.Scenes.Orbit.Scripts
 
             if (IsCloseToSurface(position))
             {
-                SurfaceCameraController.TileController.GeoOrigin = _tileController.GetCoordinate(_lastOrientation);
+                SurfaceCameraController.TileController.GeoOrigin = TileController.GetCoordinate(_lastOrientation);
                 _tileController.Dispose();
                 SceneManager.LoadScene("Surface");
                 return;
             }
 
-            _tileController.Build(Planet, position, _lastOrientation);
+            TileController.Build(Planet, position, _lastOrientation);
         }
 
         void OnGUI()
@@ -90,9 +90,9 @@ namespace Assets.Scenes.Orbit.Scripts
             {
                 var orientation = transform.rotation.eulerAngles;
                 var labelText = String.Format("Position: {0}\nDistance: {1:0.#}km\nLOD: {2}",
-                    _tileController.GetCoordinate(orientation),
-                    _tileController.DistanceToSurface(transform.position),
-                    _tileController.CurrentLevelOfDetail);
+                    TileController.GetCoordinate(orientation),
+                    TileController.DistanceToSurface(transform.position),
+                    TileController.CurrentLevelOfDetail);
 
                 GUI.Label(new Rect(0, 0, Screen.width, Screen.height), labelText);
             }
@@ -103,7 +103,7 @@ namespace Assets.Scenes.Orbit.Scripts
         /// <summary> Checks whether position is close to surface. </summary>
         private bool IsCloseToSurface(Vector3 position)
         {
-            return Vector3.Distance(position, TileController.Origin) < MinDistance;
+            return TileController.CurrentLevelOfDetail == MaxLod && TileController.IsUnderMin(position);
         }
     }
 }

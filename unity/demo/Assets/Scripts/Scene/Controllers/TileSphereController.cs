@@ -17,30 +17,28 @@ namespace Assets.Scripts.Scene.Controllers
         private readonly Stylesheet _stylesheet;
         private readonly ElevationDataType _elevationType;
         private readonly Range<int> _lodRange;
-        private readonly float _minDistance;
+        private readonly RangeTree<float, int> _lodTree;
         private readonly IProjection _projection;
-        private readonly float _lodStep;
-
-        private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
+        private readonly Dictionary<QuadKey, Tile> _loadedQuadKeys;
 
         public int CurrentLevelOfDetail { get; private set; }
         public float Radius { get; private set; }
         public Vector3 Origin { get; private set; }
 
         public TileSphereController(IMapDataStore dataStore, Stylesheet stylesheet,
-            ElevationDataType elevationType, Range<int> lodRange, float radius, float minDistance)
+            ElevationDataType elevationType, Range<int> lodRange, float radius)
         {
             _dataStore = dataStore;
             _stylesheet = stylesheet;
             _elevationType = elevationType;
             _projection = new SphericalProjection(radius);
+            _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
             _lodRange = lodRange;
-            _minDistance = minDistance;
 
             Radius = radius;
             Origin = Vector3.zero;
 
-            _lodStep = (2 * Radius - minDistance) / (lodRange.Maximum - lodRange.Minimum);
+            _lodTree = CreateLodTree();
         }
 
         /// <summary> Gets coordinate from given rotation in euler angles. </summary>
@@ -55,7 +53,7 @@ namespace Assets.Scripts.Scene.Controllers
             return new GeoCoordinate(latitude, longitude);
         }
 
-        /// <summary> Calculates distance to surface. </summary>
+        /// <summary> Calculates scaled distance to surface. </summary>
         public float DistanceToSurface(Vector3 position)
         {
             return Vector3.Distance(position, Origin) - Radius;
@@ -70,6 +68,12 @@ namespace Assets.Scripts.Scene.Controllers
                 BuildIfNecessary(planet, orientation);
             else
                 BuildInitial(planet);
+        }
+
+        /// <summary> Checks whether position is under min. </summary>
+        public bool IsUnderMin(Vector3 position)
+        {
+            return _lodTree.Min > Vector3.Distance(position, Origin);
         }
 
         /// <summary> Builds quadkeys if necessary. Decision is based on visible quadkey and lod level. </summary>
@@ -205,18 +209,55 @@ namespace Assets.Scripts.Scene.Controllers
                 : GetLastParent(go.transform.GetChild(0).gameObject);
         }
 
+        #region LOD calculations
+
+        private RangeTree<float, int> CreateLodTree()
+        {
+            var diameter = 2 * Radius;
+            var lodTree = new RangeTree<float, int>();
+            for (int lod = _lodRange.Minimum; lod <= _lodRange.Maximum; ++lod)
+            {
+                if (lod == 1)
+                    lodTree.Add(diameter, float.MaxValue, lod);
+                else if (lod == 2)
+                    lodTree.Add(diameter - 1 / 3f * Radius, diameter, lod);
+                else
+                {
+                    float fib1 = GetFibonacciNumber(lod - 1);
+                    float fib2 = GetFibonacciNumber(lod);
+                    var max = diameter - Radius * (lod == 3 ? 1 / 3f : fib1 / (fib1 + 1));
+                    var min = diameter - Radius * fib2 / (fib2 + 1);
+
+                    lodTree.Add(min, max, lod);
+                }
+            }
+
+            return lodTree;
+        }
+
         /// <summary> Calculates LOD for given position </summary>
         private int CalculateLevelOfDetail(Vector3 position)
         {
-            // TODO make it better: handle non-uniformly
-            var distance = Vector3.Distance(position, Origin) - _minDistance;
-            return Math.Max(_lodRange.Maximum - (int)Math.Round(distance / _lodStep), _lodRange.Minimum);
+            var distance = Vector3.Distance(position, Origin);
+            return _lodTree.Min > distance
+                ? _lodRange.Maximum
+                : _lodTree[distance].First().Value;
         }
+
+        /// <summary> Naive implementation of algorithm to find nth Fibonacci number. </summary>
+        private int GetFibonacciNumber(int n)
+        {
+            if (n == 0) return 0;
+            if (n == 1) return 1;
+            return GetFibonacciNumber(n - 2) + GetFibonacciNumber(n - 1);
+        }
+
+        #endregion
 
         /// <inheritdoc />
         public void Dispose()
         {
-            foreach (var quadkey in _loadedQuadKeys.Keys)
+            foreach (var quadkey in _loadedQuadKeys.Keys.ToArray())
                 SafeDestroy(quadkey);
             Resources.UnloadUnusedAssets();
         }
