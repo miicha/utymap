@@ -305,9 +305,9 @@ namespace UtyMap.Unity.Infrastructure.Primitives
             get
             {
                 if (_leftNode != null)
-                    return _leftNode.Max;
+                    return _leftNode.Min;
                 if (_items != null)
-                    return _items.Max(i => i.From);
+                    return _items.Min(i => i.From);
                 return default(TKey);
             }
         }
