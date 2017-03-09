@@ -123,3 +123,7 @@ Project consists of two sub-projects:
 
 <h2> Install </h2>
 See instructions [here] (https://github.com/reinterpretcat/utymap/wiki#install).
+
+<h2> License </h2>
+
+Licensed under GPLv3
