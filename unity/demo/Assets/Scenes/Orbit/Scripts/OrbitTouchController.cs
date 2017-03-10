@@ -103,8 +103,8 @@ namespace Assets.Scenes.Orbit.Scripts
 
         private void CancelAnimation()
         {
-            if (_animator != null && _animator.Animation != null)
-                _animator.Animation.Cancel();
+            if (_animator != null)
+                _animator.Cancel();
         }
     }
 }
