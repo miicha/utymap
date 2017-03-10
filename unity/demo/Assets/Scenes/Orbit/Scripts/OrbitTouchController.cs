@@ -1,6 +1,7 @@
 ﻿using System;
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
+using Animator = UtyMap.Unity.Animations.Animator;
 
 namespace Assets.Scenes.Orbit.Scripts
 {
@@ -19,11 +20,15 @@ namespace Assets.Scenes.Orbit.Scripts
         private Transform _cam;
         private Transform _light;
 
+        private Animator _animator;
+
         private void Awake()
         {
             _pivot = transform.Find("Pivot");
             _cam = transform.Find("Pivot/Camera");
             _light = transform.Find("Directional Light");
+
+            _animator = _cam.GetComponent<Animator>();
         }
 
         private void OnEnable()
@@ -40,6 +45,8 @@ namespace Assets.Scenes.Orbit.Scripts
 
         private void manipulationTransformedHandler(object sender, EventArgs e)
         {
+            CancelAnimation();
+
             var rotation = Quaternion.Euler(
                           ManipulationGesture.DeltaPosition.y / Screen.height * RotationSpeed,
                           -ManipulationGesture.DeltaPosition.x / Screen.width * RotationSpeed,
@@ -51,6 +58,8 @@ namespace Assets.Scenes.Orbit.Scripts
 
         private void twoFingerTransformHandler(object sender, EventArgs e)
         {
+            CancelAnimation();
+
             var rotation = Quaternion.Euler(
               TwoFingerMoveGesture.DeltaPosition.y / Screen.height * RotationSpeed,
                -TwoFingerMoveGesture.DeltaPosition.x / Screen.width * RotationSpeed,
@@ -90,6 +99,12 @@ namespace Assets.Scenes.Orbit.Scripts
 
             var cosine = (a * a + b * b - c * c) / (2 * a * b);
             return (float) Math.Acos(cosine) * Mathf.Rad2Deg * MagicAngleLimitCoeff;
+        }
+
+        private void CancelAnimation()
+        {
+            if (_animator != null && _animator.Animation != null)
+                _animator.Animation.Cancel();
         }
     }
 }

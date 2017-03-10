@@ -46,6 +46,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\Animator.cs" />
+    <Compile Include="Animations\Path\IPathInterpolator.cs" />
+    <Compile Include="Animations\Path\LinearInterpolator.cs" />
+    <Compile Include="Animations\Path\SplineInterpolator.cs" />
+    <Compile Include="Animations\Time\AccelerateDecelerateInterpolator.cs" />
+    <Compile Include="Animations\Time\AccelerateInterpolator.cs" />
+    <Compile Include="Animations\Time\DeaccelerateInterpolator.cs" />
+    <Compile Include="Animations\Time\ITimeInterpolator.cs" />
+    <Compile Include="Animations\Time\LinearInterpolator.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="GeoCoordinate.cs" />

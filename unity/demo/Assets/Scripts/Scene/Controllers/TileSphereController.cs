@@ -20,6 +20,7 @@ namespace Assets.Scripts.Scene.Controllers
         private readonly RangeTree<float, int> _lodTree;
         private readonly IProjection _projection;
         private readonly Dictionary<QuadKey, Tile> _loadedQuadKeys;
+        private readonly float _minHeight;
 
         public int CurrentLevelOfDetail { get; private set; }
         public float Radius { get; private set; }
@@ -39,6 +40,7 @@ namespace Assets.Scripts.Scene.Controllers
             Origin = Vector3.zero;
 
             _lodTree = CreateLodTree();
+            _minHeight = _lodTree.Min;
         }
 
         /// <summary> Gets coordinate from given rotation in euler angles. </summary>
@@ -73,7 +75,16 @@ namespace Assets.Scripts.Scene.Controllers
         /// <summary> Checks whether position is under min. </summary>
         public bool IsUnderMin(Vector3 position)
         {
-            return _lodTree.Min > Vector3.Distance(position, Origin);
+            return _minHeight > Vector3.Distance(position, Origin);
+        }
+
+        /// <summary> Calculates LOD for given position </summary>
+        public int CalculateLevelOfDetail(Vector3 position)
+        {
+            var distance = Vector3.Distance(position, Origin);
+            return _minHeight > distance
+                ? _lodRange.Maximum
+                : _lodTree[distance].First().Value;
         }
 
         /// <summary> Builds quadkeys if necessary. Decision is based on visible quadkey and lod level. </summary>
@@ -213,35 +224,26 @@ namespace Assets.Scripts.Scene.Controllers
 
         private RangeTree<float, int> CreateLodTree()
         {
-            var diameter = 2 * Radius;
+            var baseValue = 2f * Radius;
             var lodTree = new RangeTree<float, int>();
             for (int lod = _lodRange.Minimum; lod <= _lodRange.Maximum; ++lod)
             {
                 if (lod == 1)
-                    lodTree.Add(diameter, float.MaxValue, lod);
+                    lodTree.Add(baseValue, float.MaxValue, lod);
                 else if (lod == 2)
-                    lodTree.Add(diameter - 1 / 3f * Radius, diameter, lod);
+                    lodTree.Add(baseValue - 1 / 3f * Radius, baseValue, lod);
                 else
                 {
                     float fib1 = GetFibonacciNumber(lod - 1);
                     float fib2 = GetFibonacciNumber(lod);
-                    var max = diameter - Radius * (lod == 3 ? 1 / 3f : fib1 / (fib1 + 1));
-                    var min = diameter - Radius * fib2 / (fib2 + 1);
+                    var max = baseValue - Radius * (lod == 3 ? 1 / 3f : fib1 / (fib1 + 1));
+                    var min = baseValue - Radius * fib2 / (fib2 + 1);
 
                     lodTree.Add(min, max, lod);
                 }
             }
-
+            
             return lodTree;
-        }
-
-        /// <summary> Calculates LOD for given position </summary>
-        private int CalculateLevelOfDetail(Vector3 position)
-        {
-            var distance = Vector3.Distance(position, Origin);
-            return _lodTree.Min > distance
-                ? _lodRange.Maximum
-                : _lodTree[distance].First().Value;
         }
 
         /// <summary> Naive implementation of algorithm to find nth Fibonacci number. </summary>

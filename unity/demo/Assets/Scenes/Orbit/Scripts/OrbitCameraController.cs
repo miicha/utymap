@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using Assets.Scenes.Surface.Scripts;
 using Assets.Scripts;
 using Assets.Scripts.Scene.Controllers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UtyMap.Unity;
+using UtyMap.Unity.Animations.Path;
+using UtyMap.Unity.Animations.Time;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Primitives;
+using Animator = UtyMap.Unity.Animations.Animator;
+using Animation = UtyMap.Unity.Animations.Animation;
 
 namespace Assets.Scenes.Orbit.Scripts
 {
@@ -30,7 +35,7 @@ namespace Assets.Scenes.Orbit.Scripts
         public bool ShowState = true;
         public bool FreezeLod = false;
 
-        private float _lastHeight = float.MaxValue;
+        private Vector3 _lastPosition;
         private Vector3 _lastOrientation;
 
         private static TileSphereController _tileController;
@@ -57,6 +62,19 @@ namespace Assets.Scenes.Orbit.Scripts
 
         #region Unity's callbacks
 
+        void Start()
+        {
+            var animation = new Animation(new AccelerateInterpolator(), 
+                new UtyMap.Unity.Animations.Path.LinearInterpolator(new List<Vector3>()
+                {
+                   transform.position,
+                   transform.position + (transform.position - Vector3.zero).normalized * -5000,
+                }), 10);
+
+            GetComponent<Animator>().Animation = animation;
+            animation.Start();
+        }
+
         void Update()
         {
             if (FreezeLod)
@@ -67,10 +85,10 @@ namespace Assets.Scenes.Orbit.Scripts
             var rotation = trans.rotation;
 
             if (Vector3.Distance(_lastOrientation, rotation.eulerAngles) < RotationSensivity &&
-                Math.Abs(_lastHeight - position.y) < HeightSensivity)
+                Vector3.Distance(position, TileController.Origin) < HeightSensivity)
                 return;
 
-            _lastHeight = position.y;
+            _lastPosition = position;
             _lastOrientation = rotation.eulerAngles;
 
             if (IsCloseToSurface(position))
