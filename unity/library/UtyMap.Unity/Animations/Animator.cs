@@ -2,18 +2,15 @@
 
 namespace UtyMap.Unity.Animations
 {
-    /// <summary> Runs animation with proper timing. </summary>
-    public class Animator : MonoBehaviour
+    /// <summary> Implements basic animation behaviour. </summary>
+    public abstract class Animator : MonoBehaviour
     {
-        /// <summary> Target animation </summary>
-        public Animation Animation { get; set; }
-
-        void Update()
+        protected virtual void UpdateAnimation(Transform trans, Animation anim, float deltaTime)
         {
-            if (Animation == null || Animation.IsFinished)
+            if (anim == null || anim.IsFinished)
                 return;
 
-            Animation.OnUpdate(transform, UnityEngine.Time.deltaTime);
+            anim.OnUpdate(trans, deltaTime);
         }
     }
 }

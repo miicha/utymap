@@ -20,7 +20,7 @@ namespace Assets.Scenes.Orbit.Scripts
         private Transform _cam;
         private Transform _light;
 
-        private Animator _animator;
+        private OrbitAnimator _animator;
 
         private void Awake()
         {
@@ -28,7 +28,7 @@ namespace Assets.Scenes.Orbit.Scripts
             _cam = transform.Find("Pivot/Camera");
             _light = transform.Find("Directional Light");
 
-            _animator = _cam.GetComponent<Animator>();
+            _animator = _cam.GetComponent<OrbitAnimator>();
         }
 
         private void OnEnable()
