@@ -2,15 +2,17 @@
 
 namespace UtyMap.Unity.Animations
 {
-    /// <summary> Implements basic animation behaviour. </summary>
+    /// <summary> Provides the way to properly update animation. </summary>
     public abstract class Animator : MonoBehaviour
     {
-        protected virtual void UpdateAnimation(Transform trans, Animation anim, float deltaTime)
+        /// <summary> Notifies target animation about update. </summary>
+        /// <remarks> Should be called from Update method. </remarks>
+        protected void UpdateAnimation(Animation anim, float deltaTime)
         {
-            if (anim == null || anim.IsFinished)
+            if (anim == null || !anim.IsRunning)
                 return;
 
-            anim.OnUpdate(trans, deltaTime);
+            anim.OnUpdate(deltaTime);
         }
     }
 }

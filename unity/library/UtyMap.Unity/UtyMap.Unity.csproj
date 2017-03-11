@@ -46,8 +46,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\TransformAnimation.cs" />
     <Compile Include="Animations\Animator.cs" />
+    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\CompositeAnimation.cs" />
     <Compile Include="Animations\Path\IPathInterpolator.cs" />
     <Compile Include="Animations\Path\LinearInterpolator.cs" />
     <Compile Include="Animations\Path\SplineInterpolator.cs" />

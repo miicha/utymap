@@ -1,78 +1,45 @@
 ﻿using System;
-using UnityEngine;
-using UtyMap.Unity.Animations.Path;
-using UtyMap.Unity.Animations.Time;
 
 namespace UtyMap.Unity.Animations
 {
-    /// <summary> Represents animation. </summary>
-    public class Animation
+    /// <summary> Represents an animation. </summary>
+    public abstract class Animation
     {
-        private readonly ITimeInterpolator _timeInterpolator;
-        private readonly IPathInterpolator _pathInterpolator;
-        
-        private readonly float _duration;
-        private readonly bool _isLoop;
-
-        private float _time;
-
-        internal bool IsFinished { get; private set; }
-
         /// <summary> Called when animation is finished. </summary>
         public event EventHandler Finished;
 
-        public Animation(ITimeInterpolator timeInterpolator, IPathInterpolator pathInterpolator,
-            float duration = 2, bool isLoop = false)
-        {
-            _timeInterpolator = timeInterpolator;
-            _pathInterpolator = pathInterpolator;
-            _duration = duration;
-            _isLoop = isLoop;
+        /// <summary> True if animation is running. </summary>
+        internal bool IsRunning { get; private set; }
 
-            IsFinished = true;
-        }
+        /// <summary> Called when animation is started. </summary>
+        protected internal abstract void OnStarted();
 
-        /// <summary> Starts animation. </summary>
-        public void Start()
-        {
-            _time = 0;
-            IsFinished = false;
-        }
+        /// <summary> Called when animation is updated. </summary>
+        /// <param name="deltaTime"> Delta time between frames in seconds. </param>
+        /// <remarks> Should be called externally. </remarks>
+        protected internal abstract void OnUpdate(float deltaTime);
 
-        /// <summary> Stops animation. </summary>
-        public void Cancel()
-        {
-            IsFinished = true;
-            OnFinished(EventArgs.Empty);
-        }
-
-        protected virtual void OnFinished(EventArgs e)
+        /// <summary> Called when animation is stopped. </summary>
+        /// <remarks> This might happen due manual stop or animation completion. </remarks>
+        protected internal virtual void OnStopped(EventArgs e)
         {
             var @event = Finished;
             if (@event != null)
                 @event(this, e);
         }
-
-        internal void OnUpdate(Transform transform, float deltaTime)
+  
+        /// <summary> Starts animation. </summary>
+        public void Start()
         {
-            _time += deltaTime / _duration;
+            IsRunning = true;
+            OnStarted();
+        }
 
-            if (_time > 1)
-            {
-                if (_isLoop)
-                    _time = 0;
-                else
-                {
-                    Cancel();
-                    return;
-                }
-            }
-
-            // interpolate time
-            var t = _timeInterpolator.GetTime(_time);
-            // interpolate position
-            transform.position = _pathInterpolator.GetPoint(t);
-            // TODO interpolate rotation
+        /// <summary> Stops animation. </summary>
+        public void Stop()
+        {
+            IsRunning = false;
+            OnStopped(EventArgs.Empty);
         }
     }
 }

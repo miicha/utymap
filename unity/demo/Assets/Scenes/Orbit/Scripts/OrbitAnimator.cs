@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UtyMap.Unity;
+using UtyMap.Unity.Animations;
 using UtyMap.Unity.Animations.Time;
 using Animator = UtyMap.Unity.Animations.Animator;
 using Animation = UtyMap.Unity.Animations.Animation;
@@ -14,7 +16,8 @@ namespace Assets.Scenes.Orbit.Scripts
 
         public void AnimateTo(Vector3 point, TimeSpan duration)
         {
-            _animation = new Animation(
+            _animation = new TransformAnimation(
+                transform,
                 new DecelerateInterpolator(),
                 new LinearInterpolator(new List<Vector3>() { transform.position, point }),
                 (float) duration.TotalSeconds);
@@ -23,13 +26,15 @@ namespace Assets.Scenes.Orbit.Scripts
 
         void Update()
         {
-            UpdateAnimation(transform, _animation, Time.deltaTime);
+            // Update camera position
+            UpdateAnimation(_animation, Time.deltaTime);
+            // TODO update pivot rotation
         }
 
         public void Cancel()
         {
             if (_animation != null)
-                _animation.Cancel();
+                _animation.Stop();
         }
     }
 }

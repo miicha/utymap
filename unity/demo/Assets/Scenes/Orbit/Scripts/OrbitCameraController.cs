@@ -61,7 +61,7 @@ namespace Assets.Scenes.Orbit.Scripts
         void Start()
         {
             // animation example
-            GetComponent<OrbitAnimator>().AnimateTo(new Vector3(0, 0, -8000), TimeSpan.FromSeconds(3));
+            GetComponent<OrbitAnimator>().AnimateTo(new Vector3(0, 0, -8000), TimeSpan.FromSeconds(10));
         }
 
         void Update()
