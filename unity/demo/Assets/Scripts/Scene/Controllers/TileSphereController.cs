@@ -87,6 +87,30 @@ namespace Assets.Scripts.Scene.Controllers
                 : _lodTree[distance].First().Value;
         }
 
+        /// <summary> Gets height for given lod. </summary>
+        public float GetHeight(float lod)
+        {
+            var startLod = Math.Max((int) Math.Floor(lod), _lodRange.Minimum);
+            var endLod = Math.Min((int) Math.Ceiling(lod), _lodRange.Maximum);
+
+            var startHeight = float.MinValue;
+            var endHeight = float.MinValue;
+
+            foreach (var rangeValuePair in _lodTree)
+            {
+                if (rangeValuePair.Value == startLod)
+                    startHeight = rangeValuePair.To;
+                if (rangeValuePair.Value == endLod)
+                    endHeight = rangeValuePair.From;
+            }
+
+            if (Math.Abs(startHeight - float.MinValue) < float.Epsilon || 
+                Math.Abs(endHeight - float.MinValue) < float.Epsilon)
+                throw new ArgumentException(String.Format("Invalid lod: {0}.", lod));
+
+            return startHeight + (endHeight - startHeight) * (lod - startLod);
+        }
+
         /// <summary> Builds quadkeys if necessary. Decision is based on visible quadkey and lod level. </summary>
         private void BuildIfNecessary(GameObject planet, Vector3 orientation)
         {
