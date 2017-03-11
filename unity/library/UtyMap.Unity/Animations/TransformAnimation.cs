@@ -1,30 +1,29 @@
 ﻿using UnityEngine;
-using UtyMap.Unity.Animations.Path;
 using UtyMap.Unity.Animations.Time;
 
 namespace UtyMap.Unity.Animations
 {
-    /// <summary> Represents animation for transform. </summary>
-    public class TransformAnimation : Animation
+    /// <summary> Represents animation for updating transform. </summary>
+    public abstract class TransformAnimation : Animation
     {
         private readonly Transform _transform;
         private readonly ITimeInterpolator _timeInterpolator;
-        private readonly IPathInterpolator _pathInterpolator;
         private readonly float _duration;
         private readonly bool _isLoop;
         private float _time;
 
-        public TransformAnimation(Transform transform,
-                                  ITimeInterpolator timeInterpolator,
-                                  IPathInterpolator pathInterpolator,
-                                  float duration = 2, bool isLoop = false)
+        protected TransformAnimation(Transform transform,
+                                     ITimeInterpolator timeInterpolator,
+                                     float duration = 2, bool isLoop = false)
         {
             _transform = transform;
             _timeInterpolator = timeInterpolator;
-            _pathInterpolator = pathInterpolator;
             _duration = duration;
             _isLoop = isLoop;
         }
+
+        /// <summary> Updates transform using interpolated time. </summary>
+        protected abstract void UpdateTransform(Transform transform, float time);
 
         /// <inheritdoc />
         protected internal override void OnStarted()
@@ -48,11 +47,7 @@ namespace UtyMap.Unity.Animations
                 }
             }
 
-            // interpolate time
-            var t = _timeInterpolator.GetTime(_time);
-            // interpolate position
-            _transform.position = _pathInterpolator.GetPoint(t);
-            // TODO interpolate rotation
+            UpdateTransform(_transform, _timeInterpolator.GetTime(_time));
         }
     }
 }

@@ -9,7 +9,7 @@ namespace UtyMap.Unity.Animations
         public event EventHandler Finished;
 
         /// <summary> True if animation is running. </summary>
-        internal bool IsRunning { get; private set; }
+        public bool IsRunning { get; private set; }
 
         /// <summary> Called when animation is started. </summary>
         protected internal abstract void OnStarted();
@@ -31,15 +31,21 @@ namespace UtyMap.Unity.Animations
         /// <summary> Starts animation. </summary>
         public void Start()
         {
-            IsRunning = true;
-            OnStarted();
+            if (!IsRunning)
+            {
+                IsRunning = true;
+                OnStarted();
+            }
         }
 
         /// <summary> Stops animation. </summary>
         public void Stop()
         {
-            IsRunning = false;
-            OnStopped(EventArgs.Empty);
+            if (IsRunning)
+            {
+                IsRunning = false;
+                OnStopped(EventArgs.Empty);
+            }
         }
     }
 }

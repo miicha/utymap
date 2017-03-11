@@ -28,7 +28,13 @@ namespace Assets.Scenes.Orbit.Scripts
             _cam = transform.Find("Pivot/Camera");
             _light = transform.Find("Directional Light");
 
-            _animator = _cam.GetComponent<OrbitAnimator>();
+            _animator = FindObjectOfType<OrbitAnimator>();
+        }
+
+        void Update()
+        {
+            if (_animator.HasRunningAnimations)
+                _light.localRotation = _pivot.localRotation;
         }
 
         private void OnEnable()
@@ -45,7 +51,7 @@ namespace Assets.Scenes.Orbit.Scripts
 
         private void manipulationTransformedHandler(object sender, EventArgs e)
         {
-            CancelAnimation();
+            CancelAnimations();
 
             var rotation = Quaternion.Euler(
                           ManipulationGesture.DeltaPosition.y / Screen.height * RotationSpeed,
@@ -53,12 +59,11 @@ namespace Assets.Scenes.Orbit.Scripts
                           ManipulationGesture.DeltaRotation);
 
             SetRotation(rotation);
-            _light.localRotation = _pivot.localRotation;
         }
 
         private void twoFingerTransformHandler(object sender, EventArgs e)
         {
-            CancelAnimation();
+            CancelAnimations();
 
             var rotation = Quaternion.Euler(
               TwoFingerMoveGesture.DeltaPosition.y / Screen.height * RotationSpeed,
@@ -101,10 +106,10 @@ namespace Assets.Scenes.Orbit.Scripts
             return (float) Math.Acos(cosine) * Mathf.Rad2Deg * MagicAngleLimitCoeff;
         }
 
-        private void CancelAnimation()
+        private void CancelAnimations()
         {
             if (_animator != null)
-                _animator.Cancel();
+                _animator.CancelAnimations();
         }
     }
 }
