@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UtyMap.Unity.Animations.Time;
 
 namespace UtyMap.Unity.Animations
@@ -14,11 +15,11 @@ namespace UtyMap.Unity.Animations
 
         protected TransformAnimation(Transform transform,
                                      ITimeInterpolator timeInterpolator,
-                                     float duration = 2, bool isLoop = false)
+                                     TimeSpan duration, bool isLoop = false)
         {
             _transform = transform;
             _timeInterpolator = timeInterpolator;
-            _duration = duration;
+            _duration = (float) duration.TotalSeconds;
             _isLoop = isLoop;
         }
 

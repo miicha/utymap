@@ -18,9 +18,6 @@ namespace Assets.Scenes.Orbit.Scripts
         /// <inheritdoc />
         public override void AnimateTo(GeoCoordinate coordinate, float height, TimeSpan duration)
         {
-            // TODO pass duration as TimeSpan
-            var animationDuration = (float) duration.TotalSeconds;
-
             // create position change animation
             var points = new List<Vector3>()
             {
@@ -31,7 +28,7 @@ namespace Assets.Scenes.Orbit.Scripts
                         _cam.transform,
                         new DecelerateInterpolator(),
                         new UtyMap.Unity.Animations.Path.LinearInterpolator(points),
-                        animationDuration);
+                        duration);
 
             // create rotation change animation
             var rotations = new List<Quaternion>()
@@ -43,7 +40,7 @@ namespace Assets.Scenes.Orbit.Scripts
               _pivot.transform,
               new DecelerateInterpolator(),
               new UtyMap.Unity.Animations.Rotation.LinearInterpolator(rotations),
-              animationDuration);
+              duration);
 
             // compose animation into one composite
             _animation = new CompositeAnimation(new List<Animation>() { pathAnimation, rotationAnimation});

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UtyMap.Unity.Animations.Rotation;
 using UtyMap.Unity.Animations.Time;
 
@@ -12,7 +13,7 @@ namespace UtyMap.Unity.Animations
         public RotationAnimation(Transform transform,
                                  ITimeInterpolator timeInterpolator,
                                  IRotationInterpolator rotationInterpolator,
-                                 float duration = 2, bool isLoop = false)
+                                 TimeSpan duration, bool isLoop = false)
             : base(transform, timeInterpolator, duration, isLoop)
         {
             _rotationInterpolator = rotationInterpolator;
