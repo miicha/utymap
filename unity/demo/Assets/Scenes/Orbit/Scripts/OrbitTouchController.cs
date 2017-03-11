@@ -59,6 +59,7 @@ namespace Assets.Scenes.Orbit.Scripts
                           ManipulationGesture.DeltaRotation);
 
             SetRotation(rotation);
+            _light.localRotation = _pivot.localRotation;
         }
 
         private void twoFingerTransformHandler(object sender, EventArgs e)
