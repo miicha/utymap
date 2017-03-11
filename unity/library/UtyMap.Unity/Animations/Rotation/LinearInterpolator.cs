@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace UtyMap.Unity.Animations.Rotation
 {
+    /// <summary> Interpolates object's rotation using linear interpolation. </summary>
     public class LinearInterpolator : IRotationInterpolator
     {
         private readonly Quaternion[] _quaternions;
@@ -20,6 +21,7 @@ namespace UtyMap.Unity.Animations.Rotation
                 throw new ArgumentException("LinearInterpolator does not support less than 2 quaternions.");
         }
 
+        /// <inheritdoc />
         public Quaternion GetRotation(float time)
         {
             return Quaternion.Slerp(_quaternions[0], _quaternions[1], time);

@@ -3,7 +3,7 @@
 namespace UtyMap.Unity.Animations.Path
 {
     /// <summary>
-    ///    A path interpolator defines API to get position/orientation changes of an object.
+    ///    A path interpolator defines API to get position/direction changes of an object.
     /// </summary>
     public interface IPathInterpolator
     {

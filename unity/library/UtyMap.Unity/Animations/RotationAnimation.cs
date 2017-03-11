@@ -4,6 +4,7 @@ using UtyMap.Unity.Animations.Time;
 
 namespace UtyMap.Unity.Animations
 {
+    /// <summary> Animates transform rotation. </summary>
     public class RotationAnimation : TransformAnimation
     {
         private readonly IRotationInterpolator _rotationInterpolator;
@@ -17,6 +18,7 @@ namespace UtyMap.Unity.Animations
             _rotationInterpolator = rotationInterpolator;
         }
 
+        /// <inheritdoc />
         protected override void UpdateTransform(Transform transform, float time)
         {
             transform.rotation = _rotationInterpolator.GetRotation(time);

@@ -1,10 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UtyMap.Unity.Animations.Path;
 using UtyMap.Unity.Animations.Time;
 
 namespace UtyMap.Unity.Animations
 {
+    /// <summary> Animates transform position. </summary>
     public class PathAnimation : TransformAnimation
     {
         private readonly IPathInterpolator _pathInterpolator;
@@ -18,6 +18,7 @@ namespace UtyMap.Unity.Animations
             _pathInterpolator = pathInterpolator;
         }
 
+        /// <inheritdoc />
         protected override void UpdateTransform(Transform transform, float time)
         {
             transform.localPosition = _pathInterpolator.GetPoint(time);
