@@ -9,7 +9,7 @@ node|z2[label_placement=true][kind=ocean][name] {
 node|z4[kind=country][name][population>5000000] {
     builders: label;
     font-name: Arial;
-    font-size: 32;
+    font-size: 48;
     font-color: black;
 }
 
