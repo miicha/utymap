@@ -1,11 +1,9 @@
-#include "BoundingBox.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "index/PersistentElementStore.hpp"
 #include "utils/CoreUtils.hpp"
-#include "utils/LruCache.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -273,14 +271,13 @@ class PersistentElementStore::PersistentElementStoreImpl final
 
 public:
     explicit PersistentElementStoreImpl(const std::string& dataPath) :
-        dataPath_(dataPath),
-        dataCache_(8)
+        dataPath_(dataPath)
     {
     }
 
     void store(const Element& element, const QuadKey& quadKey)
     {
-        const auto& quadKeyData = getQuadKeyData(quadKey);
+        QuadKeyData quadKeyData(getFilePath(quadKey, DataFileExtension), getFilePath(quadKey, IndexFileExtension));
 
         // write element data
         std::uint32_t offset = static_cast<std::uint32_t>(quadKeyData.dataFile->tellg());
@@ -296,7 +293,7 @@ public:
 
     void search(const QuadKey& quadKey, ElementVisitor& visitor, const utymap::CancellationToken& cancelToken)
     {
-        const auto& quadKeyData = getQuadKeyData(quadKey);
+        QuadKeyData quadKeyData(getFilePath(quadKey, DataFileExtension), getFilePath(quadKey, IndexFileExtension));
 
         std::uint32_t count = static_cast<std::uint32_t>(quadKeyData.indexFile->tellg() /
                 (sizeof(std::uint64_t) + sizeof(std::uint32_t)));
@@ -332,23 +329,7 @@ private:
         return ss.str();
     }
 
-    /// Ensures that open/close function is called on files.
-    const QuadKeyData& getQuadKeyData(const QuadKey& quadKey)
-    {
-        // TODO this is not 100% thread safe as we return reference to data
-        // object it points can be destroyed right after.
-        std::lock_guard<std::mutex> lock(lock_);
-        if (dataCache_.exists(quadKey))
-            return dataCache_.get(quadKey);
-
-        dataCache_.put(quadKey, QuadKeyData(getFilePath(quadKey, DataFileExtension), getFilePath(quadKey, IndexFileExtension)));
-        
-        return dataCache_.get(quadKey);
-    }
-
-    mutable std::mutex lock_;
     const std::string dataPath_;
-    utymap::utils::LruCache<QuadKey, QuadKeyData, QuadKey::Comparator> dataCache_;
 };
 
 PersistentElementStore::PersistentElementStore(const std::string& dataPath, const StringTable& stringTable) :
