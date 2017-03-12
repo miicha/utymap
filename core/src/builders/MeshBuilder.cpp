@@ -8,10 +8,18 @@
 #include "utils/GeoUtils.hpp"
 #include "utils/GradientUtils.hpp"
 
+#include <mutex>
+
 using namespace utymap::builders;
 using namespace utymap::heightmap;
 using namespace utymap::math;
 using namespace utymap::utils;
+
+namespace
+{
+    // NOTE triangle library is not thread safe.
+    std::mutex lock_;
+}
 
 class MeshBuilder::MeshBuilderImpl
 {
@@ -48,7 +56,10 @@ public:
         mid.segmentlist = nullptr;
         mid.segmentmarkerlist = nullptr;
 
-        ::triangulate(const_cast<char*>("pzBQ"), &in, &mid, nullptr);
+        {
+            std::lock_guard<std::mutex> lock(lock_);
+            ::triangulate(const_cast<char*>("pzBQ"), &in, &mid, nullptr);
+        }
 
         // do not refine mesh if area is not set.
         if (std::abs(geometryOptions.area) < std::numeric_limits<double>::epsilon()) {
@@ -73,7 +84,11 @@ public:
             for (int i = 0; i < geometryOptions.segmentSplit; i++) {
                 triOptions += "Y";
             }
-            ::triangulate(const_cast<char*>(triOptions.c_str()), &mid, &out, nullptr);
+            
+            {
+                std::lock_guard<std::mutex> lock(lock_);
+                ::triangulate(const_cast<char*>(triOptions.c_str()), &mid, &out, nullptr);
+            }
 
             fillMesh(&out, mesh, geometryOptions, appearanceOptions);
 
