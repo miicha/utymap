@@ -120,7 +120,8 @@ public:
             eleProvider, meshFunc, elementFunc, builderFactory_, builderKeyId_);
 
         geoStore_.search(quadKey, styleProvider, elementVisitor, cancelToken);
-        elementVisitor.complete();
+        if (!cancelToken.isCancelled())
+            elementVisitor.complete();
     }
 
 private:
