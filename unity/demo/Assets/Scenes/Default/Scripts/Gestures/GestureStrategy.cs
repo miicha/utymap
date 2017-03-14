@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Assets.Scenes.Default.Scripts.Gestures
 {
-    /// <summary> Encapsulated gesture processing. </summary>
+    /// <summary> Encapsulates gesture processing. </summary>
     internal abstract class GestureStrategy
     {
         protected readonly ScreenTransformGesture TwoFingerMoveGesture;

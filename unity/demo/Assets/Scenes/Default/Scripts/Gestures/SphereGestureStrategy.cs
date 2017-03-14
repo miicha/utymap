@@ -1,5 +1,4 @@
 ﻿using System;
-using Assets.Scenes.Default.Scripts.Tiling;
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 

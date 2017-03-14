@@ -31,7 +31,7 @@ namespace Assets.Scenes.Default.Scripts.Tiling
         // <summary> Gets current geo coordinate. </summary>
         public abstract GeoCoordinate Coordinate { get; }
 
-        /// <summary> Gets current distance to sea level in meters. </summary>
+        /// <summary> Gets current height on sea level in meters. </summary>
         public abstract float DistanceToSurface { get; }
 
         /// <summary> Is above maximum zoom level. </summary>
@@ -71,9 +71,9 @@ namespace Assets.Scenes.Default.Scripts.Tiling
             foreach (var rangeValuePair in LodTree)
             {
                 if (rangeValuePair.Value == startLod)
-                    startHeight = rangeValuePair.To;
+                    startHeight = startLod == LodRange.Minimum ? rangeValuePair.From : rangeValuePair.To;
                 if (rangeValuePair.Value == endLod)
-                    endHeight = rangeValuePair.From;
+                    endHeight = endLod == LodRange.Maximum ? rangeValuePair.To : rangeValuePair.From;
             }
 
             if (Math.Abs(startHeight - float.MinValue) < float.Epsilon ||

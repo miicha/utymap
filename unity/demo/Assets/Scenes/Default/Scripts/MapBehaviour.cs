@@ -78,6 +78,9 @@ namespace Assets.Scenes.Default.Scripts
 
         void Update()
         {
+            if (_animator.HasRunningAnimations)
+                return;
+
             _spaces[_currentSpaceIndex].TileController.OnUpdate(Planet, Camera.transform.position, Pivot.rotation.eulerAngles);
         }
 

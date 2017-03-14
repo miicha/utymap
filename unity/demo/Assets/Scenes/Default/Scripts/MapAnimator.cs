@@ -19,8 +19,6 @@ namespace Assets.Scenes.Default.Scripts
         /// <inheritdoc />
         public override void AnimateTo(GeoCoordinate coordinate, float height, TimeSpan duration)
         {
-            height = 13000;
-
             // create position change animation
             var points = new List<Vector3>()
             {
@@ -51,7 +49,10 @@ namespace Assets.Scenes.Default.Scripts
         }
 
         /// <inheritdoc />
-        public override bool HasRunningAnimations { get { return _animation != null && _animation.IsRunning; } }
+        public override bool HasRunningAnimations
+        {
+            get { return _animation != null && _animation.IsRunning; }
+        }
 
         /// <inheritdoc />
         public override void CancelAnimations()
