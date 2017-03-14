@@ -28,7 +28,7 @@ namespace Assets.Scenes.Orbit.Scripts
             _cam = transform.Find("Pivot/Camera");
             _light = transform.Find("Directional Light");
 
-            _animator = FindObjectOfType<OrbitAnimator>();
+            //_animator = FindObjectOfType<OrbitAnimator>();
         }
 
         void Update()

@@ -1,28 +1,43 @@
 ﻿using System;
-using UnityEngine;
 
 namespace UtyMap.Unity.Animations
 {
-    /// <summary> Provides the way to properly update animation. </summary>
-    public abstract class Animator : MonoBehaviour
+    /// <summary> Provides the way to handle animation. </summary>
+    public abstract class Animator
     {
-        /// <summary> True if there is at least one running animation scheduled by this animator. </summary>
-        public abstract bool HasRunningAnimations { get; }
+        private Animation _animation;
 
-        /// <summary> Starts animation to given geocoordinate an height. </summary>
-        public abstract void AnimateTo(GeoCoordinate coordinate, float height, TimeSpan duration);
+        /// <summary> Animates to given coordinate using default interpolators. </summary>
+        public abstract void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration);
 
-        /// <summary> Cancels all outstanding animations. </summary>
-        public abstract void CancelAnimations();
-
-        /// <summary> Notifies target animation about update. </summary>
-        /// <remarks> Should be called from Update method. </remarks>
-        protected void UpdateAnimation(Animation anim, float deltaTime)
+        /// <summary> Notifies animator about frame update. </summary>
+        public void Update(float deltaTime)
         {
-            if (anim == null || !anim.IsRunning)
+            if (_animation == null || !_animation.IsRunning)
                 return;
 
-            anim.OnUpdate(deltaTime);
+            _animation.OnUpdate(deltaTime);
+        }
+
+        /// <summary> True if there is running animation. </summary>
+        public bool IsRunningAnimation
+        {
+            get { return _animation != null && _animation.IsRunning; }
+        }
+
+        /// <summary> Cancels outstanding animation. </summary>
+        public void Cancel()
+        {
+            if (_animation != null)
+                _animation.Stop();
+        }
+
+        /// <summary> Sets animation. </summary>
+        /// <remarks> Stops existing animation. </remarks>
+        protected void SetAnimation(Animation animation)
+        {
+            Cancel();
+            _animation = animation;
         }
     }
 }

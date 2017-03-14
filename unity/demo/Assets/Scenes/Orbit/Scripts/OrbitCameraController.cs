@@ -61,10 +61,10 @@ namespace Assets.Scenes.Orbit.Scripts
         void Start()
         {
             // animation example
-            FindObjectOfType<OrbitAnimator>()
-                .AnimateTo(ApplicationManager.Instance.DefaultCoordinate,
-                           TileController.GetHeight(8.25f),
-                           TimeSpan.FromSeconds(15));
+            //FindObjectOfType<OrbitAnimator>()
+            //    .AnimateTo(ApplicationManager.Instance.DefaultCoordinate,
+            //               TileController.GetHeight(8.25f),
+            //               TimeSpan.FromSeconds(15));
         }
 
         void Update()

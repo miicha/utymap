@@ -48,10 +48,10 @@ namespace Assets.Scenes.Orbit.Scripts
         }
 
         /// <inheritdoc />
-        public override bool HasRunningAnimations { get { return _animation != null && _animation.IsRunning; } }
+        public bool HasRunningAnimations { get { return _animation != null && _animation.IsRunning; } }
 
         /// <inheritdoc />
-        public override void CancelAnimations()
+        public void CancelAnimations()
         {
             if (_animation != null)
                 _animation.Stop();
@@ -61,14 +61,14 @@ namespace Assets.Scenes.Orbit.Scripts
 
         void Awake()
         {
-            _pivot = transform.Find("Pivot");
-            _cam = transform.Find("Pivot/Camera");
+           // _pivot = transform.Find("Pivot");
+           // _cam = transform.Find("Pivot/Camera");
         }
 
         void Update()
         {
             // Update camera position
-            UpdateAnimation(_animation, Time.deltaTime);
+            //UpdateAnimation(_animation, Time.deltaTime);
             // TODO update pivot rotation
         }
 
