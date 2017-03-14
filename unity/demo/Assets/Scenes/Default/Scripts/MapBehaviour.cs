@@ -17,6 +17,8 @@ namespace Assets.Scenes.Default.Scripts
         public double Latitude = 52.53171;
         public double Longitude = 13.38721;
 
+        public bool ShowState = true;
+
         public Transform Planet;
         public Transform Pivot;
         public Camera Camera;
@@ -82,6 +84,21 @@ namespace Assets.Scenes.Default.Scripts
                 return;
 
             _spaces[_currentSpaceIndex].TileController.OnUpdate(Planet, Camera.transform.position, Pivot.rotation.eulerAngles);
+        }
+
+        void OnGUI()
+        {
+            if (ShowState)
+            {
+                var tileController = _spaces[_currentSpaceIndex].TileController;
+                var labelText = String.Format("Position: {0}\nDistance: {1:0.#}km\nZoom: {2}",
+                    tileController.Coordinate,
+                    tileController.DistanceToSurface / 1000f,
+                    tileController.ZoomLevel);
+                
+                GUI.contentColor = Color.red;
+                GUI.Label(new Rect(0, 0, Screen.width, Screen.height), labelText);
+            }
         }
 
         #endregion
