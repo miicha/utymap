@@ -83,7 +83,7 @@ namespace Assets.Scenes.Default.Scripts
             if (_animator.HasRunningAnimations)
                 return;
 
-            _spaces[_currentSpaceIndex].TileController.OnUpdate(Planet, Camera.transform.position, Pivot.rotation.eulerAngles);
+            _spaces[_currentSpaceIndex].TileController.OnUpdate(Planet, Camera.transform.localPosition, Pivot.rotation.eulerAngles);
         }
 
         void OnGUI()

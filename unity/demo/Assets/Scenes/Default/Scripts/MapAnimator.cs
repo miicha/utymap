@@ -22,7 +22,7 @@ namespace Assets.Scenes.Default.Scripts
             // create position change animation
             var points = new List<Vector3>()
             {
-                Camera.transform.position,
+                Camera.transform.localPosition,
                 new Vector3(0, 0, -height)
             };
             var pathAnimation = new PathAnimation(

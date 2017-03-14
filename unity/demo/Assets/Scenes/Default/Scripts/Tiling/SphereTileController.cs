@@ -12,6 +12,9 @@ namespace Assets.Scenes.Default.Scripts.Tiling
 {
     internal sealed class SphereTileController : TileController
     {
+        private const float RotationSensivity = 5f;
+        private const float HeightSensivity = 100f;
+
         private readonly Vector3 _origin = Vector3.zero;
 
         private readonly float _radius;
@@ -76,6 +79,10 @@ namespace Assets.Scenes.Default.Scripts.Tiling
         /// <inheritdoc />
         public override void OnUpdate(Transform planet, Vector3 position, Vector3 rotation)
         {
+            if (Vector3.Distance(_rotation, rotation) < RotationSensivity &&
+                Vector3.Distance(position, _position) < HeightSensivity)
+                return;
+
             _position = position;
             _rotation = rotation;
             _zoom = CalculateZoom(GetDistanceToOrigin());

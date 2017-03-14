@@ -71,9 +71,9 @@ namespace Assets.Scenes.Default.Scripts.Tiling
             foreach (var rangeValuePair in LodTree)
             {
                 if (rangeValuePair.Value == startLod)
-                    startHeight = startLod == LodRange.Minimum ? rangeValuePair.From : rangeValuePair.To;
+                    startHeight = startLod == LodRange.Minimum ? rangeValuePair.From + 1 : rangeValuePair.To;
                 if (rangeValuePair.Value == endLod)
-                    endHeight = endLod == LodRange.Maximum ? rangeValuePair.To : rangeValuePair.From;
+                    endHeight = endLod == LodRange.Maximum ? rangeValuePair.To - 1 : rangeValuePair.From;
             }
 
             if (Math.Abs(startHeight - float.MinValue) < float.Epsilon ||

@@ -22,7 +22,7 @@ namespace UtyMap.Unity.Animations
         /// <inheritdoc />
         protected override void UpdateTransform(Transform transform, float time)
         {
-            transform.rotation = _rotationInterpolator.GetRotation(time);
+            transform.localRotation = _rotationInterpolator.GetRotation(time);
         }
     }
 }
