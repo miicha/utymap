@@ -102,9 +102,8 @@ namespace Assets.Scenes.Default.Scripts
             if (ShowState)
             {
                 var tileController = _spaces[_currentSpaceIndex].TileController;
-                var labelText = String.Format("Position: {0}\nDistance: {1:0.#}km\nZoom: {2}",
+                var labelText = String.Format("Position: {0}\nZoom: {1}",
                     tileController.Coordinate,
-                    tileController.DistanceToSurface / 1000f,
                     tileController.ZoomLevel);
                 
                 GUI.contentColor = Color.red;

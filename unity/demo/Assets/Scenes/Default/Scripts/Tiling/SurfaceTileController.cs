@@ -51,9 +51,6 @@ namespace Assets.Scenes.Default.Scripts.Tiling
         public override GeoCoordinate Coordinate { get { return GeoUtils.ToGeoCoordinate(_geoOrigin, _position); } }
 
         /// <inheritdoc />
-        public override float DistanceToSurface { get { return GetDistanceToOrigin(); } }
-
-        /// <inheritdoc />
         public override bool IsAboveMax { get { return _maxHeight < GetDistanceToOrigin(); } }
 
         /// <inheritdoc />

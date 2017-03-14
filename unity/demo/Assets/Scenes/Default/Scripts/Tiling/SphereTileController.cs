@@ -13,7 +13,7 @@ namespace Assets.Scenes.Default.Scripts.Tiling
     internal sealed class SphereTileController : TileController
     {
         private const float RotationSensivity = 5f;
-        private const float HeightSensivity = 100f;
+        private const float HeightSensivity = 50f;
 
         private readonly Vector3 _origin = Vector3.zero;
 
@@ -63,9 +63,6 @@ namespace Assets.Scenes.Default.Scripts.Tiling
                 return new GeoCoordinate(latitude, longitude);
             }
         }
-
-        /// <inheritdoc />
-        public override float DistanceToSurface { get { return GetDistanceToOrigin() - _radius; } }
 
         /// <inheritdoc />
         public override bool IsAboveMax { get { return _maxHeight < GetDistanceToOrigin(); } }
