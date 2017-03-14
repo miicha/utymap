@@ -96,7 +96,8 @@ namespace Assets.Scenes.Default.Scripts.Tiling
         protected float CalculateZoom(float distance)
         {
             var lodRange = LodTree[distance].First();
-            return lodRange.Value + (distance - lodRange.From) / (lodRange.To - lodRange.From);
+            var zoom = lodRange.Value + (lodRange.To - distance) / (lodRange.To - lodRange.From);
+            return Mathf.Clamp(zoom, LodRange.Minimum, LodRange.Maximum);
         }
     }
 }

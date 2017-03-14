@@ -113,7 +113,7 @@ namespace Assets.Scenes.Default.Scripts.Tiling
             for (int lod = LodRange.Minimum; lod <= LodRange.Maximum; ++lod)
             {
                 if (lod == 1)
-                    lodTree.Add(baseValue, float.MaxValue, lod);
+                    lodTree.Add(baseValue, 2 * baseValue, lod);
                 else if (lod == 2)
                     lodTree.Add(baseValue - 1 / 3f * _radius, baseValue, lod);
                 else
