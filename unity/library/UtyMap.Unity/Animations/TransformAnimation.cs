@@ -35,11 +35,14 @@ namespace UtyMap.Unity.Animations
         /// <inheritdoc />
         protected internal override void OnUpdate(float deltaTime)
         {
-            if (Math.Abs(_duration) < float.Epsilon && 
-                Math.Abs(_time - 1) > float.Epsilon)
-                _time = 1;
-            else
-                _time += deltaTime / _duration;
+            if (Math.Abs(_duration) < float.Epsilon)
+            {
+                UpdateTransform(_transform, _timeInterpolator.GetTime(1));
+                Stop();
+                return;
+            }
+               
+            _time += deltaTime / _duration;
 
             if (_time > 1)
             {
