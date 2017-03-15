@@ -78,11 +78,11 @@ namespace Assets.Scenes.Default.Scripts
             _animators = new List<Animator>()
             {
                 // Orbit
-                new SphereAnimator(Pivot, Camera.transform, _spaces[0].TileController),
+                new SphereAnimator(Pivot, _spaces[0].TileController),
                 // Surface
-                new SurfaceAnimator(),
+                new SurfaceAnimator(Pivot, _spaces[1].TileController),
                 // Detail
-                new SurfaceAnimator()
+                new SurfaceAnimator(Pivot, _spaces[2].TileController)
             };
 
             OnTransition(null, _spaces[_currentSpaceIndex]);
