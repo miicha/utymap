@@ -8,9 +8,8 @@ namespace Assets.Scenes.Default.Scripts.Spaces
     {
         private readonly GameObject _planet;
 
-        public SphereSpace(TileController tileController, GestureStrategy gestureStrategy, 
-            Transform pivot, Camera camera, Transform planet) :
-            base(tileController, gestureStrategy, pivot, camera)
+        public SphereSpace(TileController tileController, GestureStrategy gestureStrategy, Transform pivot, Transform planet) :
+            base(tileController, gestureStrategy, pivot)
         {
             _planet = planet.gameObject;
         }
@@ -20,6 +19,7 @@ namespace Assets.Scenes.Default.Scripts.Spaces
         {
             Camera.fieldOfView = TileController.FieldOfView;
             Camera.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            Light.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
             _planet.SetActive(true);
         }

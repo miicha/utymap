@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Assets.Scenes.Default.Scripts.Gestures;
+﻿using Assets.Scenes.Default.Scripts.Gestures;
 using Assets.Scenes.Default.Scripts.Tiling;
 using UnityEngine;
 
@@ -15,14 +11,16 @@ namespace Assets.Scenes.Default.Scripts.Spaces
 
         protected readonly Transform Pivot;
         protected readonly Camera Camera;
+        protected readonly Transform Light;
 
-        public Space(TileController tileController, GestureStrategy gestureStrategy, Transform pivot, Camera camera)
+        public Space(TileController tileController, GestureStrategy gestureStrategy, Transform pivot)
         {
             TileController = tileController;
             GestureStrategy = gestureStrategy;
             
             Pivot = pivot;
-            Camera = camera;
+            Camera = pivot.Find("Camera").GetComponent<Camera>();
+            Light = pivot.Find("Directional Light");
         }
 
         public abstract void Enter();

@@ -9,9 +9,8 @@ namespace Assets.Scenes.Default.Scripts.Spaces
     {
         private readonly GameObject _surface;
 
-        public SurfaceSpace(TileController tileController, GestureStrategy gestureStrategy, 
-            Transform pivot, Camera camera, Transform surface) :
-            base(tileController, gestureStrategy, pivot, camera)
+        public SurfaceSpace(TileController tileController, GestureStrategy gestureStrategy, Transform pivot, Transform surface) :
+            base(tileController, gestureStrategy, pivot)
         {
             _surface = surface.gameObject;
         }
@@ -20,6 +19,7 @@ namespace Assets.Scenes.Default.Scripts.Spaces
         {
             Camera.fieldOfView = TileController.FieldOfView;
             Camera.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            Light.transform.localRotation = Quaternion.Euler(90, 0, 0);
 
             _surface.SetActive(true);
         }

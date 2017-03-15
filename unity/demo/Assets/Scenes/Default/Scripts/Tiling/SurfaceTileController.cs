@@ -224,6 +224,5 @@ namespace Assets.Scenes.Default.Scripts.Tiling
                 ? new ScaledProjection(projection, _scale)
                 : projection;
         }
-
     }
 }
