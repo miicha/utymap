@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assets.Scenes.Default.Scripts.Animations;
 using Assets.Scenes.Default.Scripts.Gestures;
+using Assets.Scenes.Default.Scripts.Spaces;
 using Assets.Scenes.Default.Scripts.Tiling;
 using Assets.Scripts;
 using TouchScript.Gestures.TransformGestures;
@@ -12,6 +13,7 @@ using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Primitives;
 
 using Animator = UtyMap.Unity.Animations.Animator;
+using Space = Assets.Scenes.Default.Scripts.Spaces.Space;
 
 namespace Assets.Scenes.Default.Scripts
 {
@@ -23,6 +25,7 @@ namespace Assets.Scenes.Default.Scripts
         public bool ShowState = true;
 
         public Transform Planet;
+        public Transform Surface;
         public Transform Pivot;
         public Camera Camera;
 
@@ -51,14 +54,14 @@ namespace Assets.Scenes.Default.Scripts
             _spaces = new List<Space>()
             {
                 // Orbit
-                new Space(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, new Range<int>(1, 8), PlanetRadius),
-                          new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, PlanetRadius)),
+                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, new Range<int>(1, 8), PlanetRadius),
+                                new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, PlanetRadius), Planet),
                 // Surface
-                new Space(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(9, 15), geoOrigin, aspect, 0.01f, 2000),
-                          new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture)),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(9, 15), geoOrigin, aspect, 0.01f, 2000),
+                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
                 // Detail
-                new Space(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(16, 16), geoOrigin, aspect, 1f, 3000),
-                          new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture))
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(16, 16), geoOrigin, aspect, 1f, 3000),
+                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
             };
 
             _animators = new List<Animator>()
@@ -132,10 +135,15 @@ namespace Assets.Scenes.Default.Scripts
         /// <summary> Performs transition from one space to another. </summary>
         private void OnTransition(Space from, Space to)
         {
+            if (from != null)
+                from.Leave();
+
             Camera.fieldOfView = to.TileController.FieldOfView;
 
+            to.Enter();
+
             var coordinate = from == null
-                ? ApplicationManager.Instance.DefaultCoordinate
+                ? new GeoCoordinate(Latitude, Longitude)
                 : from.TileController.Coordinate;
 
             var lodRange = to.TileController.LodRange;
@@ -143,22 +151,9 @@ namespace Assets.Scenes.Default.Scripts
             var zoom = from != null && from.TileController.LodRange.Maximum > lodRange.Maximum
                 ? lodRange.Maximum
                 : lodRange.Minimum;
-            
+           
             _animators[_currentSpaceIndex].AnimateTo(coordinate, zoom, TimeSpan.Zero);
         }
-
-        private class Space
-        {
-            public readonly TileController TileController;
-            public readonly GestureStrategy GestureStrategy;
-
-            public Space(TileController tileController, GestureStrategy gestureStrategy)
-            {
-                TileController = tileController;
-                GestureStrategy = gestureStrategy;
-            }
-        }
-
         #endregion
     }
 }

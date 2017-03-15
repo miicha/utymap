@@ -13,19 +13,12 @@ namespace Assets.Scripts.Scene.Builders
     /// <summary> Builds a label. </summary>
     internal sealed class LabelElementBuilder : IElementBuilder
     {
-        private GameObject _canvas;
-
-        public LabelElementBuilder()
-        {
-            _canvas = GameObject.Find("Text Visualizer");
-        }
-
         /// <inheritdoc />
         public GameObject Build(Tile tile, Element element)
         {
             var gameObject = new GameObject(GetName(element));
             // NOTE should be attached to properly oriented canvas from proper scene.
-            gameObject.transform.SetParent(_canvas.transform);
+            gameObject.transform.SetParent(GameObject.Find("Text Visualizer").transform);
 
             return element.Styles.ContainsKey("type") && element.Styles["type"] == "flat"
                 ? BuildFlatText(gameObject, element)
