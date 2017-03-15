@@ -9,7 +9,7 @@ namespace Assets.Scenes.Default.Scripts.Animations
     {
         public override void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

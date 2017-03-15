@@ -66,8 +66,12 @@ namespace Assets.Scenes.Default.Scripts.Tiling
         /// <inheritdoc />
         public override void OnUpdate(Transform planet, Vector3 position, Vector3 rotation)
         {
+            var oldLod = (int)_zoom;
+
             _position = position;
-            Build(planet);
+            _zoom = CalculateZoom(GetDistanceToOrigin());
+           
+            Build(planet, oldLod);
         }
 
         /// <inheritdoc />
@@ -88,9 +92,8 @@ namespace Assets.Scenes.Default.Scripts.Tiling
         }
 
         /// <summary> Builds quadkeys if necessary. Decision is based on current position and lod level. </summary>
-        private void Build(Transform parent)
+        private void Build(Transform parent, int oldLod)
         {
-            var oldLod = (int) _zoom;
             var currentLod = LodTree[_position.y].First().Value;
 
             var currentQuadKey = GetQuadKey(currentLod);

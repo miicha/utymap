@@ -19,10 +19,13 @@ namespace Assets.Scenes.Default.Scripts
 {
     internal class MapBehaviour: MonoBehaviour
     {
-        public double Latitude = 52.53171;
-        public double Longitude = 13.38721;
+        #region User controlled settings
 
-        public bool ShowState = true;
+        public enum SpaceType { Orbit, Surface, Detail }
+
+        public double StartLatitude = 52.53171;
+        public double StartLongitude = 13.38721;
+        public SpaceType StartSpace = SpaceType.Orbit;
 
         public Transform Planet;
         public Transform Surface;
@@ -31,6 +34,10 @@ namespace Assets.Scenes.Default.Scripts
 
         public ScreenTransformGesture TwoFingerMoveGesture;
         public ScreenTransformGesture ManipulationGesture;
+
+        public bool ShowState = true;
+
+        #endregion
 
         private int _currentSpaceIndex;
         private List<Space> _spaces;
@@ -45,23 +52,27 @@ namespace Assets.Scenes.Default.Scripts
 
             var mapDataStore = appManager.GetService<IMapDataStore>();
             var stylesheet = appManager.GetService<Stylesheet>();
-            var geoOrigin = new GeoCoordinate(Latitude, Longitude);
+            var geoOrigin = new GeoCoordinate(StartLatitude, StartLongitude);
+            _currentSpaceIndex = (int)StartSpace;
 
             // scaled radius of Earth in meters, approx. 1:1000
-            const float PlanetRadius = 6371f;
+            const float planetRadius = 6371f;
+            const float surfaceScale = 0.01f;
+            const float detailScale = 1f;
+            const float maxDistance = 3000;
             float aspect = Camera.aspect;
 
             _spaces = new List<Space>()
             {
                 // Orbit
-                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, new Range<int>(1, 8), PlanetRadius),
-                                new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, PlanetRadius), Planet),
+                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, new Range<int>(1, 8), planetRadius),
+                                new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Pivot, Camera, Planet),
                 // Surface
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(9, 15), geoOrigin, aspect, 0.01f, 2000),
-                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(9, 15), geoOrigin, aspect, surfaceScale, maxDistance),
+                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Pivot, Camera,Surface),
                 // Detail
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(16, 16), geoOrigin, aspect, 1f, 3000),
-                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(16, 16), geoOrigin, aspect, detailScale, maxDistance),
+                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Pivot, Camera,Surface)
             };
 
             _animators = new List<Animator>()
@@ -97,7 +108,8 @@ namespace Assets.Scenes.Default.Scripts
                 return;
             }
 
-            _spaces[_currentSpaceIndex].TileController.OnUpdate(Planet, Camera.transform.localPosition, Pivot.rotation.eulerAngles);
+            _spaces[_currentSpaceIndex].TileController.OnUpdate(_currentSpaceIndex == 0 ? Planet : Surface, 
+                Camera.transform.localPosition, Pivot.rotation.eulerAngles);
         }
 
         void OnGUI()
@@ -135,25 +147,24 @@ namespace Assets.Scenes.Default.Scripts
         /// <summary> Performs transition from one space to another. </summary>
         private void OnTransition(Space from, Space to)
         {
-            if (from != null)
-                from.Leave();
-
-            Camera.fieldOfView = to.TileController.FieldOfView;
-
-            to.Enter();
-
+            // calculate "to"-space parameters
             var coordinate = from == null
-                ? new GeoCoordinate(Latitude, Longitude)
+                ? new GeoCoordinate(StartLatitude, StartLongitude)
                 : from.TileController.Coordinate;
 
-            var lodRange = to.TileController.LodRange;
+            var zoom = from != null && from.TileController.LodRange.Maximum > to.TileController.LodRange.Maximum
+                ? to.TileController.LodRange.Maximum
+                : to.TileController.LodRange.Minimum;
 
-            var zoom = from != null && from.TileController.LodRange.Maximum > lodRange.Maximum
-                ? lodRange.Maximum
-                : lodRange.Minimum;
+            // prepare scen for "to"-state by making transition
+            if (from != null)
+                from.Leave();
+            to.Enter();
            
+            // make an instant animation to given position
             _animators[_currentSpaceIndex].AnimateTo(coordinate, zoom, TimeSpan.Zero);
         }
+
         #endregion
     }
 }

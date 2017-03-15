@@ -9,14 +9,18 @@ namespace Assets.Scenes.Default.Scripts.Spaces
     {
         private readonly GameObject _surface;
 
-        public SurfaceSpace(TileController tileController, GestureStrategy gestureStrategy, Transform surface) 
-            : base(tileController, gestureStrategy)
+        public SurfaceSpace(TileController tileController, GestureStrategy gestureStrategy, 
+            Transform pivot, Camera camera, Transform surface) :
+            base(tileController, gestureStrategy, pivot, camera)
         {
             _surface = surface.gameObject;
         }
 
         public override void Enter()
         {
+            Camera.fieldOfView = TileController.FieldOfView;
+            Camera.transform.localRotation = Quaternion.Euler(90, 0, 0);
+
             _surface.SetActive(true);
         }
 
