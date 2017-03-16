@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Assets.Scripts.Scene.Builders;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity;
 using Mesh = UtyMap.Unity.Mesh;
 
-namespace Assets.Scripts.Scene
+namespace Assets.Scripts.Scene.Builders
 {
     /// <summary> Responsible for building Unity game objects from meshes and elements. </summary>
     internal class UnityModelBuilder

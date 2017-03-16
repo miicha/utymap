@@ -3,6 +3,7 @@ using Assets.Scripts.Debug;
 using Assets.Scripts.Environment;
 using Assets.Scripts.Environment.Reactive;
 using Assets.Scripts.Scene;
+using Assets.Scripts.Scene.Builders;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
