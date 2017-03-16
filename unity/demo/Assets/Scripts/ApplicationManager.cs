@@ -2,8 +2,8 @@
 using Assets.Scripts.Debug;
 using Assets.Scripts.Environment;
 using Assets.Scripts.Environment.Reactive;
+using Assets.Scripts.Plugins;
 using Assets.Scripts.Scene;
-using Assets.Scripts.Scene.Builders;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
@@ -22,9 +22,6 @@ namespace Assets.Scripts
     internal class ApplicationManager
     {
         private const string FatalCategoryName = "Fatal";
-
-        /// <summary> Default coordinate which will be used in scenes. </summary>
-        public readonly GeoCoordinate DefaultCoordinate = new GeoCoordinate(52.53171, 13.38721);
 
         private IContainer _container;
         private DebugConsoleTrace _trace;
@@ -92,7 +89,7 @@ namespace Assets.Scripts
                     .RegisterAction((c, _) => c.RegisterInstance<ITrace>(_trace))
                     .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<UnityPathResolver>()))
                     .RegisterAction((c, _) => c.Register(Component.For<INetworkService>().Use<UnityNetworkService>()))
-                    // register scene specific services
+                    // register scene specific services (plugins)
                     .RegisterAction((c, _) => c.Register(Component.For<UnityModelBuilder>().Use<UnityModelBuilder>()))
                     .RegisterAction((c, _) => c.Register(Component.For<MaterialProvider>().Use<MaterialProvider>()))
                     // register default mapcss
