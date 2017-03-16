@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UtyMap.Unity;
 
-namespace Assets.Scripts.Scene.Builders
+namespace Assets.Scripts.Plugins
 {
     class ImportElementBuilder : IElementBuilder
     {

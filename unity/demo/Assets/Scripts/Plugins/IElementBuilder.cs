@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UtyMap.Unity;
 
-namespace Assets.Scripts.Scene.Builders
+namespace Assets.Scripts.Plugins
 {
     /// <summary> Provides the way to build custom representation of map data. </summary>
     public interface IElementBuilder

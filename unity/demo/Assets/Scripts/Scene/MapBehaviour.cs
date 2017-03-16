@@ -8,7 +8,6 @@ using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
-using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Primitives;
 using Animator = UtyMap.Unity.Animations.Animator;
 using Space = Assets.Scripts.Scene.Spaces.Space;
@@ -34,9 +33,11 @@ namespace Assets.Scripts.Scene
         public ScreenTransformGesture ManipulationGesture;
 
         public bool ShowState = true;
+        public bool ShowConsole = false;
 
         #endregion
 
+        private CompositionRoot _compositionRoot;
         private int _currentSpaceIndex;
         private List<Space> _spaces;
         private List<Animator> _animators;
@@ -52,11 +53,10 @@ namespace Assets.Scripts.Scene
 
         void Start()
         {
-            var appManager = ApplicationManager.Instance;
-            appManager.InitializeFramework(ConfigBuilder.GetDefault());
+            _compositionRoot = MapInitTask.Run(ShowConsole);
 
-            var mapDataStore = appManager.GetService<IMapDataStore>();
-            var stylesheet = appManager.GetService<Stylesheet>();
+            var mapDataStore = _compositionRoot.GetService<IMapDataStore>();
+            var stylesheet = _compositionRoot.GetService<Stylesheet>();
             var geoOrigin = new GeoCoordinate(StartLatitude, StartLongitude);
             _currentSpaceIndex = (int)StartSpace;
 
@@ -132,7 +132,7 @@ namespace Assets.Scripts.Scene
         }
 
         #endregion
-
+     
         #region Touch handles
 
         private void ManipulationTransformedHandler(object sender, EventArgs e)

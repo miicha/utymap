@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UtyMap.Unity;
 
-namespace Assets.Scripts.Scene.Builders
+namespace Assets.Scripts.Plugins
 {
     /// <summary> Builds Place of Interest represented by cube primitive. </summary>
     internal sealed class PlaceElementBuilder : IElementBuilder

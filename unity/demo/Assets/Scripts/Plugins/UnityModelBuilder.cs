@@ -4,7 +4,7 @@ using UtyDepend;
 using UtyMap.Unity;
 using Mesh = UtyMap.Unity.Mesh;
 
-namespace Assets.Scripts.Scene.Builders
+namespace Assets.Scripts.Plugins
 {
     /// <summary> Responsible for building Unity game objects from meshes and elements. </summary>
     internal class UnityModelBuilder
