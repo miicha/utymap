@@ -69,34 +69,25 @@ namespace Assets.Scripts.Scene
 
             _lodRanges = new List<Range<int>>()
             {
-                // Orbit
                 new Range<int>(1, 8),
-                // Surface
                 new Range<int>(9, 15),
-                // Detail
                 new Range<int>(16, 16)
             };
 
             _spaces = new List<Space>()
             {
-                // Orbit
                 new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, _lodRanges[0], planetRadius),
                                 new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Pivot, Planet),
-                // Surface
                 new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, _lodRanges[1], startCoordinate, aspect, surfaceScale, maxDistance),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Pivot, Surface),
-                // Detail
                 new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, _lodRanges[2], startCoordinate, aspect, detailScale, maxDistance),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Pivot, Surface)
             };
 
             _animators = new List<Animator>()
             {
-                // Orbit
                 new SphereAnimator(Pivot, _spaces[0].TileController),
-                // Surface
                 new SurfaceAnimator(Pivot, _spaces[1].TileController),
-                // Detail
                 new SurfaceAnimator(Pivot, _spaces[2].TileController)
             };
 
