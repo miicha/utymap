@@ -20,7 +20,7 @@ namespace Assets.Scripts.Scene.Animations
             return CreatePathAnimation(duration, new List<Vector3>()
             {
                 Camera.transform.localPosition,
-                new Vector3(0, 0, TileController.GetHeight(zoom))
+                new Vector3(0, TileController.GetHeight(zoom), 0)
             });
         }
     }
