@@ -32,7 +32,7 @@ namespace Assets.Scripts.Scene
         public ScreenTransformGesture TwoFingerMoveGesture;
         public ScreenTransformGesture ManipulationGesture;
 
-        public bool ShowState = true;
+        public bool ShowPosition = true;
         public bool ShowConsole = false;
 
         #endregion
@@ -119,7 +119,7 @@ namespace Assets.Scripts.Scene
 
         void OnGUI()
         {
-            if (ShowState)
+            if (ShowPosition)
             {
                 var tileController = _spaces[_currentSpaceIndex].TileController;
                 var labelText = String.Format("Position: {0}\nZoom: {1}",
