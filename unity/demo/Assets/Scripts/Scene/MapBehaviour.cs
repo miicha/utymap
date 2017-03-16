@@ -132,6 +132,14 @@ namespace Assets.Scripts.Scene
             }
         }
 
+        void OnDestroy()
+        {
+            foreach (var space in _spaces)
+                space.Dispose();
+
+            _compositionRoot.Dispose();
+        }
+
         #endregion
      
         #region Touch handles

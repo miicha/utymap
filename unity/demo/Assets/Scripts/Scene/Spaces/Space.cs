@@ -1,10 +1,11 @@
-﻿using Assets.Scripts.Scene.Gestures;
+﻿using System;
+using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
 
 namespace Assets.Scripts.Scene.Spaces
 {
-    internal abstract class Space
+    internal abstract class Space : IDisposable
     {
         public readonly TileController TileController;
         public readonly GestureStrategy GestureStrategy;
@@ -26,5 +27,11 @@ namespace Assets.Scripts.Scene.Spaces
         public abstract void Enter();
 
         public abstract void Leave();
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            TileController.Dispose();
+        }
     }
 }
