@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scenes.Orbit.Scripts;
-using Assets.Scenes.Surface.Scripts;
+using Assets.Scenes.Default.Scripts;
 using Assets.Scripts.UI;
 using UnityEngine;
 using UtyMap.Unity;
@@ -13,6 +12,13 @@ namespace Assets.Scripts.Scene.Builders
     /// <summary> Builds a label. </summary>
     internal sealed class LabelElementBuilder : IElementBuilder
     {
+        private readonly MapBehaviour _mapBehaviour;
+
+        public LabelElementBuilder()
+        {
+            _mapBehaviour = GameObject.FindObjectOfType<MapBehaviour>();
+        }
+
         /// <inheritdoc />
         public GameObject Build(Tile tile, Element element)
         {
@@ -32,7 +38,7 @@ namespace Assets.Scripts.Scene.Builders
 
             sphereText.Coordinate = element.Geometry[0];
             // NOTE should be in sync with sphere size and offsetted polygons
-            sphereText.Radius = OrbitCameraController.TileController.Radius + 25;
+            sphereText.Radius = 6371f + 25f;
 
             var font = new FontWrapper(element.Styles);
             sphereText.font = font.Font;
@@ -49,8 +55,8 @@ namespace Assets.Scripts.Scene.Builders
         {
             var text = gameObject.AddComponent<TextMesh>();
 
-            // TODO determine correct height and tile controller.
-            gameObject.transform.position = SurfaceCameraController.TileController.Projection.Project(element.Geometry[0], 100);
+            // TODO determine correct height
+            gameObject.transform.position = _mapBehaviour.TileController.Projection.Project(element.Geometry[0], 100);
             gameObject.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             var font = new FontWrapper(element.Styles);

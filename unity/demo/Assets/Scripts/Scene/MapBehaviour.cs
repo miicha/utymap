@@ -45,6 +45,13 @@ namespace Assets.Scenes.Default.Scripts
 
         #region Unity lifecycle methods
 
+        #region Public properties
+
+        /// <summary> Gets current tile controller. </summary>
+        public TileController TileController { get { return _spaces[_currentSpaceIndex].TileController; } }
+
+        #endregion
+
         void Start()
         {
             var appManager = ApplicationManager.Instance;
