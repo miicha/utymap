@@ -1,7 +1,7 @@
 ﻿using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 
-namespace Assets.Scenes.Default.Scripts.Gestures
+namespace Assets.Scripts.Scene.Gestures
 {
     /// <summary> Encapsulates gesture processing. </summary>
     internal abstract class GestureStrategy

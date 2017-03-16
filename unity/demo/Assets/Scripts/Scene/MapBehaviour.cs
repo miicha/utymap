@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scenes.Default.Scripts.Animations;
-using Assets.Scenes.Default.Scripts.Gestures;
-using Assets.Scenes.Default.Scripts.Spaces;
-using Assets.Scenes.Default.Scripts.Tiling;
-using Assets.Scripts;
+using Assets.Scripts.Scene.Animations;
+using Assets.Scripts.Scene.Gestures;
+using Assets.Scripts.Scene.Spaces;
+using Assets.Scripts.Scene.Tiling;
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Primitives;
-
 using Animator = UtyMap.Unity.Animations.Animator;
-using Space = Assets.Scenes.Default.Scripts.Spaces.Space;
+using Space = Assets.Scripts.Scene.Spaces.Space;
 
-namespace Assets.Scenes.Default.Scripts
+namespace Assets.Scripts.Scene
 {
     internal class MapBehaviour: MonoBehaviour
     {

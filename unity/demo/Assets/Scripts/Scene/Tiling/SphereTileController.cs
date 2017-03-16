@@ -8,7 +8,7 @@ using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 using Object = UnityEngine.Object;
 
-namespace Assets.Scenes.Default.Scripts.Tiling
+namespace Assets.Scripts.Scene.Tiling
 {
     internal sealed class SphereTileController : TileController
     {

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scenes.Default.Scripts.Tiling;
+using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Animations.Time;
-
 using Animation = UtyMap.Unity.Animations.Animation;
 
-namespace Assets.Scenes.Default.Scripts.Animations
+namespace Assets.Scripts.Scene.Animations
 {
     internal sealed class SurfaceAnimator : SpaceAnimator
     {

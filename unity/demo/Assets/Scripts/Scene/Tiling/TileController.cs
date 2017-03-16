@@ -5,7 +5,7 @@ using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 
-namespace Assets.Scenes.Default.Scripts.Tiling
+namespace Assets.Scripts.Scene.Tiling
 {
     internal abstract class TileController : IDisposable
     {

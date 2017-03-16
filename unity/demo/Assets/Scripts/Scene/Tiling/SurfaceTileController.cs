@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UtyMap.Unity;
@@ -7,7 +6,7 @@ using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 
-namespace Assets.Scenes.Default.Scripts.Tiling
+namespace Assets.Scripts.Scene.Tiling
 {
     /// <summary>  </summary>
     internal sealed class SurfaceTileController : TileController

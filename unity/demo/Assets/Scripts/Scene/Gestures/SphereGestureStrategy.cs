@@ -2,7 +2,7 @@
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 
-namespace Assets.Scenes.Default.Scripts.Gestures
+namespace Assets.Scripts.Scene.Gestures
 {
     internal class SphereGestureStrategy : GestureStrategy
     {

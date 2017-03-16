@@ -1,9 +1,8 @@
-﻿using System;
-using Assets.Scenes.Default.Scripts.Gestures;
-using Assets.Scenes.Default.Scripts.Tiling;
+﻿using Assets.Scripts.Scene.Gestures;
+using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
 
-namespace Assets.Scenes.Default.Scripts.Spaces
+namespace Assets.Scripts.Scene.Spaces
 {
     internal class SurfaceSpace : Space
     {
