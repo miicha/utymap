@@ -19,11 +19,10 @@ namespace Assets.Scripts.Scene
     {
         #region User controlled settings
 
-        public enum SpaceType { Orbit, Surface, Detail }
-
         public double StartLatitude = 52.53171;
         public double StartLongitude = 13.38721;
-        public SpaceType StartSpace = SpaceType.Orbit;
+        [Range(1, 16)]
+        public float StartZoom = 1;
 
         public Transform Planet;
         public Transform Surface;
@@ -40,6 +39,7 @@ namespace Assets.Scripts.Scene
 
         private CompositionRoot _compositionRoot;
         private int _currentSpaceIndex;
+        private List<Range<int>> _lodRanges;
         private List<Space> _spaces;
         private List<Animator> _animators;
 
@@ -58,8 +58,7 @@ namespace Assets.Scripts.Scene
 
             var mapDataStore = _compositionRoot.GetService<IMapDataStore>();
             var stylesheet = _compositionRoot.GetService<Stylesheet>();
-            var geoOrigin = new GeoCoordinate(StartLatitude, StartLongitude);
-            _currentSpaceIndex = (int)StartSpace;
+            var startCoordinate = new GeoCoordinate(StartLatitude, StartLongitude);
 
             // scaled radius of Earth in meters, approx. 1:1000
             const float planetRadius = 6371f;
@@ -68,16 +67,26 @@ namespace Assets.Scripts.Scene
             const float maxDistance = 3000;
             float aspect = Camera.aspect;
 
+            _lodRanges = new List<Range<int>>()
+            {
+                // Orbit
+                new Range<int>(1, 8),
+                // Surface
+                new Range<int>(9, 15),
+                // Detail
+                new Range<int>(16, 16)
+            };
+
             _spaces = new List<Space>()
             {
                 // Orbit
-                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, new Range<int>(1, 8), planetRadius),
+                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, _lodRanges[0], planetRadius),
                                 new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Pivot, Planet),
                 // Surface
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(9, 15), geoOrigin, aspect, surfaceScale, maxDistance),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, _lodRanges[1], startCoordinate, aspect, surfaceScale, maxDistance),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Pivot, Surface),
                 // Detail
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, new Range<int>(16, 16), geoOrigin, aspect, detailScale, maxDistance),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, _lodRanges[2], startCoordinate, aspect, detailScale, maxDistance),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Pivot, Surface)
             };
 
@@ -91,7 +100,7 @@ namespace Assets.Scripts.Scene
                 new SurfaceAnimator(Pivot, _spaces[2].TileController)
             };
 
-            OnTransition(null, _spaces[_currentSpaceIndex]);
+            OnTransition(startCoordinate, StartZoom);
         }
 
         void OnEnable()
@@ -150,23 +159,40 @@ namespace Assets.Scripts.Scene
 
         #region Space change logic
 
+        /// <summary> Performs transition to unknown space based on zoom level and lod ranges. </summary>
+        private void OnTransition(GeoCoordinate coordinate, float zoom)
+        {
+            for (int i = 0; i < _lodRanges.Count; ++i)
+            {
+                if (_lodRanges[i].Contains((int) zoom))
+                {
+                    _currentSpaceIndex = i;
+                    break;
+                }
+            }
+
+            OnTransition(_spaces[_currentSpaceIndex], coordinate, zoom);
+        }
+
         /// <summary> Performs transition from one space to another. </summary>
         private void OnTransition(Space from, Space to)
         {
             // calculate "to"-space parameters
-            var coordinate = from == null
-                ? new GeoCoordinate(StartLatitude, StartLongitude)
-                : from.TileController.Coordinate;
-
-            var zoom = from != null && from.TileController.LodRange.Maximum > to.TileController.LodRange.Maximum
+            var coordinate = from.TileController.Coordinate;
+            var zoom = from.TileController.LodRange.Maximum > to.TileController.LodRange.Maximum
                 ? to.TileController.LodRange.Maximum
                 : to.TileController.LodRange.Minimum;
 
+            from.Leave();
+
+            OnTransition(to, coordinate, zoom);
+        }
+
+        /// <summary> Performs transition to the new space. </summary>
+        private void OnTransition(Space to, GeoCoordinate coordinate, float zoom)
+        {
             // prepare scen for "to"-state by making transition
-            if (from != null)
-                from.Leave();
             to.Enter();
-           
             // make an instant animation to given position
             _animators[_currentSpaceIndex].AnimateTo(coordinate, zoom, TimeSpan.Zero);
         }
