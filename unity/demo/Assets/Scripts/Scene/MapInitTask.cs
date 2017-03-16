@@ -14,6 +14,7 @@ using UtyRx;
 
 namespace Assets.Scripts.Scene
 {
+    /// <summary> Provides the way to initialize the map. </summary>
     internal static class MapInitTask
     {
         #region Initialization
@@ -39,8 +40,7 @@ namespace Assets.Scripts.Scene
             UnityScheduler.SetDefaultForUnity();
 
             // subscribe to unhandled exceptions in RX
-            MainThreadDispatcher.RegisterUnhandledExceptionCallback(ex =>
-                trace.Error(fatalCategoryName, ex, "Unhandled exception"));
+            MainThreadDispatcher.RegisterUnhandledExceptionCallback(ex => trace.Error(fatalCategoryName, ex, "Unhandled exception"));
 
             try
             {
@@ -57,6 +57,7 @@ namespace Assets.Scripts.Scene
             }
         }
 
+        /// <summary> Builds instance responsible for composing object graph. </summary>
         private static CompositionRoot BuildCompositionRoot(IContainer container, ITrace trace)
         {
             // create configuration from default overriding some properties
@@ -108,6 +109,7 @@ namespace Assets.Scripts.Scene
             }
         }
 
+        /// <summary> Starts listening for mapdata from core library to convert it into unity game objects. </summary>
         private static void SubscribeOnMapData(CompositionRoot compositionRoot, ITrace trace)
         {
             const string traceCategory = "mapdata";

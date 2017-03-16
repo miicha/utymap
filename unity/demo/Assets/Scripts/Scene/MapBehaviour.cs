@@ -14,6 +14,7 @@ using Space = Assets.Scripts.Scene.Spaces.Space;
 
 namespace Assets.Scripts.Scene
 {
+    /// <summary> Provides an entry point for building the map and reacting on user interaction with it. </summary>
     internal class MapBehaviour: MonoBehaviour
     {
         #region User controlled settings
