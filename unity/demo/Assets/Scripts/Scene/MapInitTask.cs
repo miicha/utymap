@@ -17,8 +17,6 @@ namespace Assets.Scripts.Scene
     /// <summary> Provides the way to initialize the map. </summary>
     internal static class MapInitTask
     {
-        #region Initialization
-
         /// <summary> Run library initialization logic. </summary>
         public static CompositionRoot Run(bool isDebug = false)
         {
@@ -124,7 +122,5 @@ namespace Assets.Scripts.Scene
                           ex => trace.Error(traceCategory, ex, "cannot process mapdata."),
                           () => trace.Warn(traceCategory, "stop listening mapdata."));
         }
-
-        #endregion
     }
 }
