@@ -16,6 +16,9 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Contains LOD values mapped for height ranges. </summary>
         protected RangeTree<float, int> LodTree;
 
+        /// <summary> Pivot. </summary>
+        public readonly Transform Pivot;
+
         /// <summary> Level of detail range handled by the controller. </summary>
         public readonly Range<int> LodRange;
 
@@ -41,18 +44,19 @@ namespace Assets.Scripts.Scene.Tiling
         public abstract void MoveOrigin(Vector3 position);
 
         /// <summary> Updates position and rotation. </summary>
-        public abstract void OnUpdate(Transform planet, Vector3 position, Vector3 rotation);
+        public abstract void OnUpdate(Transform planet);
 
         /// <inheritdoc />
         public abstract void Dispose();
 
         protected TileController(IMapDataStore dataStore, Stylesheet stylesheet, 
-            ElevationDataType elevationType, Range<int> lodRange)
+            ElevationDataType elevationType, Transform pivot, Range<int> lodRange)
         {
             _dataStore = dataStore;
             _stylesheet = stylesheet;
             _elevationType = elevationType;
-            
+
+            Pivot = pivot;
             LodRange = lodRange;
         }
 

@@ -65,7 +65,6 @@ namespace Assets.Scripts.Scene
             const float surfaceScale = 0.01f;
             const float detailScale = 1f;
             const float maxDistance = 3000;
-            float aspect = Camera.aspect;
 
             _lodRanges = new List<Range<int>>()
             {
@@ -76,12 +75,12 @@ namespace Assets.Scripts.Scene
 
             _spaces = new List<Space>()
             {
-                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, _lodRanges[0], planetRadius),
-                                new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Pivot, Planet),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, _lodRanges[1], startCoordinate, aspect, surfaceScale, maxDistance),
-                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Pivot, Surface),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, _lodRanges[2], startCoordinate, aspect, detailScale, maxDistance),
-                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Pivot, Surface)
+                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lodRanges[0], planetRadius),
+                                new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Planet),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, Pivot, _lodRanges[1], startCoordinate, surfaceScale, maxDistance),
+                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, Pivot, _lodRanges[2], startCoordinate, detailScale, maxDistance),
+                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
             };
 
             _animators = new List<Animator>()
@@ -114,8 +113,7 @@ namespace Assets.Scripts.Scene
                 return;
             }
 
-            _spaces[_currentSpaceIndex].TileController.OnUpdate(_currentSpaceIndex == 0 ? Planet : Surface, 
-                Camera.transform.localPosition, Pivot.rotation.eulerAngles);
+            _spaces[_currentSpaceIndex].TileController.OnUpdate(_currentSpaceIndex == 0 ? Planet : Surface);
         }
 
         void OnGUI()

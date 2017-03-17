@@ -22,17 +22,16 @@ namespace Assets.Scripts.Scene.Animations
         {
             return new CompositeAnimation(new List<Animation>
             {
-                CreatePathAnimation(duration, new List<Vector3>()
+                CreatePathAnimation(Camera, duration, new List<Vector3>()
                 {
-                    Camera.transform.localPosition,
+                    Camera.localPosition,
                     new Vector3(0, 0, -TileController.GetHeight(zoom))
                 }),
-                CreateRotationAnimation(duration,
-                    new List<Quaternion>()
-                    {
-                        Pivot.rotation,
-                        Quaternion.Euler(new Vector3((float) coordinate.Latitude, 270 - (float) coordinate.Longitude, 0))
-                    })
+                CreateRotationAnimation(Pivot, duration, new List<Quaternion>()
+                {
+                    Pivot.rotation,
+                    Quaternion.Euler(new Vector3((float) coordinate.Latitude, 270 - (float) coordinate.Longitude, 0))
+                })
             });
         }
     }

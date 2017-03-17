@@ -21,7 +21,7 @@ namespace Assets.Scripts.Scene.Gestures
 
         public override void OnTwoFingerTransform(Transform pivot, Transform camera)
         {
-            camera.transform.localPosition += Vector3.up * (TwoFingerMoveGesture.DeltaScale - 1f) * _zoomSpeed;
+            pivot.localPosition += Vector3.up * (TwoFingerMoveGesture.DeltaScale - 1f) * _zoomSpeed;
         }
     }
 }

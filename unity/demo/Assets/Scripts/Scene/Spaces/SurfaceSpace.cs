@@ -8,8 +8,8 @@ namespace Assets.Scripts.Scene.Spaces
     {
         private readonly GameObject _surface;
 
-        public SurfaceSpace(TileController tileController, GestureStrategy gestureStrategy, Transform pivot, Transform surface) :
-            base(tileController, gestureStrategy, pivot)
+        public SurfaceSpace(TileController tileController, GestureStrategy gestureStrategy, Transform surface) :
+            base(tileController, gestureStrategy)
         {
             _surface = surface.gameObject;
         }

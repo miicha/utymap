@@ -10,18 +10,16 @@ namespace Assets.Scripts.Scene.Spaces
         public readonly TileController TileController;
         public readonly GestureStrategy GestureStrategy;
 
-        protected readonly Transform Pivot;
         protected readonly Camera Camera;
         protected readonly Transform Light;
 
-        public Space(TileController tileController, GestureStrategy gestureStrategy, Transform pivot)
+        public Space(TileController tileController, GestureStrategy gestureStrategy)
         {
             TileController = tileController;
             GestureStrategy = gestureStrategy;
-            
-            Pivot = pivot;
-            Camera = pivot.Find("Camera").GetComponent<Camera>();
-            Light = pivot.Find("Directional Light");
+
+            Camera = tileController.Pivot.Find("Camera").GetComponent<Camera>();
+            Light = tileController.Pivot.Find("Directional Light");
         }
 
         public abstract void Enter();

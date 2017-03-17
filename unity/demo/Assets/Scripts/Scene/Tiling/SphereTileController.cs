@@ -17,6 +17,7 @@ namespace Assets.Scripts.Scene.Tiling
 
         private readonly Vector3 _origin = Vector3.zero;
 
+        private readonly Transform _camera;
         private readonly float _radius;
         private readonly float _minHeight;
         private readonly float _maxHeight;
@@ -27,8 +28,8 @@ namespace Assets.Scripts.Scene.Tiling
         private float _zoom;
 
         public SphereTileController(IMapDataStore dataStore, Stylesheet stylesheet,
-            ElevationDataType elevationType, Range<int> lodRange, float radius) :
-            base(dataStore, stylesheet, elevationType, lodRange)
+            ElevationDataType elevationType, Transform pivot, Range<int> lodRange, float radius) :
+            base(dataStore, stylesheet, elevationType, pivot, lodRange)
         {
             _radius = radius;
 
@@ -36,6 +37,7 @@ namespace Assets.Scripts.Scene.Tiling
             FieldOfView = 60;
             Projection = new SphericalProjection(radius);
 
+            _camera = pivot.Find("Camera").transform;
             _maxHeight = LodTree.Max;
             _minHeight = LodTree.Min;
         }
@@ -74,8 +76,11 @@ namespace Assets.Scripts.Scene.Tiling
         public override void MoveOrigin(Vector3 position) { throw new NotImplementedException(); }
 
         /// <inheritdoc />
-        public override void OnUpdate(Transform planet, Vector3 position, Vector3 rotation)
+        public override void OnUpdate(Transform planet)
         {
+            var position = _camera.localPosition;
+            var rotation = Pivot.rotation.eulerAngles;
+
             if (Vector3.Distance(_rotation, rotation) < RotationSensivity &&
                 Vector3.Distance(position, _position) < HeightSensivity)
                 return;

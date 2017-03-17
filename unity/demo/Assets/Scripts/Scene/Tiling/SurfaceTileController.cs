@@ -11,6 +11,8 @@ namespace Assets.Scripts.Scene.Tiling
     /// <summary>  </summary>
     internal sealed class SurfaceTileController : TileController
     {
+        private const float PositionSensivity = 50f;
+
         private readonly float _minHeight;
         private readonly float _maxHeight;
         private readonly float _scale;
@@ -22,15 +24,14 @@ namespace Assets.Scripts.Scene.Tiling
         private GeoCoordinate _geoOrigin;
         private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
 
-        public SurfaceTileController(IMapDataStore dataStore, Stylesheet stylesheet,
-            ElevationDataType elevationType, Range<int> lodRange, GeoCoordinate origin,
-            float cameraAspect, float scale, float maxDistance) :
-            base(dataStore, stylesheet, elevationType, lodRange)
+        public SurfaceTileController(IMapDataStore dataStore, Stylesheet stylesheet, ElevationDataType elevationType, 
+            Transform pivot, Range<int> lodRange, GeoCoordinate origin, float scale, float maxDistance) :
+            base(dataStore, stylesheet, elevationType, pivot, lodRange)
         {
             _scale = scale;
             _geoOrigin = origin;
 
-            LodTree = GetLodTree(cameraAspect, maxDistance);
+            LodTree = GetLodTree(pivot.Find("Camera").GetComponent<Camera>().aspect, maxDistance);
             Projection = CreateProjection();
 
             _maxHeight = LodTree.Max;
@@ -63,8 +64,13 @@ namespace Assets.Scripts.Scene.Tiling
         }
 
         /// <inheritdoc />
-        public override void OnUpdate(Transform planet, Vector3 position, Vector3 rotation)
+        public override void OnUpdate(Transform planet)
         {
+            var position = Pivot.localPosition;
+
+            if (Vector3.Distance(position, _position) < PositionSensivity)
+                return;
+            
             var oldLod = (int)_zoom;
 
             _position = position;

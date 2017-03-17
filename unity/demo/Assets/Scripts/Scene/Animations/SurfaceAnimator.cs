@@ -17,9 +17,9 @@ namespace Assets.Scripts.Scene.Animations
 
         protected override Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
         {
-            return CreatePathAnimation(duration, new List<Vector3>()
+            return CreatePathAnimation(Pivot, duration, new List<Vector3>()
             {
-                Camera.transform.localPosition,
+                Pivot.localPosition,
                 new Vector3(0, TileController.GetHeight(zoom), 0)
             });
         }

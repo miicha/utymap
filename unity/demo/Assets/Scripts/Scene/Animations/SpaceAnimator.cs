@@ -13,7 +13,7 @@ namespace Assets.Scripts.Scene.Animations
     internal abstract class SpaceAnimator : Animator
     {
         protected readonly Transform Pivot;
-        protected readonly Camera Camera;
+        protected readonly Transform Camera;
         protected readonly TileController TileController;
 
         private readonly ITimeInterpolator _timeInterpolator;
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Scene.Animations
         protected SpaceAnimator(Transform pivot, TileController tileController, ITimeInterpolator timeInterpolator)
         {
             Pivot = pivot;
-            Camera = pivot.Find("Camera").GetComponent<Camera>();
+            Camera = pivot.Find("Camera").transform;
             TileController = tileController;
             _timeInterpolator = timeInterpolator;
         }
@@ -37,20 +37,16 @@ namespace Assets.Scripts.Scene.Animations
             animation.Start();
         }
 
-        protected PathAnimation CreatePathAnimation(TimeSpan duration, IEnumerable<Vector3> points)
+        protected PathAnimation CreatePathAnimation(Transform target, TimeSpan duration, IEnumerable<Vector3> points)
         {
-            return new PathAnimation(
-                Camera.transform,
-                _timeInterpolator,
+            return new PathAnimation(target, _timeInterpolator,
                 new UtyMap.Unity.Animations.Path.LinearInterpolator(points),
                 duration);
         }
 
-        protected RotationAnimation CreateRotationAnimation(TimeSpan duration, IEnumerable<Quaternion> rotations)
+        protected RotationAnimation CreateRotationAnimation(Transform target, TimeSpan duration, IEnumerable<Quaternion> rotations)
         {
-            return new RotationAnimation(
-                Pivot.transform,
-                _timeInterpolator,
+            return new RotationAnimation(target, _timeInterpolator,
                 new UtyMap.Unity.Animations.Rotation.LinearInterpolator(rotations),
                 duration);
         }

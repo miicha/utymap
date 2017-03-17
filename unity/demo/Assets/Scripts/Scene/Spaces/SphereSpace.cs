@@ -8,8 +8,8 @@ namespace Assets.Scripts.Scene.Spaces
     {
         private readonly GameObject _planet;
 
-        public SphereSpace(TileController tileController, GestureStrategy gestureStrategy, Transform pivot, Transform planet) :
-            base(tileController, gestureStrategy, pivot)
+        public SphereSpace(TileController tileController, GestureStrategy gestureStrategy, Transform planet) :
+            base(tileController, gestureStrategy)
         {
             _planet = planet.gameObject;
         }
