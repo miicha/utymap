@@ -200,7 +200,7 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Gets field of view for given quadkey and distance. </summary>
         private float GetFieldOfView(QuadKey quadKey, float distance, float aspectRatio)
         {
-            return 2.0f * Mathf.Rad2Deg * Mathf.Atan(GetFrustumHeight(quadKey, aspectRatio) * 0.5f / distance);
+            return 2.0f * Mathf.Rad2Deg * Mathf.Atan(GetFrustumHeight(quadKey, aspectRatio) / distance);
         }
 
         /// <summary> Get side size of grid consists of 9 quadkeys. </summary>
