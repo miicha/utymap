@@ -13,11 +13,11 @@ namespace Assets.Scripts.Scene.Spaces
         /// <inheritdoc />
         public override Animator Animator { get; protected set; }
 
-        public SphereSpace(TileController tileController, GestureStrategy gestureStrategy, Transform planet) :
+        public SphereSpace(SphereTileController tileController, SphereGestureStrategy gestureStrategy, Transform planet) :
             base(tileController, gestureStrategy)
         {
             _planet = planet.gameObject;
-            Animator = new SurfaceAnimator(tileController);
+            Animator = new SphereAnimator(tileController);
         }
 
         /// <inheritdoc />

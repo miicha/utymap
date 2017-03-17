@@ -13,7 +13,7 @@ namespace Assets.Scripts.Scene.Spaces
         /// <inheritdoc />
         public override Animator Animator { get; protected set; }
 
-        public SurfaceSpace(TileController tileController, GestureStrategy gestureStrategy, Transform surface) :
+        public SurfaceSpace(SurfaceTileController tileController, SurfaceGestureStrategy gestureStrategy, Transform surface) :
             base(tileController, gestureStrategy)
         {
             _surface = surface.gameObject;

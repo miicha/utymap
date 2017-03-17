@@ -37,7 +37,7 @@ namespace Assets.Scripts.Scene
 
         private CompositionRoot _compositionRoot;
         private int _currentSpaceIndex;
-        private List<Range<int>> _lodRanges;
+        private List<Range<int>> _lods;
         private List<Space> _spaces;
 
         #region Unity lifecycle methods
@@ -55,7 +55,7 @@ namespace Assets.Scripts.Scene
 
             var mapDataStore = _compositionRoot.GetService<IMapDataStore>();
             var stylesheet = _compositionRoot.GetService<Stylesheet>();
-            var startCoordinate = new GeoCoordinate(StartLatitude, StartLongitude);
+            var startCoord = new GeoCoordinate(StartLatitude, StartLongitude);
 
             // scaled radius of Earth in meters, approx. 1:1000
             const float planetRadius = 6371f;
@@ -63,7 +63,7 @@ namespace Assets.Scripts.Scene
             const float detailScale = 1f;
             const float maxDistance = 3000;
 
-            _lodRanges = new List<Range<int>>()
+            _lods = new List<Range<int>>()
             {
                 new Range<int>(1, 8),
                 new Range<int>(9, 15),
@@ -72,15 +72,15 @@ namespace Assets.Scripts.Scene
 
             _spaces = new List<Space>()
             {
-                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lodRanges[0], planetRadius),
+                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[0], planetRadius),
                                 new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Planet),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, Pivot, _lodRanges[1], startCoordinate, surfaceScale, maxDistance),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, Pivot, _lods[1], startCoord, surfaceScale, maxDistance),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, Pivot, _lodRanges[2], startCoordinate, detailScale, maxDistance),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, Pivot, _lods[2], startCoord, detailScale, maxDistance),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
             };
 
-            OnTransition(startCoordinate, StartZoom);
+            OnTransition(startCoord, StartZoom);
         }
 
         void OnEnable()
@@ -100,10 +100,7 @@ namespace Assets.Scripts.Scene
             var space = _spaces[_currentSpaceIndex];
 
             if (space.Animator.IsRunningAnimation)
-            {
                 space.Animator.Update(Time.deltaTime);
-                return;
-            }
 
             space.TileController.OnUpdate(_currentSpaceIndex == 0 ? Planet : Surface);
         }
@@ -151,9 +148,9 @@ namespace Assets.Scripts.Scene
         /// <summary> Performs transition to unknown space based on zoom level and lod ranges. </summary>
         private void OnTransition(GeoCoordinate coordinate, float zoom)
         {
-            for (int i = 0; i < _lodRanges.Count; ++i)
+            for (int i = 0; i < _lods.Count; ++i)
             {
-                if (_lodRanges[i].Contains((int) zoom))
+                if (_lods[i].Contains((int) zoom))
                 {
                     _currentSpaceIndex = i;
                     break;
