@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.Scene.Animations;
 using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Spaces;
 using Assets.Scripts.Scene.Tiling;
@@ -9,7 +8,6 @@ using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
-using Animator = UtyMap.Unity.Animations.Animator;
 using Space = Assets.Scripts.Scene.Spaces.Space;
 
 namespace Assets.Scripts.Scene
@@ -41,7 +39,6 @@ namespace Assets.Scripts.Scene
         private int _currentSpaceIndex;
         private List<Range<int>> _lodRanges;
         private List<Space> _spaces;
-        private List<Animator> _animators;
 
         #region Unity lifecycle methods
 
@@ -83,13 +80,6 @@ namespace Assets.Scripts.Scene
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
             };
 
-            _animators = new List<Animator>()
-            {
-                new SphereAnimator(Pivot, _spaces[0].TileController),
-                new SurfaceAnimator(Pivot, _spaces[1].TileController),
-                new SurfaceAnimator(Pivot, _spaces[2].TileController)
-            };
-
             OnTransition(startCoordinate, StartZoom);
         }
 
@@ -107,13 +97,15 @@ namespace Assets.Scripts.Scene
 
         void Update()
         {
-            if (_animators[_currentSpaceIndex].IsRunningAnimation)
+            var space = _spaces[_currentSpaceIndex];
+
+            if (space.Animator.IsRunningAnimation)
             {
-                _animators[_currentSpaceIndex].Update(Time.deltaTime);
+                space.Animator.Update(Time.deltaTime);
                 return;
             }
 
-            _spaces[_currentSpaceIndex].TileController.OnUpdate(_currentSpaceIndex == 0 ? Planet : Surface);
+            space.TileController.OnUpdate(_currentSpaceIndex == 0 ? Planet : Surface);
         }
 
         void OnGUI()
@@ -191,7 +183,7 @@ namespace Assets.Scripts.Scene
             // prepare scen for "to"-state by making transition
             to.Enter();
             // make an instant animation to given position
-            _animators[_currentSpaceIndex].AnimateTo(coordinate, zoom, TimeSpan.Zero);
+            _spaces[_currentSpaceIndex].Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
         }
 
         #endregion

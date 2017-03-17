@@ -10,8 +10,8 @@ namespace Assets.Scripts.Scene.Animations
 {
     internal sealed class SurfaceAnimator : SpaceAnimator
     {
-        public SurfaceAnimator(Transform pivot, TileController tileController) :
-            base(pivot, tileController, new DecelerateInterpolator())
+        public SurfaceAnimator(TileController tileController) :
+            base(tileController, new DecelerateInterpolator())
         {
         }
 

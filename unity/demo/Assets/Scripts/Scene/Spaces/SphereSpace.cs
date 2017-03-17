@@ -1,6 +1,8 @@
-﻿using Assets.Scripts.Scene.Gestures;
+﻿using Assets.Scripts.Scene.Animations;
+using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
+using Animator = UtyMap.Unity.Animations.Animator;
 
 namespace Assets.Scripts.Scene.Spaces
 {
@@ -8,10 +10,14 @@ namespace Assets.Scripts.Scene.Spaces
     {
         private readonly GameObject _planet;
 
+        /// <inheritdoc />
+        public override Animator Animator { get; protected set; }
+
         public SphereSpace(TileController tileController, GestureStrategy gestureStrategy, Transform planet) :
             base(tileController, gestureStrategy)
         {
             _planet = planet.gameObject;
+            Animator = new SurfaceAnimator(tileController);
         }
 
         /// <inheritdoc />

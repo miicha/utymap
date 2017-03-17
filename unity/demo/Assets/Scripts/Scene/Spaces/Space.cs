@@ -2,6 +2,7 @@
 using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
+using Animator = UtyMap.Unity.Animations.Animator;
 
 namespace Assets.Scripts.Scene.Spaces
 {
@@ -9,6 +10,7 @@ namespace Assets.Scripts.Scene.Spaces
     {
         public readonly TileController TileController;
         public readonly GestureStrategy GestureStrategy;
+        public abstract Animator Animator { get; protected set; }
 
         protected readonly Camera Camera;
         protected readonly Transform Light;

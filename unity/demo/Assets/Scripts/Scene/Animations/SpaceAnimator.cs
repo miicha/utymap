@@ -20,10 +20,10 @@ namespace Assets.Scripts.Scene.Animations
 
         protected abstract Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration);
 
-        protected SpaceAnimator(Transform pivot, TileController tileController, ITimeInterpolator timeInterpolator)
+        protected SpaceAnimator(TileController tileController, ITimeInterpolator timeInterpolator)
         {
-            Pivot = pivot;
-            Camera = pivot.Find("Camera").transform;
+            Pivot = tileController.Pivot;
+            Camera = Pivot.Find("Camera").transform;
             TileController = tileController;
             _timeInterpolator = timeInterpolator;
         }

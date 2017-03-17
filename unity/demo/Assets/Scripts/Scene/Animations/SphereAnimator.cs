@@ -12,8 +12,8 @@ namespace Assets.Scripts.Scene.Animations
     /// <summary> Handles sphere animations. </summary>
     internal sealed class SphereAnimator : SpaceAnimator
     {
-        public SphereAnimator(Transform pivot, TileController tileController) :
-            base(pivot, tileController, new DecelerateInterpolator())
+        public SphereAnimator(TileController tileController) :
+            base(tileController, new DecelerateInterpolator())
         {
         }
 
