@@ -96,9 +96,14 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Calculates target zoom level for given distance. </summary>
         protected float CalculateZoom(float distance)
         {
+            if (IsAboveMax)
+                return LodRange.Maximum + 0.99f;
+
+            if (IsBelowMin)
+                return LodRange.Minimum;
+
             var lodRange = LodTree[distance].Single();
-            var zoom = lodRange.Value + (lodRange.To - distance) / (lodRange.To - lodRange.From);
-            return Mathf.Clamp(zoom, LodRange.Minimum, LodRange.Maximum);
+            return lodRange.Value + (lodRange.To - distance) / (lodRange.To - lodRange.From);
         }
     }
 }
