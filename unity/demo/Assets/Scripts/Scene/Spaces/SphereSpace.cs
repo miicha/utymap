@@ -2,7 +2,6 @@
 using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
-using Animator = UtyMap.Unity.Animations.Animator;
 
 namespace Assets.Scripts.Scene.Spaces
 {
@@ -11,7 +10,7 @@ namespace Assets.Scripts.Scene.Spaces
         private readonly GameObject _planet;
 
         /// <inheritdoc />
-        public override Animator Animator { get; protected set; }
+        public override SpaceAnimator Animator { get; protected set; }
 
         public SphereSpace(SphereTileController tileController, SphereGestureStrategy gestureStrategy, Transform planet) :
             base(tileController, gestureStrategy)
@@ -23,9 +22,7 @@ namespace Assets.Scripts.Scene.Spaces
         /// <inheritdoc />
         public override void Enter()
         {
-            ResetTransforms();
-
-            Camera.fieldOfView = TileController.FieldOfView;
+            base.Enter();
 
             _planet.SetActive(true);
         }
@@ -33,8 +30,9 @@ namespace Assets.Scripts.Scene.Spaces
         /// <inheritdoc />
         public override void Leave()
         {
+            base.Leave();
+
             _planet.SetActive(false);
-            TileController.Dispose();
         }
     }
 }

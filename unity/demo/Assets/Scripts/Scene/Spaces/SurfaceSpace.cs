@@ -2,7 +2,6 @@
 using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
-using Animator = UtyMap.Unity.Animations.Animator;
 
 namespace Assets.Scripts.Scene.Spaces
 {
@@ -11,7 +10,7 @@ namespace Assets.Scripts.Scene.Spaces
         private readonly GameObject _surface;
 
         /// <inheritdoc />
-        public override Animator Animator { get; protected set; }
+        public override SpaceAnimator Animator { get; protected set; }
 
         public SurfaceSpace(SurfaceTileController tileController, SurfaceGestureStrategy gestureStrategy, Transform surface) :
             base(tileController, gestureStrategy)
@@ -22,9 +21,8 @@ namespace Assets.Scripts.Scene.Spaces
 
         public override void Enter()
         {
-            ResetTransforms();
+            base.Enter();
 
-            Camera.fieldOfView = TileController.FieldOfView;
             Camera.transform.localRotation = Quaternion.Euler(90, 0, 0);
             Light.transform.localRotation = Quaternion.Euler(90, 0, 0);
 
@@ -33,8 +31,9 @@ namespace Assets.Scripts.Scene.Spaces
 
         public override void Leave()
         {
+            base.Leave();
+
             _surface.SetActive(false);
-            TileController.Dispose();
         }
     }
 }

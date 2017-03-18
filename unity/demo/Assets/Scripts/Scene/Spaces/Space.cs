@@ -1,8 +1,8 @@
 ﻿using System;
+using Assets.Scripts.Scene.Animations;
 using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
-using Animator = UtyMap.Unity.Animations.Animator;
 
 namespace Assets.Scripts.Scene.Spaces
 {
@@ -10,7 +10,7 @@ namespace Assets.Scripts.Scene.Spaces
     {
         public readonly TileController TileController;
         public readonly GestureStrategy GestureStrategy;
-        public abstract Animator Animator { get; protected set; }
+        public abstract SpaceAnimator Animator { get; protected set; }
 
         protected readonly Transform Pivot;
         protected readonly Camera Camera;
@@ -37,9 +37,19 @@ namespace Assets.Scripts.Scene.Spaces
             Light.localRotation = Quaternion.Euler(0, 0, 0);
         }
 
-        public abstract void Enter();
+        /// <summary> Performs init actions. </summary>
+        public virtual void Enter()
+        {
+            ResetTransforms();
+            Camera.fieldOfView = TileController.FieldOfView;
+        }
 
-        public abstract void Leave();
+        /// <summary> Performs cleanup actions. </summary>
+        public virtual void Leave()
+        {
+            Animator.Cancel();
+            TileController.Dispose();
+        }
 
         /// <inheritdoc />
         public void Dispose()
