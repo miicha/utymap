@@ -72,16 +72,16 @@ namespace Assets.Scripts.Scene.Tiling
             foreach (var rangeValuePair in LodTree)
             {
                 if (rangeValuePair.Value == startLod)
-                    startHeight = startLod == LodRange.Minimum ? rangeValuePair.From + 1 : rangeValuePair.To;
+                    startHeight = rangeValuePair.To;
                 if (rangeValuePair.Value == endLod)
-                    endHeight = endLod == LodRange.Maximum ? rangeValuePair.To - 1 : rangeValuePair.From;
+                    endHeight = rangeValuePair.From;
             }
 
             if (Math.Abs(startHeight - float.MinValue) < float.Epsilon ||
                 Math.Abs(endHeight - float.MinValue) < float.Epsilon)
                 throw new ArgumentException(String.Format("Invalid lod: {0}.", zoom));
 
-            return startHeight + (endHeight - startHeight) * (zoom - startLod);
+            return endHeight - (endHeight - startHeight) * (zoom - startLod);
         }
 
         /// <summary> Creates tile for given quadkey. </summary>
@@ -99,7 +99,7 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Calculates target zoom level for given distance. </summary>
         protected float CalculateZoom(float distance)
         {
-            var lodRange = LodTree[distance].First();
+            var lodRange = LodTree[distance].Single();
             var zoom = lodRange.Value + (lodRange.To - distance) / (lodRange.To - lodRange.From);
             return Mathf.Clamp(zoom, LodRange.Minimum, LodRange.Maximum);
         }

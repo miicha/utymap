@@ -99,7 +99,7 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Builds quadkeys if necessary. Decision is based on current position and lod level. </summary>
         private void Build(Transform parent, int oldLod)
         {
-            var currentLod = LodTree[_position.y].First().Value;
+            var currentLod = LodTree[_position.y].Single().Value;
 
             var currentQuadKey = GetQuadKey(currentLod);
 
@@ -182,18 +182,16 @@ namespace Assets.Scripts.Scene.Tiling
             FieldOfView = GetFieldOfView(GeoUtils.CreateQuadKey(_geoOrigin, LodRange.Minimum), maxDistance, aspectRatio);
 
             if (LodRange.Minimum == LodRange.Maximum)
-                tree.Add(0, maxDistance * 2, LodRange.Minimum);
+                tree.Add(0, maxDistance, LodRange.Minimum);
             else
             {
-                tree.Add(maxDistance, maxDistance * 2, LodRange.Minimum);
-                for (int lod = LodRange.Minimum + 1; lod <= LodRange.Maximum; ++lod)
+                for (int lod = LodRange.Minimum; lod <= LodRange.Maximum; ++lod)
                 {
                     var frustumHeight = GetFrustumHeight(GeoUtils.CreateQuadKey(_geoOrigin, lod), aspectRatio);
                     var distance = frustumHeight * 0.5f / Mathf.Tan(FieldOfView * 0.5f * Mathf.Deg2Rad);
-                    tree.Add(distance, maxDistance, lod - 1);
+                    tree.Add(distance, maxDistance, lod);
                     maxDistance = distance;
                 }
-                tree.Add(0, maxDistance, LodRange.Maximum);
             }
 
             return tree;
@@ -202,7 +200,7 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Gets height of camera's frustum. </summary>
         private float GetFrustumHeight(QuadKey quadKey, float aspectRatio)
         {
-            return GetGridHeight(quadKey) * aspectRatio * 2;
+            return GetGridHeight(quadKey) * aspectRatio;
         }
 
         /// <summary> Gets field of view for given quadkey and distance. </summary>

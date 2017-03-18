@@ -61,7 +61,6 @@ namespace Assets.Scripts.Scene
             const float planetRadius = 6371f;
             const float surfaceScale = 0.01f;
             const float detailScale = 1f;
-            const float maxDistance = 3000;
 
             _lods = new List<Range<int>>()
             {
@@ -74,13 +73,13 @@ namespace Assets.Scripts.Scene
             {
                 new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[0], planetRadius),
                                 new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Planet),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, Pivot, _lods[1], startCoord, surfaceScale, maxDistance),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[1], startCoord, surfaceScale, 12000),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Grid, Pivot, _lods[2], startCoord, detailScale, maxDistance),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[2], startCoord, detailScale, 500),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
             };
 
-            OnTransition(startCoord, StartZoom);
+            OnTransition(startCoord, StartZoom + 0.5f);
         }
 
         void OnEnable()
@@ -149,13 +148,11 @@ namespace Assets.Scripts.Scene
         private void OnTransition(GeoCoordinate coordinate, float zoom)
         {
             for (int i = 0; i < _lods.Count; ++i)
-            {
                 if (_lods[i].Contains((int) zoom))
                 {
                     _currentSpaceIndex = i;
                     break;
                 }
-            }
 
             OnTransition(_spaces[_currentSpaceIndex], coordinate, zoom);
         }
