@@ -6,7 +6,7 @@ namespace Assets.Scripts.Scene.Gestures
     internal class SurfaceGestureStrategy : GestureStrategy
     {
         private float _panSpeed = 1f;
-        private float _zoomSpeed = 1f;
+        private float _zoomSpeed = 100f;
 
         public SurfaceGestureStrategy(ScreenTransformGesture twoFingerMoveGesture,
                                       ScreenTransformGesture manipulationGesture) :
@@ -21,7 +21,7 @@ namespace Assets.Scripts.Scene.Gestures
 
         public override void OnTwoFingerTransform(Transform pivot, Transform camera)
         {
-            pivot.localPosition += Vector3.up * (TwoFingerMoveGesture.DeltaScale - 1f) * _zoomSpeed;
+            pivot.localPosition += Vector3.up * (1 -TwoFingerMoveGesture.DeltaScale) * _zoomSpeed;
         }
     }
 }

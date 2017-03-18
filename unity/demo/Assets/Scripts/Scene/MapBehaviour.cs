@@ -73,7 +73,7 @@ namespace Assets.Scripts.Scene
             {
                 new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[0], planetRadius),
                                 new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Planet),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[1], startCoord, surfaceScale, 12000),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[1], startCoord, surfaceScale, 5000),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
                 new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[2], startCoord, detailScale, 500),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)

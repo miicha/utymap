@@ -11,7 +11,7 @@ namespace Assets.Scripts.Scene.Gestures
 
         private const float RotationSpeed = 100f;
         
-        private const float ZoomSpeed = 200f;
+        private const float ZoomSpeed = 500f;
         
         private readonly float _radius;
 

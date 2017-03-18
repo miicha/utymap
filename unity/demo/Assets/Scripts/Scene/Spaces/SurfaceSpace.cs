@@ -22,6 +22,8 @@ namespace Assets.Scripts.Scene.Spaces
 
         public override void Enter()
         {
+            ResetTransforms();
+
             Camera.fieldOfView = TileController.FieldOfView;
             Camera.transform.localRotation = Quaternion.Euler(90, 0, 0);
             Light.transform.localRotation = Quaternion.Euler(90, 0, 0);

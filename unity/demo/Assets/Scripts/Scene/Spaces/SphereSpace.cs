@@ -23,9 +23,9 @@ namespace Assets.Scripts.Scene.Spaces
         /// <inheritdoc />
         public override void Enter()
         {
+            ResetTransforms();
+
             Camera.fieldOfView = TileController.FieldOfView;
-            Camera.transform.localRotation = Quaternion.Euler(0, 0, 0);
-            Light.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
             _planet.SetActive(true);
         }

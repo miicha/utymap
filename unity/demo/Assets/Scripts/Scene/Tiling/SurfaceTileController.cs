@@ -172,7 +172,7 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Gets range (interval) tree with LODs </summary>
         private RangeTree<float, int> GetLodTree(float cameraAspect, float maxDistance)
         {
-            const float sizeRatio = 0.75f;
+            const float sizeRatio = 0.5f;
             var tree = new RangeTree<float, int>();
 
             var aspectRatio = sizeRatio * (Screen.height < Screen.width ? 1 / cameraAspect : 1);
