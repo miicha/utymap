@@ -20,6 +20,7 @@ namespace Assets.Scripts.Scene.Tiling
         private readonly Vector3 _origin = Vector3.zero;
 
         private float _zoom;
+        private float _distanceToOrigin;
         private Vector3 _position;
         private GeoCoordinate _geoOrigin;
         private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
@@ -51,10 +52,10 @@ namespace Assets.Scripts.Scene.Tiling
         public override GeoCoordinate Coordinate { get { return GeoUtils.ToGeoCoordinate(_geoOrigin, _position); } }
 
         /// <inheritdoc />
-        public override bool IsAboveMax { get { return _maxHeight < GetDistanceToOrigin(); } }
+        public override bool IsAboveMax { get { return _maxHeight < _distanceToOrigin; } }
 
         /// <inheritdoc />
-        public override bool IsBelowMin { get { return _minHeight > GetDistanceToOrigin(); } }
+        public override bool IsBelowMin { get { return _minHeight > _distanceToOrigin; } }
 
         /// <inheritdoc />
         public override void OnUpdate(Transform planet)
@@ -67,7 +68,8 @@ namespace Assets.Scripts.Scene.Tiling
             var oldLod = (int)_zoom;
 
             _position = position;
-            _zoom = CalculateZoom(GetDistanceToOrigin());
+            _distanceToOrigin = Vector3.Distance(_position, _origin);
+            _zoom = CalculateZoom(_distanceToOrigin);
            
             Build(planet, oldLod);
         }
@@ -89,12 +91,6 @@ namespace Assets.Scripts.Scene.Tiling
         {
             _geoOrigin = GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(position.x, position.z) / _scale);
             Projection = CreateProjection();
-        }
-
-        /// <summary> Gets distance to origin. </summary>
-        private float GetDistanceToOrigin()
-        {
-            return Vector3.Distance(_position, _origin);
         }
 
         /// <summary> Builds quadkeys if necessary. Decision is based on current position and lod level. </summary>

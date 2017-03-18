@@ -23,9 +23,10 @@ namespace Assets.Scripts.Scene.Tiling
         private readonly float _maxHeight;
         private readonly Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
 
+        private float _zoom;
+        private float _distanceToOrigin;
         private Vector3 _position;
         private Vector3 _rotation;
-        private float _zoom;
 
         public SphereTileController(IMapDataStore dataStore, Stylesheet stylesheet,
             ElevationDataType elevationType, Transform pivot, Range<int> lodRange, float radius) :
@@ -67,10 +68,10 @@ namespace Assets.Scripts.Scene.Tiling
         }
 
         /// <inheritdoc />
-        public override bool IsAboveMax { get { return _maxHeight < GetDistanceToOrigin(); } }
+        public override bool IsAboveMax { get { return _maxHeight < _distanceToOrigin; } }
 
         /// <inheritdoc />
-        public override bool IsBelowMin { get { return _minHeight > GetDistanceToOrigin(); } }
+        public override bool IsBelowMin { get { return _minHeight > _distanceToOrigin; } }
 
         /// <inheritdoc />
         public override void OnUpdate(Transform planet)
@@ -84,7 +85,8 @@ namespace Assets.Scripts.Scene.Tiling
 
             _position = position;
             _rotation = rotation;
-            _zoom = CalculateZoom(GetDistanceToOrigin());
+            _distanceToOrigin = Vector3.Distance(_position, _origin);
+            _zoom = CalculateZoom(_distanceToOrigin);
 
             if (_loadedQuadKeys.Any())
                 BuildIfNecessary(planet);
@@ -101,12 +103,6 @@ namespace Assets.Scripts.Scene.Tiling
         }
 
         #region LOD calculations
-
-        /// <summary> Gets distance to origin. </summary>
-        private float GetDistanceToOrigin()
-        {
-            return Vector3.Distance(_position, _origin);
-        }
 
         private RangeTree<float, int> GetLodTree()
         {
