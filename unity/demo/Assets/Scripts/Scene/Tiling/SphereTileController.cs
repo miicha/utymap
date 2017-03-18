@@ -125,6 +125,8 @@ namespace Assets.Scripts.Scene.Tiling
                 }
             }
 
+            lodTree.Rebuild();
+
             return lodTree;
         }
 

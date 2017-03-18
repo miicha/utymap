@@ -191,6 +191,8 @@ namespace Assets.Scripts.Scene.Tiling
                 }
             }
 
+            tree.Rebuild();
+
             return tree;
         }
 
