@@ -38,5 +38,31 @@ namespace UtyMap.Unity.Tests.Infrastructure.Primitives
             Assert.AreEqual("1", tree[5].First().Value);
             Assert.AreEqual("2", tree[11].First().Value);
         }
+
+        [Test]
+        public void CanGetMinValue()
+        {
+            var tree = new RangeTree<float, string>();
+            tree.Add(new RangeValuePair<float, string>(100, 200, "1"));
+            tree.Add(new RangeValuePair<float, string>(300, 400, "2"));
+            tree.Rebuild();
+
+            var value = tree.Min;
+
+            Assert.AreEqual(100, value);
+        }
+
+        [Test]
+        public void CanGetMaxValue()
+        {
+            var tree = new RangeTree<float, string>();
+            tree.Add(new RangeValuePair<float, string>(100, 200, "1"));
+            tree.Add(new RangeValuePair<float, string>(300, 400, "2"));
+            tree.Rebuild();
+
+            var value = tree.Max;
+
+            Assert.AreEqual(400, value);
+        }
     }
 }
