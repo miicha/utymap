@@ -57,13 +57,6 @@ namespace Assets.Scripts.Scene.Tiling
         public override bool IsBelowMin { get { return _minHeight > GetDistanceToOrigin(); } }
 
         /// <inheritdoc />
-        public override void MoveOrigin(Vector3 position)
-        {
-            _geoOrigin = GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(position.x, position.z) / _scale);
-            Projection = CreateProjection();
-        }
-
-        /// <inheritdoc />
         public override void OnUpdate(Transform planet)
         {
             var position = Pivot.localPosition;
@@ -89,6 +82,14 @@ namespace Assets.Scripts.Scene.Tiling
         }
 
         #region Tile processing
+
+        // TODO call this method
+        /// <summary> Moves geo origin to specific world position. </summary>
+        private void MoveOrigin(Vector3 position)
+        {
+            _geoOrigin = GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(position.x, position.z) / _scale);
+            Projection = CreateProjection();
+        }
 
         /// <summary> Gets distance to origin. </summary>
         private float GetDistanceToOrigin()

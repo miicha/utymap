@@ -73,9 +73,6 @@ namespace Assets.Scripts.Scene.Tiling
         public override bool IsBelowMin { get { return _minHeight > GetDistanceToOrigin(); } }
 
         /// <inheritdoc />
-        public override void MoveOrigin(Vector3 position) { throw new NotImplementedException(); }
-
-        /// <inheritdoc />
         public override void OnUpdate(Transform planet)
         {
             var position = _camera.localPosition;

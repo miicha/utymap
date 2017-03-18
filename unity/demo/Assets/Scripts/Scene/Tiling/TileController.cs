@@ -40,9 +40,6 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Is belove minimum zoom level </summary>
         public abstract bool IsBelowMin{ get; }
 
-        /// <summary> Moves geo origin to specific world position. </summary>
-        public abstract void MoveOrigin(Vector3 position);
-
         /// <summary> Updates position and rotation. </summary>
         public abstract void OnUpdate(Transform planet);
 
