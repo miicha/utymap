@@ -97,7 +97,7 @@ namespace Assets.Scripts.Scene.Tiling
         protected float CalculateZoom(float distance)
         {
             if (IsAboveMax)
-                return LodRange.Maximum + 0.99f;
+                return LodRange.Maximum + 0.999f;
 
             if (IsBelowMin)
                 return LodRange.Minimum;

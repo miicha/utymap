@@ -79,7 +79,7 @@ namespace Assets.Scripts.Scene
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
             };
 
-            OnTransition(startCoord, StartZoom + 0.5f);
+            DoTransition(startCoord, StartZoom + 0.5f);
         }
 
         void OnEnable()
@@ -97,11 +97,17 @@ namespace Assets.Scripts.Scene
         void Update()
         {
             var space = _spaces[_currentSpaceIndex];
-
             if (space.Animator.IsRunningAnimation)
                 space.Animator.Update(Time.deltaTime);
 
-            space.TileController.OnUpdate(_currentSpaceIndex == 0 ? Planet : Surface);
+            var tileController = space.TileController;
+            tileController.OnUpdate(_currentSpaceIndex == 0 ? Planet : Surface);
+
+            // check whether space change is needed
+            if (tileController.IsAboveMax && _currentSpaceIndex > 0)
+                DoTransition(space, _spaces[--_currentSpaceIndex]);
+            else if (tileController.IsBelowMin && _currentSpaceIndex != _spaces.Count - 1)
+                DoTransition(space, _spaces[++_currentSpaceIndex]);
         }
 
         void OnGUI()
@@ -145,7 +151,7 @@ namespace Assets.Scripts.Scene
         #region Space change logic
 
         /// <summary> Performs transition to unknown space based on zoom level and lod ranges. </summary>
-        private void OnTransition(GeoCoordinate coordinate, float zoom)
+        private void DoTransition(GeoCoordinate coordinate, float zoom)
         {
             for (int i = 0; i < _lods.Count; ++i)
                 if (_lods[i].Contains((int) zoom))
@@ -154,25 +160,25 @@ namespace Assets.Scripts.Scene
                     break;
                 }
 
-            OnTransition(_spaces[_currentSpaceIndex], coordinate, zoom);
+            DoTransition(_spaces[_currentSpaceIndex], coordinate, zoom);
         }
 
         /// <summary> Performs transition from one space to another. </summary>
-        private void OnTransition(Space from, Space to)
+        private void DoTransition(Space from, Space to)
         {
             // calculate "to"-space parameters
             var coordinate = from.TileController.Coordinate;
             var zoom = from.TileController.LodRange.Maximum > to.TileController.LodRange.Maximum
                 ? to.TileController.LodRange.Maximum
-                : to.TileController.LodRange.Minimum;
+                : to.TileController.LodRange.Minimum + 0.99f;
 
             from.Leave();
 
-            OnTransition(to, coordinate, zoom);
+            DoTransition(to, coordinate, zoom);
         }
 
         /// <summary> Performs transition to the new space. </summary>
-        private void OnTransition(Space to, GeoCoordinate coordinate, float zoom)
+        private void DoTransition(Space to, GeoCoordinate coordinate, float zoom)
         {
             // prepare scen for "to"-state by making transition
             to.Enter();

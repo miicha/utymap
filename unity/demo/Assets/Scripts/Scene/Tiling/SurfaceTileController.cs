@@ -187,7 +187,7 @@ namespace Assets.Scripts.Scene.Tiling
                     var frustumHeight = GetFrustumHeight(GeoUtils.CreateQuadKey(_geoOrigin, lod), aspectRatio);
                     var distance = frustumHeight * 0.5f / Mathf.Tan(FieldOfView * 0.5f * Mathf.Deg2Rad);
                     tree.Add(distance, maxDistance, lod);
-                    maxDistance = distance;
+                    maxDistance = distance - 1;
                 }
             }
 
