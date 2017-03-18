@@ -179,20 +179,22 @@ namespace Assets.Scripts.Scene.Tiling
             var tree = new RangeTree<float, int>();
 
             var aspectRatio = sizeRatio * (Screen.height < Screen.width ? 1 / cameraAspect : 1);
+            FieldOfView = GetFieldOfView(GeoUtils.CreateQuadKey(_geoOrigin, LodRange.Minimum), maxDistance, aspectRatio);
 
-            var fov = GetFieldOfView(GeoUtils.CreateQuadKey(_geoOrigin, LodRange.Minimum), maxDistance, aspectRatio);
-
-            tree.Add(maxDistance, float.MaxValue, LodRange.Minimum);
-            for (int lod = LodRange.Minimum + 1; lod <= LodRange.Maximum; ++lod)
+            if (LodRange.Minimum == LodRange.Maximum)
+                tree.Add(0, maxDistance * 2, LodRange.Minimum);
+            else
             {
-                var frustumHeight = GetFrustumHeight(GeoUtils.CreateQuadKey(_geoOrigin, lod), aspectRatio);
-                var distance = frustumHeight * 0.5f / Mathf.Tan(fov * 0.5f * Mathf.Deg2Rad);
-                tree.Add(distance, maxDistance, lod - 1);
-                maxDistance = distance;
+                tree.Add(maxDistance, maxDistance * 2, LodRange.Minimum);
+                for (int lod = LodRange.Minimum + 1; lod <= LodRange.Maximum; ++lod)
+                {
+                    var frustumHeight = GetFrustumHeight(GeoUtils.CreateQuadKey(_geoOrigin, lod), aspectRatio);
+                    var distance = frustumHeight * 0.5f / Mathf.Tan(FieldOfView * 0.5f * Mathf.Deg2Rad);
+                    tree.Add(distance, maxDistance, lod - 1);
+                    maxDistance = distance;
+                }
+                tree.Add(0, maxDistance, LodRange.Maximum);
             }
-            tree.Add(float.MinValue, maxDistance, LodRange.Maximum);
-
-            FieldOfView = fov;
 
             return tree;
         }
@@ -200,7 +202,7 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Gets height of camera's frustum. </summary>
         private float GetFrustumHeight(QuadKey quadKey, float aspectRatio)
         {
-            return GetGridSize(quadKey) * aspectRatio;
+            return GetGridHeight(quadKey) * aspectRatio * 2;
         }
 
         /// <summary> Gets field of view for given quadkey and distance. </summary>
@@ -209,14 +211,14 @@ namespace Assets.Scripts.Scene.Tiling
             return 2.0f * Mathf.Rad2Deg * Mathf.Atan(GetFrustumHeight(quadKey, aspectRatio) / distance);
         }
 
-        /// <summary> Get side size of grid consists of 9 quadkeys. </summary>
-        private float GetGridSize(QuadKey quadKey)
+        /// <summary> Get side size in meters of grid consists of 9 quadkeys. </summary>
+        private float GetGridHeight(QuadKey quadKey)
         {
             var bbox = GeoUtils.QuadKeyToBoundingBox(quadKey);
-            var bboxWidth = bbox.MaxPoint.Longitude - bbox.MinPoint.Longitude;
-            var minPoint = new GeoCoordinate(bbox.MinPoint.Latitude, bbox.MinPoint.Longitude - bboxWidth);
-            var maxPoint = new GeoCoordinate(bbox.MinPoint.Latitude, bbox.MaxPoint.Longitude + bboxWidth);
-            return (float)GeoUtils.Distance(minPoint, maxPoint) * _scale;
+            var bboxHeight = bbox.MaxPoint.Latitude - bbox.MinPoint.Latitude;
+            var minPoint = new GeoCoordinate(bbox.MinPoint.Latitude - bboxHeight, bbox.MinPoint.Longitude);
+            var maxPoint = new GeoCoordinate(bbox.MinPoint.Latitude + bboxHeight, bbox.MaxPoint.Longitude);
+            return (float) GeoUtils.Distance(minPoint, maxPoint) * _scale;
         }
 
         #endregion
