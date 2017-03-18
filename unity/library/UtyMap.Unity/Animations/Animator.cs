@@ -25,6 +25,13 @@ namespace UtyMap.Unity.Animations
             get { return _animation != null && _animation.IsRunning; }
         }
 
+        /// <summary> Starts animation if it is set. </summary>
+        public void Start()
+        {
+            if (_animation != null)
+                _animation.Start();
+        }
+
         /// <summary> Cancels outstanding animation. </summary>
         public void Cancel()
         {

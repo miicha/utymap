@@ -28,13 +28,11 @@ namespace Assets.Scripts.Scene.Animations
             _timeInterpolator = timeInterpolator;
         }
 
-
         /// <inheritdoc />
         public override void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
         {
-            var animation = CreateAnimationTo(coordinate, zoom, duration);
-            SetAnimation(animation);
-            animation.Start();
+            SetAnimation(CreateAnimationTo(coordinate, zoom, duration));
+            Start();
         }
 
         protected PathAnimation CreatePathAnimation(Transform target, TimeSpan duration, IEnumerable<Vector3> points)
