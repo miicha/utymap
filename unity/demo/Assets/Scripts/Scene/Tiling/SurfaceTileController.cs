@@ -2,7 +2,6 @@
 using System.Linq;
 using UnityEngine;
 using UtyMap.Unity;
-using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 
@@ -12,8 +11,7 @@ namespace Assets.Scripts.Scene.Tiling
     internal sealed class SurfaceTileController : TileController
     {
         // TODO this value zoom specific
-        private const float PositionSensivity = 10f;
-
+        private readonly float _positionSensivity = 10f;
         private readonly float _scale;
 
         private readonly Vector3 _origin = Vector3.zero;
@@ -30,6 +28,7 @@ namespace Assets.Scripts.Scene.Tiling
         {
             _scale = scale;
             _geoOrigin = origin;
+            _positionSensivity *= _scale;
 
             LodTree = GetLodTree(pivot.Find("Camera").GetComponent<Camera>().aspect, maxDistance);
             Projection = CreateProjection();
@@ -72,7 +71,7 @@ namespace Assets.Scripts.Scene.Tiling
         {
             var position = Pivot.localPosition;
 
-            if (Vector3.Distance(position, _position) < PositionSensivity)
+            if (Vector3.Distance(position, _position) < _positionSensivity)
                 return;
 
             var oldLod = (int)_zoom;
@@ -191,7 +190,7 @@ namespace Assets.Scripts.Scene.Tiling
                     var frustumHeight = GetFrustumHeight(GeoUtils.CreateQuadKey(_geoOrigin, lod), aspectRatio);
                     var distance = frustumHeight * 0.5f / Mathf.Tan(FieldOfView * 0.5f * Mathf.Deg2Rad);
                     tree.Add(distance, maxDistance, lod);
-                    maxDistance = distance - 1;
+                    maxDistance = distance - float.Epsilon;
                 }
             }
 
