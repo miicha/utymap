@@ -19,10 +19,11 @@ namespace Assets.Scripts.Scene.Animations
         /// <inheritdoc />
         protected override Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
         {
+            var position = Pivot.localPosition;
             return CreatePathAnimation(Pivot, duration, new List<Vector3>()
             {
-                Pivot.localPosition,
-                new Vector3(0, TileController.GetHeight(zoom), 0)
+                position,
+                new Vector3(position.x, TileController.GetHeight(zoom), position.z)
             });
         }
     }

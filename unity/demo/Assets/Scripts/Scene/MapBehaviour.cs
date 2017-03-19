@@ -123,7 +123,7 @@ namespace Assets.Scripts.Scene
                 if (GUI.Button(new Rect(10, 70, 50, 30), "Click"))
                 {
                     _spaces[_currentSpaceIndex].Animator
-                        .AnimateTo(new GeoCoordinate(StartLatitude, StartLongitude), 16, TimeSpan.FromSeconds(30));
+                        .AnimateTo(new GeoCoordinate(StartLatitude, StartLongitude), 13, TimeSpan.FromSeconds(30));
                 }
             }
         }

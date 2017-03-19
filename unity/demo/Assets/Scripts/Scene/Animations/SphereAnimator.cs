@@ -20,12 +20,13 @@ namespace Assets.Scripts.Scene.Animations
         /// <inheritdoc />
         protected override Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
         {
+            var position = Camera.localPosition;
             return new CompositeAnimation(new List<Animation>
             {
                 CreatePathAnimation(Camera, duration, new List<Vector3>()
                 {
-                    Camera.localPosition,
-                    new Vector3(0, 0, -TileController.GetHeight(zoom))
+                    position,
+                    new Vector3(position.x, position.y, -TileController.GetHeight(zoom))
                 }),
                 CreateRotationAnimation(Pivot, duration, new List<Quaternion>()
                 {
