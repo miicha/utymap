@@ -13,7 +13,7 @@ using Space = Assets.Scripts.Scene.Spaces.Space;
 namespace Assets.Scripts.Scene
 {
     /// <summary> Provides an entry point for building the map and reacting on user interaction with it. </summary>
-    internal class MapBehaviour: MonoBehaviour
+    internal class MapBehaviour : MonoBehaviour
     {
         #region User controlled settings
 
@@ -73,9 +73,9 @@ namespace Assets.Scripts.Scene
             {
                 new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[0], planetRadius),
                                 new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Planet),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[1], startCoord, surfaceScale, 5000),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[1], startCoord, surfaceScale, 1000),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[2], startCoord, detailScale, 500),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[2], startCoord, detailScale, 100),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
             };
 
@@ -97,11 +97,9 @@ namespace Assets.Scripts.Scene
         void Update()
         {
             var space = _spaces[_currentSpaceIndex];
-            if (space.Animator.IsRunningAnimation)
-                space.Animator.Update(Time.deltaTime);
-
             var tileController = space.TileController;
-            tileController.OnUpdate(_currentSpaceIndex == 0 ? Planet : Surface);
+
+            space.Update(Time.deltaTime);
 
             // check whether space change is needed
             if (tileController.IsAboveMax && _currentSpaceIndex > 0)
@@ -118,9 +116,15 @@ namespace Assets.Scripts.Scene
                 var labelText = String.Format("Position: {0}\nZoom: {1}",
                     tileController.Coordinate,
                     tileController.ZoomLevel);
-                
+
                 GUI.contentColor = Color.red;
                 GUI.Label(new Rect(0, 0, Screen.width, Screen.height), labelText);
+
+                if (GUI.Button(new Rect(10, 70, 50, 30), "Click"))
+                {
+                    _spaces[_currentSpaceIndex].Animator
+                        .AnimateTo(new GeoCoordinate(StartLatitude, StartLongitude), 16, TimeSpan.FromSeconds(30));
+                }
             }
         }
 
@@ -133,7 +137,7 @@ namespace Assets.Scripts.Scene
         }
 
         #endregion
-     
+
         #region Touch handles
 
         private void ManipulationTransformedHandler(object sender, EventArgs e)
@@ -154,7 +158,7 @@ namespace Assets.Scripts.Scene
         private void DoTransition(GeoCoordinate coordinate, float zoom)
         {
             for (int i = 0; i < _lods.Count; ++i)
-                if (_lods[i].Contains((int) zoom))
+                if (_lods[i].Contains((int)zoom))
                 {
                     _currentSpaceIndex = i;
                     break;
@@ -172,7 +176,7 @@ namespace Assets.Scripts.Scene
         {
             bool fromTopSpace = from.TileController.LodRange.Maximum < to.TileController.LodRange.Maximum;
             bool hadRunningAnimation = from.Animator.IsRunningAnimation;
-            
+
             from.Leave();
 
             // make transition

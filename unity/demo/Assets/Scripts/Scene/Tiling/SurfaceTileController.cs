@@ -11,7 +11,8 @@ namespace Assets.Scripts.Scene.Tiling
     /// <summary>  </summary>
     internal sealed class SurfaceTileController : TileController
     {
-        private const float PositionSensivity = 50f;
+        // TODO this value zoom specific
+        private const float PositionSensivity = 10f;
 
         private readonly float _scale;
 

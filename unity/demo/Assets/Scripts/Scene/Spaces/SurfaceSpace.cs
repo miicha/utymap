@@ -7,15 +7,12 @@ namespace Assets.Scripts.Scene.Spaces
 {
     internal sealed class SurfaceSpace : Space
     {
-        private readonly GameObject _surface;
-
         /// <inheritdoc />
         public override SpaceAnimator Animator { get; protected set; }
 
         public SurfaceSpace(SurfaceTileController tileController, SurfaceGestureStrategy gestureStrategy, Transform surface) :
-            base(tileController, gestureStrategy)
+            base(tileController, gestureStrategy, surface)
         {
-            _surface = surface.gameObject;
             Animator = new SurfaceAnimator(tileController);
         }
 
@@ -34,13 +31,6 @@ namespace Assets.Scripts.Scene.Spaces
             Enter(false);
         }
 
-        public override void Leave()
-        {
-            base.Leave();
-
-            _surface.SetActive(false);
-        }
-
         private void Enter(bool isFromTop)
         {
             Camera.transform.localRotation = Quaternion.Euler(90, 0, 0);
@@ -49,8 +39,6 @@ namespace Assets.Scripts.Scene.Spaces
                 ? TileController.HeightRange.Maximum
                 : TileController.HeightRange.Minimum, 
                 0);
-
-            _surface.SetActive(true);
         }
     }
 }

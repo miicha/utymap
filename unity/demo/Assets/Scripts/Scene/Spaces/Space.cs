@@ -12,12 +12,14 @@ namespace Assets.Scripts.Scene.Spaces
         public readonly GestureStrategy GestureStrategy;
         public abstract SpaceAnimator Animator { get; protected set; }
 
+        protected readonly Transform Target;
         protected readonly Transform Pivot;
         protected readonly Camera Camera;
         protected readonly Transform Light;
 
-        public Space(TileController tileController, GestureStrategy gestureStrategy)
+        public Space(TileController tileController, GestureStrategy gestureStrategy, Transform target)
         {
+            Target = target;
             TileController = tileController;
             GestureStrategy = gestureStrategy;
 
@@ -43,11 +45,19 @@ namespace Assets.Scripts.Scene.Spaces
         /// <summary> Enters space from bottom. </summary>
         public virtual void EnterBottom() { Enter(); }
 
+        /// <summary> Notifies space about time since last update. </summary>
+        public void Update(float deltaTime)
+        {
+            Animator.Update(deltaTime);
+            TileController.OnUpdate(Target);
+        }
+
         /// <summary> Performs cleanup actions. </summary>
         public virtual void Leave()
         {
             Animator.Cancel();
             TileController.Dispose();
+            Target.gameObject.SetActive(false);
         }
 
         /// <inheritdoc />
@@ -59,6 +69,7 @@ namespace Assets.Scripts.Scene.Spaces
         /// <summary> Performs init actions. </summary>
         private void Enter()
         {
+            Target.gameObject.SetActive(true);
             ResetTransforms();
             Camera.fieldOfView = TileController.FieldOfView;
         }
