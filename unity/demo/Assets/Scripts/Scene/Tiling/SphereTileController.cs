@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UtyMap.Unity;
-using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 using Object = UnityEngine.Object;
@@ -26,9 +24,8 @@ namespace Assets.Scripts.Scene.Tiling
         private Vector3 _position;
         private Vector3 _rotation;
 
-        public SphereTileController(IMapDataStore dataStore, Stylesheet stylesheet,
-            ElevationDataType elevationType, Transform pivot, Range<int> lodRange, float radius) :
-            base(dataStore, stylesheet, elevationType, pivot, lodRange)
+        public SphereTileController(Settings settings, Transform pivot, Range<int> lodRange, float radius) :
+            base(settings, pivot, lodRange)
         {
             _radius = radius;
 

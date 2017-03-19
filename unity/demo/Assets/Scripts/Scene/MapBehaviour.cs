@@ -62,20 +62,21 @@ namespace Assets.Scripts.Scene
             const float surfaceScale = 0.01f;
             const float detailScale = 1f;
 
-            _lods = new List<Range<int>>()
-            {
-                new Range<int>(1, 8),
-                new Range<int>(9, 15),
-                new Range<int>(16, 16)
-            };
+            var sphereSettings = new TileController.Settings(mapDataStore, stylesheet, ElevationDataType.Flat);
+            var surfaceSettings = new TileController.Settings(mapDataStore, stylesheet, ElevationDataType.Flat);
+            var detailSettings = new TileController.Settings(mapDataStore, stylesheet, ElevationDataType.Flat);
 
-            _spaces = new List<Space>()
+            _lods = new List<Range<int>> { new Range<int>(1, 8), new Range<int>(9, 15), new Range<int>(16, 16) };
+
+            _spaces = new List<Space>
             {
-                new SphereSpace(new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[0], planetRadius),
+                new SphereSpace(new SphereTileController(sphereSettings, Pivot, _lods[0], planetRadius),
                                 new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Planet),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[1], startCoord, surfaceScale, 1000),
+
+                new SurfaceSpace(new SurfaceTileController(surfaceSettings, Pivot, _lods[1], startCoord, surfaceScale, 1000),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[2], startCoord, detailScale, 500),
+
+                new SurfaceSpace(new SurfaceTileController(detailSettings, Pivot, _lods[2], startCoord, detailScale, 500),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
             };
 

@@ -24,9 +24,9 @@ namespace Assets.Scripts.Scene.Tiling
         private GeoCoordinate _geoOrigin;
         private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
 
-        public SurfaceTileController(IMapDataStore dataStore, Stylesheet stylesheet, ElevationDataType elevationType, 
-            Transform pivot, Range<int> lodRange, GeoCoordinate origin, float scale, float maxDistance) :
-            base(dataStore, stylesheet, elevationType, pivot, lodRange)
+        public SurfaceTileController(Settings settings, Transform pivot, Range<int> lodRange,
+            GeoCoordinate origin, float scale, float maxDistance) :
+            base(settings, pivot, lodRange)
         {
             _scale = scale;
             _geoOrigin = origin;
