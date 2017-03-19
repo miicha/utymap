@@ -2,6 +2,7 @@
 using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
+using UtyMap.Unity;
 
 namespace Assets.Scripts.Scene.Spaces
 {
@@ -16,29 +17,18 @@ namespace Assets.Scripts.Scene.Spaces
             Animator = new SurfaceAnimator(tileController);
         }
 
-        /// <inheritdoc />
-        public override void EnterTop()
-        {
-            base.EnterTop();
-            Enter(true);
-         
-        }
-
-        /// <inheritdoc />
-        public override void EnterBottom()
-        {
-            base.EnterBottom();
-            Enter(false);
-        }
-
-        private void Enter(bool isFromTop)
+        protected override void OnEnter(GeoCoordinate coordinate, bool isFromTop)
         {
             Camera.transform.localRotation = Quaternion.Euler(90, 0, 0);
             Light.transform.localRotation = Quaternion.Euler(90, 0, 0);
             Pivot.localPosition = new Vector3(0, isFromTop
                 ? TileController.HeightRange.Maximum
-                : TileController.HeightRange.Minimum, 
+                : TileController.HeightRange.Minimum,
                 0);
+        }
+
+        protected override void OnExit()
+        {
         }
     }
 }

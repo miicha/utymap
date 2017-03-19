@@ -123,7 +123,7 @@ namespace Assets.Scripts.Scene
                 if (GUI.Button(new Rect(10, 70, 50, 30), "Click"))
                 {
                     _spaces[_currentSpaceIndex].Animator
-                        .AnimateTo(new GeoCoordinate(StartLatitude, StartLongitude), 13, TimeSpan.FromSeconds(30));
+                        .AnimateTo(new GeoCoordinate(StartLatitude, StartLongitude), 1, TimeSpan.FromSeconds(30));
                 }
             }
         }
@@ -166,7 +166,7 @@ namespace Assets.Scripts.Scene
 
             Space to = _spaces[_currentSpaceIndex];
             // enter from top by default
-            to.EnterTop();
+            to.EnterTop(coordinate);
             // make instant animation
             to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
         }
@@ -174,28 +174,30 @@ namespace Assets.Scripts.Scene
         /// <summary> Performs transition from one space to another. </summary>
         private void DoTransition(Space from, Space to)
         {
-            bool fromTopSpace = from.TileController.LodRange.Maximum < to.TileController.LodRange.Maximum;
+            bool isFromTopSpace = from.TileController.LodRange.Maximum < to.TileController.LodRange.Maximum;
             bool hadRunningAnimation = from.Animator.IsRunningAnimation;
+            var coordinate = from.TileController.Coordinate;
 
+            // exit from old space
             from.Leave();
 
             // make transition
-            if (fromTopSpace) to.EnterTop();
-            else to.EnterBottom();
+            if (isFromTopSpace) 
+                to.EnterTop(coordinate);
+            else 
+                to.EnterBottom(coordinate);
 
             // continue old space animation if it is running
             if (hadRunningAnimation)
-            {
                 to.Animator.ContinueFrom(from.Animator);
-                return;
-            }
-
             // otherwise make instant transition
-            var coordinate = from.TileController.Coordinate;
-            var zoom = fromTopSpace
-                ? to.TileController.LodRange.Minimum + 0.99f
-                : to.TileController.LodRange.Maximum;
-            to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
+            else
+            {
+                var zoom = isFromTopSpace
+                    ? to.TileController.LodRange.Minimum + 0.99f
+                    : to.TileController.LodRange.Maximum;
+                to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
+            }
         }
 
         #endregion

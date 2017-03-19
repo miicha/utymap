@@ -3,6 +3,7 @@ using Assets.Scripts.Scene.Animations;
 using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Tiling;
 using UnityEngine;
+using UtyMap.Unity;
 
 namespace Assets.Scripts.Scene.Spaces
 {
@@ -39,11 +40,25 @@ namespace Assets.Scripts.Scene.Spaces
             Light.localRotation = Quaternion.Euler(0, 0, 0);
         }
 
+        /// <summary> Called when space is entered. </summary>
+        protected abstract void OnEnter(GeoCoordinate coordinate, bool isFromTop);
+
+        /// <summary> Called when space is exited </summary>
+        protected abstract void OnExit();
+
         /// <summary> Enters space from top. </summary>
-        public virtual void EnterTop() { Enter(); }
+        public void EnterTop(GeoCoordinate coordinate)
+        {
+            SetDefaults();
+            OnEnter(coordinate, true);
+        }
 
         /// <summary> Enters space from bottom. </summary>
-        public virtual void EnterBottom() { Enter(); }
+        public void EnterBottom(GeoCoordinate coordinate)
+        {
+            SetDefaults();
+            OnEnter(coordinate, false);
+        }
 
         /// <summary> Notifies space about time since last update. </summary>
         public void Update(float deltaTime)
@@ -53,11 +68,13 @@ namespace Assets.Scripts.Scene.Spaces
         }
 
         /// <summary> Performs cleanup actions. </summary>
-        public virtual void Leave()
+        public void Leave()
         {
             Animator.Cancel();
             TileController.Dispose();
             Target.gameObject.SetActive(false);
+
+            OnExit();
         }
 
         /// <inheritdoc />
@@ -67,7 +84,7 @@ namespace Assets.Scripts.Scene.Spaces
         }
 
         /// <summary> Performs init actions. </summary>
-        private void Enter()
+        private void SetDefaults()
         {
             Target.gameObject.SetActive(true);
             ResetTransforms();
