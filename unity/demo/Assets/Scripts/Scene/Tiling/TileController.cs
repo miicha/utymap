@@ -97,7 +97,7 @@ namespace Assets.Scripts.Scene.Tiling
                 var ratio = (HeightRange.Maximum - HeightRange.Minimum) / (LodRange.Maximum - LodRange.Minimum + 1);
                 return zoom > LodRange.Maximum
                     ? HeightRange.Minimum - (zoom - LodRange.Maximum) * ratio
-                    : HeightRange.Maximum + (zoom - LodRange.Minimum) * ratio;
+                    : HeightRange.Maximum - (zoom - LodRange.Minimum) * ratio;
             }
 
             return endHeight - (endHeight - startHeight) * (zoom - startLod);
