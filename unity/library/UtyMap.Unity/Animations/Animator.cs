@@ -1,4 +1,5 @@
 ﻿using System;
+using UtyMap.Unity.Animations.Time;
 
 namespace UtyMap.Unity.Animations
 {
@@ -10,8 +11,8 @@ namespace UtyMap.Unity.Animations
         /// <summary> Called when animation is updated. </summary>
         protected abstract void OnAnimationUpdate(float deltaTime);
 
-        /// <summary> Animates to given coordinate using default interpolators. </summary>
-        public abstract void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration);
+        /// <summary> Animates to given coordinate using given timeinterpolator and duration. </summary>
+        public abstract void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration, ITimeInterpolator timeInterpolator);
 
         /// <summary> Notifies animator about frame update. </summary>
         public void Update(float deltaTime)

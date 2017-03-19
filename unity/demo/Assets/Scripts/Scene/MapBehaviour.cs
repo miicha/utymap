@@ -6,6 +6,7 @@ using Assets.Scripts.Scene.Tiling;
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 using UtyMap.Unity;
+using UtyMap.Unity.Animations.Time;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using Space = Assets.Scripts.Scene.Spaces.Space;
@@ -120,10 +121,14 @@ namespace Assets.Scripts.Scene
                 GUI.contentColor = Color.red;
                 GUI.Label(new Rect(0, 0, Screen.width, Screen.height), labelText);
 
-                if (GUI.Button(new Rect(10, 70, 50, 30), "Click"))
+                if (GUI.Button(new Rect(0, 40, 50, 30), "Zoom"))
                 {
+                    var targetZoom = 16f;
+                    var timeInterpolator = targetZoom < tileController.ZoomLevel
+                        ? (ITimeInterpolator) new AccelerateInterpolator()
+                        : new DecelerateInterpolator();
                     _spaces[_currentSpaceIndex].Animator
-                        .AnimateTo(new GeoCoordinate(StartLatitude, StartLongitude), 1, TimeSpan.FromSeconds(30));
+                        .AnimateTo(new GeoCoordinate(StartLatitude, StartLongitude), targetZoom, TimeSpan.FromSeconds(60), timeInterpolator);
                 }
             }
         }
@@ -168,7 +173,7 @@ namespace Assets.Scripts.Scene
             // enter from top by default
             to.EnterTop(coordinate);
             // make instant animation
-            to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
+            to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero, new LinearInterpolator());
         }
 
         /// <summary> Performs transition from one space to another. </summary>
@@ -196,7 +201,7 @@ namespace Assets.Scripts.Scene
                 var zoom = isFromTopSpace
                     ? to.TileController.LodRange.Minimum + 0.99f
                     : to.TileController.LodRange.Maximum;
-                to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
+                to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero, new LinearInterpolator());
             }
         }
 

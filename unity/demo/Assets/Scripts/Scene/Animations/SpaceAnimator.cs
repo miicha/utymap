@@ -15,28 +15,26 @@ namespace Assets.Scripts.Scene.Animations
         protected readonly Transform Pivot;
         protected readonly Transform Camera;
         protected readonly TileController TileController;
-        private readonly ITimeInterpolator _timeInterpolator;
 
         /// <summary> Keeps track of the last animation. </summary>
         private AnimationState _lastState;
 
         /// <summary> Creates animation for given coordinate and zoom level with given duration. </summary>
-        protected abstract Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration);
+        protected abstract Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration, ITimeInterpolator timeInterpolator);
 
-        protected SpaceAnimator(TileController tileController, ITimeInterpolator timeInterpolator)
+        protected SpaceAnimator(TileController tileController)
         {
             Pivot = tileController.Pivot;
             Camera = Pivot.Find("Camera").transform;
             TileController = tileController;
-            _timeInterpolator = timeInterpolator;
         }
 
         /// <inheritdoc />
-        public sealed override void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
+        public sealed override void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration, ITimeInterpolator timeInterpolator)
         {
-            _lastState = new AnimationState(coordinate, zoom, duration);
+            _lastState = new AnimationState(coordinate, zoom, duration, timeInterpolator);
 
-            SetAnimation(CreateAnimationTo(coordinate, zoom, duration));
+            SetAnimation(CreateAnimationTo(coordinate, zoom, duration, timeInterpolator));
             Start();
         }
 
@@ -44,7 +42,7 @@ namespace Assets.Scripts.Scene.Animations
         public void ContinueFrom(SpaceAnimator other)
         {
             var state = other._lastState;
-            AnimateTo(state.Coordinate, state.Zoom, TimeSpan.FromSeconds(state.TimeLeft));
+            AnimateTo(state.Coordinate, state.Zoom, TimeSpan.FromSeconds(state.TimeLeft), state.TimeInterpolator);
         }
 
         /// <inheritdoc />
@@ -53,16 +51,16 @@ namespace Assets.Scripts.Scene.Animations
             _lastState.OnUpdate(deltaTime);
         }
 
-        protected PathAnimation CreatePathAnimation(Transform target, TimeSpan duration, IEnumerable<Vector3> points)
+        protected PathAnimation CreatePathAnimation(Transform target, TimeSpan duration, ITimeInterpolator timeInterpolator, IEnumerable<Vector3> points)
         {
-            return new PathAnimation(target, _timeInterpolator,
+            return new PathAnimation(target, timeInterpolator,
                 new UtyMap.Unity.Animations.Path.LinearInterpolator(points),
                 duration);
         }
 
-        protected RotationAnimation CreateRotationAnimation(Transform target, TimeSpan duration, IEnumerable<Quaternion> rotations)
+        protected RotationAnimation CreateRotationAnimation(Transform target, TimeSpan duration, ITimeInterpolator timeInterpolator, IEnumerable<Quaternion> rotations)
         {
-            return new RotationAnimation(target, _timeInterpolator,
+            return new RotationAnimation(target, timeInterpolator,
                 new UtyMap.Unity.Animations.Rotation.LinearInterpolator(rotations),
                 duration);
         }
@@ -75,12 +73,14 @@ namespace Assets.Scripts.Scene.Animations
         {
             public readonly GeoCoordinate Coordinate;
             public readonly float Zoom;
+            public ITimeInterpolator TimeInterpolator;
             public float TimeLeft;
 
-            public AnimationState(GeoCoordinate coordinate, float zoom, TimeSpan duration)
+            public AnimationState(GeoCoordinate coordinate, float zoom, TimeSpan duration, ITimeInterpolator timeInterpolator)
             {
                 Coordinate = coordinate;
                 Zoom = zoom;
+                TimeInterpolator = timeInterpolator;
                 TimeLeft = (float) duration.TotalSeconds;
             }
 

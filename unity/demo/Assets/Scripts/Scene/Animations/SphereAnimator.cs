@@ -12,23 +12,22 @@ namespace Assets.Scripts.Scene.Animations
     /// <summary> Handles sphere animations. </summary>
     internal sealed class SphereAnimator : SpaceAnimator
     {
-        public SphereAnimator(TileController tileController) :
-            base(tileController, new DecelerateInterpolator())
+        public SphereAnimator(TileController tileController) : base(tileController)
         {
         }
 
         /// <inheritdoc />
-        protected override Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
+        protected override Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration, ITimeInterpolator timeInterpolator)
         {
             var position = Camera.localPosition;
             return new CompositeAnimation(new List<Animation>
             {
-                CreatePathAnimation(Camera, duration, new List<Vector3>()
+                CreatePathAnimation(Camera, duration, timeInterpolator, new List<Vector3>()
                 {
                     position,
                     new Vector3(position.x, position.y, -TileController.GetHeight(zoom))
                 }),
-                CreateRotationAnimation(Pivot, duration, new List<Quaternion>()
+                CreateRotationAnimation(Pivot, duration, timeInterpolator, new List<Quaternion>()
                 {
                     Pivot.rotation,
                     Quaternion.Euler(new Vector3((float) coordinate.Latitude, 270 - (float) coordinate.Longitude, 0))
