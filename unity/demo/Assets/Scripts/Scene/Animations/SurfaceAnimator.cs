@@ -8,6 +8,7 @@ using Animation = UtyMap.Unity.Animations.Animation;
 
 namespace Assets.Scripts.Scene.Animations
 {
+    /// <summary> Handles surface animations. </summary>
     internal sealed class SurfaceAnimator : SpaceAnimator
     {
         public SurfaceAnimator(TileController tileController) :
@@ -15,6 +16,7 @@ namespace Assets.Scripts.Scene.Animations
         {
         }
 
+        /// <inheritdoc />
         protected override Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
         {
             return CreatePathAnimation(Pivot, duration, new List<Vector3>()

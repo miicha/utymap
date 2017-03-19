@@ -7,6 +7,9 @@ namespace UtyMap.Unity.Animations
     {
         private Animation _animation;
 
+        /// <summary> Called when animation is updated. </summary>
+        protected abstract void OnAnimationUpdate(float deltaTime);
+
         /// <summary> Animates to given coordinate using default interpolators. </summary>
         public abstract void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration);
 
@@ -15,6 +18,8 @@ namespace UtyMap.Unity.Animations
         {
             if (_animation == null || !_animation.IsRunning)
                 return;
+
+            OnAnimationUpdate(deltaTime);
 
             _animation.OnUpdate(deltaTime);
         }

@@ -15,9 +15,12 @@ namespace Assets.Scripts.Scene.Animations
         protected readonly Transform Pivot;
         protected readonly Transform Camera;
         protected readonly TileController TileController;
-
         private readonly ITimeInterpolator _timeInterpolator;
 
+        /// <summary> Keeps track of the last animation. </summary>
+        private AnimationState _state;
+
+        /// <summary> Creates animation for given coordinate and zoom level with given duration. </summary>
         protected abstract Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration);
 
         protected SpaceAnimator(TileController tileController, ITimeInterpolator timeInterpolator)
@@ -29,10 +32,25 @@ namespace Assets.Scripts.Scene.Animations
         }
 
         /// <inheritdoc />
-        public override void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
+        public sealed override void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
         {
+            _state = new AnimationState(coordinate, zoom, duration);
+
             SetAnimation(CreateAnimationTo(coordinate, zoom, duration));
             Start();
+        }
+
+        /// <summary> Continues animation.. </summary>
+        public void ContinueFrom(SpaceAnimator other)
+        {
+            var state = other._state;
+            AnimateTo(state.Coordinate, state.Zoom, TimeSpan.FromSeconds(state.TimeLeft));
+        }
+
+        /// <inheritdoc />
+        protected sealed override void OnAnimationUpdate(float deltaTime)
+        {
+            _state.OnUpdate(deltaTime);
         }
 
         protected PathAnimation CreatePathAnimation(Transform target, TimeSpan duration, IEnumerable<Vector3> points)
@@ -48,5 +66,27 @@ namespace Assets.Scripts.Scene.Animations
                 new UtyMap.Unity.Animations.Rotation.LinearInterpolator(rotations),
                 duration);
         }
+
+        #region Nested classes
+
+        /// <summary> Keeps state of last animation. </summary>
+        /// <remarks> Introduced to support animation transition from one space to another. </remarks>
+        struct AnimationState
+        {
+            public readonly GeoCoordinate Coordinate;
+            public readonly float Zoom;
+            public float TimeLeft;
+
+            public AnimationState(GeoCoordinate coordinate, float zoom, TimeSpan duration)
+            {
+                Coordinate = coordinate;
+                Zoom = zoom;
+                TimeLeft = (float) duration.TotalSeconds;
+            }
+
+            public void OnUpdate(float deltaTime) { TimeLeft -= deltaTime; }
+        }
+
+        #endregion
     }
 }

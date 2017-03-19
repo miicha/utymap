@@ -172,6 +172,9 @@ namespace Assets.Scripts.Scene
                 ? to.TileController.LodRange.Maximum
                 : to.TileController.LodRange.Minimum + 0.99f;
 
+            if (from.Animator.IsRunningAnimation)
+                to.Animator.ContinueFrom(from.Animator);
+
             from.Leave();
 
             DoTransition(to, coordinate, zoom);
@@ -182,8 +185,9 @@ namespace Assets.Scripts.Scene
         {
             // prepare scen for "to"-state by making transition
             to.Enter();
-            // make an instant animation to given position
-            _spaces[_currentSpaceIndex].Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
+            // make instance transition if necessary
+            if (!to.Animator.IsRunningAnimation)
+                to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
         }
 
         #endregion
