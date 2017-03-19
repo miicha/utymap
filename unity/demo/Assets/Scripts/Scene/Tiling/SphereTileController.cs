@@ -19,8 +19,6 @@ namespace Assets.Scripts.Scene.Tiling
 
         private readonly Transform _camera;
         private readonly float _radius;
-        private readonly float _minHeight;
-        private readonly float _maxHeight;
         private readonly Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
 
         private float _zoom;
@@ -39,9 +37,15 @@ namespace Assets.Scripts.Scene.Tiling
             Projection = new SphericalProjection(radius);
 
             _camera = pivot.Find("Camera").transform;
-            _maxHeight = LodTree.Max;
-            _minHeight = LodTree.Min;
+
+            HeightRange = new Range<float>(LodTree.Min, LodTree.Max);
         }
+
+        /// <inheritdoc />
+        protected override float DistanceToOrigin { get { return _distanceToOrigin; } }
+
+        /// <inheritdoc />
+        public override Range<float> HeightRange { get; protected set; }
 
         /// <inheritdoc />
         public override float FieldOfView { get; protected set; }
@@ -66,12 +70,6 @@ namespace Assets.Scripts.Scene.Tiling
                 return new GeoCoordinate(latitude, longitude);
             }
         }
-
-        /// <inheritdoc />
-        public override bool IsAboveMax { get { return _maxHeight < _distanceToOrigin; } }
-
-        /// <inheritdoc />
-        public override bool IsBelowMin { get { return _minHeight > _distanceToOrigin; } }
 
         /// <inheritdoc />
         public override void OnUpdate(Transform planet)

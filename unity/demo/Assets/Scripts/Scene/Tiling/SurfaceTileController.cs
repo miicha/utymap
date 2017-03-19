@@ -13,8 +13,6 @@ namespace Assets.Scripts.Scene.Tiling
     {
         private const float PositionSensivity = 50f;
 
-        private readonly float _minHeight;
-        private readonly float _maxHeight;
         private readonly float _scale;
 
         private readonly Vector3 _origin = Vector3.zero;
@@ -35,9 +33,14 @@ namespace Assets.Scripts.Scene.Tiling
             LodTree = GetLodTree(pivot.Find("Camera").GetComponent<Camera>().aspect, maxDistance);
             Projection = CreateProjection();
 
-            _maxHeight = LodTree.Max;
-            _minHeight = LodTree.Min;
+            HeightRange = new Range<float>(LodTree.Min, LodTree.Max);
         }
+
+        /// <inheritdoc />
+        protected override float DistanceToOrigin { get { return _distanceToOrigin; } }
+
+        /// <inheritdoc />
+        public override Range<float> HeightRange { get; protected set; }
 
         /// <inheritdoc />
         public override float FieldOfView { get; protected set; }
@@ -50,12 +53,6 @@ namespace Assets.Scripts.Scene.Tiling
 
         /// <inheritdoc />
         public override GeoCoordinate Coordinate { get { return GeoUtils.ToGeoCoordinate(_geoOrigin, _position); } }
-
-        /// <inheritdoc />
-        public override bool IsAboveMax { get { return _maxHeight < _distanceToOrigin; } }
-
-        /// <inheritdoc />
-        public override bool IsBelowMin { get { return _minHeight > _distanceToOrigin; } }
 
         /// <inheritdoc />
         public override void OnUpdate(Transform planet)

@@ -18,7 +18,7 @@ namespace Assets.Scripts.Scene.Animations
         private readonly ITimeInterpolator _timeInterpolator;
 
         /// <summary> Keeps track of the last animation. </summary>
-        private AnimationState _state;
+        private AnimationState _lastState;
 
         /// <summary> Creates animation for given coordinate and zoom level with given duration. </summary>
         protected abstract Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration);
@@ -34,23 +34,23 @@ namespace Assets.Scripts.Scene.Animations
         /// <inheritdoc />
         public sealed override void AnimateTo(GeoCoordinate coordinate, float zoom, TimeSpan duration)
         {
-            _state = new AnimationState(coordinate, zoom, duration);
+            _lastState = new AnimationState(coordinate, zoom, duration);
 
             SetAnimation(CreateAnimationTo(coordinate, zoom, duration));
             Start();
         }
 
-        /// <summary> Continues animation.. </summary>
+        /// <summary> Continues animation. </summary>
         public void ContinueFrom(SpaceAnimator other)
         {
-            var state = other._state;
+            var state = other._lastState;
             AnimateTo(state.Coordinate, state.Zoom, TimeSpan.FromSeconds(state.TimeLeft));
         }
 
         /// <inheritdoc />
         protected sealed override void OnAnimationUpdate(float deltaTime)
         {
-            _state.OnUpdate(deltaTime);
+            _lastState.OnUpdate(deltaTime);
         }
 
         protected PathAnimation CreatePathAnimation(Transform target, TimeSpan duration, IEnumerable<Vector3> points)

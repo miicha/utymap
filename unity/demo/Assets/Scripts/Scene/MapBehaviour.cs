@@ -150,7 +150,7 @@ namespace Assets.Scripts.Scene
 
         #region Space change logic
 
-        /// <summary> Performs transition to unknown space based on zoom level and lod ranges. </summary>
+        /// <summary> Performs initial space transition based on zoom level and lod ranges. </summary>
         private void DoTransition(GeoCoordinate coordinate, float zoom)
         {
             for (int i = 0; i < _lods.Count; ++i)
@@ -160,34 +160,38 @@ namespace Assets.Scripts.Scene
                     break;
                 }
 
-            DoTransition(_spaces[_currentSpaceIndex], coordinate, zoom);
+            Space to = _spaces[_currentSpaceIndex];
+            // enter from top by default
+            to.EnterTop();
+            // make instant animation
+            to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
         }
 
         /// <summary> Performs transition from one space to another. </summary>
         private void DoTransition(Space from, Space to)
         {
-            // calculate "to"-space parameters
-            var coordinate = from.TileController.Coordinate;
-            var zoom = from.TileController.LodRange.Maximum > to.TileController.LodRange.Maximum
-                ? to.TileController.LodRange.Maximum
-                : to.TileController.LodRange.Minimum + 0.99f;
-
-            if (from.Animator.IsRunningAnimation)
-                to.Animator.ContinueFrom(from.Animator);
-
+            bool fromTopSpace = from.TileController.LodRange.Maximum < to.TileController.LodRange.Maximum;
+            bool hadRunningAnimation = from.Animator.IsRunningAnimation;
+            
             from.Leave();
 
-            DoTransition(to, coordinate, zoom);
-        }
+            // make transition
+            if (fromTopSpace) to.EnterTop();
+            else to.EnterBottom();
 
-        /// <summary> Performs transition to the new space. </summary>
-        private void DoTransition(Space to, GeoCoordinate coordinate, float zoom)
-        {
-            // prepare scen for "to"-state by making transition
-            to.Enter();
-            // make instance transition if necessary
-            if (!to.Animator.IsRunningAnimation)
-                to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
+            // continue old space animation if it is running
+            if (hadRunningAnimation)
+            {
+                to.Animator.ContinueFrom(from.Animator);
+                return;
+            }
+
+            // otherwise make instant transition
+            var coordinate = from.TileController.Coordinate;
+            var zoom = fromTopSpace
+                ? to.TileController.LodRange.Minimum + 0.99f
+                : to.TileController.LodRange.Maximum;
+            to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero);
         }
 
         #endregion

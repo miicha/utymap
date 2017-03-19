@@ -37,12 +37,11 @@ namespace Assets.Scripts.Scene.Spaces
             Light.localRotation = Quaternion.Euler(0, 0, 0);
         }
 
-        /// <summary> Performs init actions. </summary>
-        public virtual void Enter()
-        {
-            ResetTransforms();
-            Camera.fieldOfView = TileController.FieldOfView;
-        }
+        /// <summary> Enters space from top. </summary>
+        public virtual void EnterTop() { Enter(); }
+
+        /// <summary> Enters space from bottom. </summary>
+        public virtual void EnterBottom() { Enter(); }
 
         /// <summary> Performs cleanup actions. </summary>
         public virtual void Leave()
@@ -55,6 +54,13 @@ namespace Assets.Scripts.Scene.Spaces
         public void Dispose()
         {
             TileController.Dispose();
+        }
+
+        /// <summary> Performs init actions. </summary>
+        private void Enter()
+        {
+            ResetTransforms();
+            Camera.fieldOfView = TileController.FieldOfView;
         }
     }
 }

@@ -19,14 +19,19 @@ namespace Assets.Scripts.Scene.Spaces
             Animator = new SurfaceAnimator(tileController);
         }
 
-        public override void Enter()
+        /// <inheritdoc />
+        public override void EnterTop()
         {
-            base.Enter();
+            base.EnterTop();
+            Enter(true);
+         
+        }
 
-            Camera.transform.localRotation = Quaternion.Euler(90, 0, 0);
-            Light.transform.localRotation = Quaternion.Euler(90, 0, 0);
-
-            _surface.SetActive(true);
+        /// <inheritdoc />
+        public override void EnterBottom()
+        {
+            base.EnterBottom();
+            Enter(false);
         }
 
         public override void Leave()
@@ -34,6 +39,18 @@ namespace Assets.Scripts.Scene.Spaces
             base.Leave();
 
             _surface.SetActive(false);
+        }
+
+        private void Enter(bool isFromTop)
+        {
+            Camera.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            Light.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            Pivot.localPosition = new Vector3(0, isFromTop
+                ? TileController.HeightRange.Maximum
+                : TileController.HeightRange.Minimum, 
+                0);
+
+            _surface.SetActive(true);
         }
     }
 }

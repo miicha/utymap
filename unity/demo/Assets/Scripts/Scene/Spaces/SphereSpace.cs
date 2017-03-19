@@ -20,10 +20,16 @@ namespace Assets.Scripts.Scene.Spaces
         }
 
         /// <inheritdoc />
-        public override void Enter()
+        public override void EnterTop()
         {
-            base.Enter();
+            base.EnterTop();
+            _planet.SetActive(true);
+        }
 
+        /// <inheritdoc />
+        public override void EnterBottom()
+        {
+            base.EnterBottom();
             _planet.SetActive(true);
         }
 

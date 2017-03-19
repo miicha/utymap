@@ -13,8 +13,14 @@ namespace Assets.Scripts.Scene.Tiling
         private readonly Stylesheet _stylesheet;
         private readonly ElevationDataType _elevationType;
 
+        /// <summary> Gets distance to origin. </summary>
+        protected abstract float DistanceToOrigin { get; }
+
         /// <summary> Contains LOD values mapped for height ranges. </summary>
         protected RangeTree<float, int> LodTree;
+
+        /// <summary> Scaled height range. </summary>
+        public abstract Range<float> HeightRange { get; protected set; }
 
         /// <summary> Pivot. </summary>
         public readonly Transform Pivot;
@@ -35,10 +41,10 @@ namespace Assets.Scripts.Scene.Tiling
         public abstract GeoCoordinate Coordinate { get; }
 
         /// <summary> Is above maximum zoom level. </summary>
-        public abstract bool IsAboveMax { get; }
+        public bool IsAboveMax { get { return HeightRange.Maximum < DistanceToOrigin; } }
 
         /// <summary> Is belove minimum zoom level </summary>
-        public abstract bool IsBelowMin{ get; }
+        public bool IsBelowMin { get { return HeightRange.Minimum > DistanceToOrigin; } }
 
         /// <summary> Updates position and rotation. </summary>
         public abstract void OnUpdate(Transform planet);
@@ -74,9 +80,15 @@ namespace Assets.Scripts.Scene.Tiling
                     endHeight = rangeValuePair.From;
             }
 
+            // NOTE extrapolate height for zoom outside lod range.
             if (Math.Abs(startHeight - float.MinValue) < float.Epsilon ||
                 Math.Abs(endHeight - float.MinValue) < float.Epsilon)
-                throw new ArgumentException(String.Format("Invalid lod: {0}.", zoom));
+            {
+                var ratio = (HeightRange.Maximum - HeightRange.Minimum) / (LodRange.Maximum - LodRange.Minimum + 1);
+                return zoom > LodRange.Maximum
+                    ? HeightRange.Minimum - (zoom - LodRange.Maximum) * ratio
+                    : HeightRange.Maximum + (zoom - LodRange.Minimum) * ratio;
+            }
 
             return endHeight - (endHeight - startHeight) * (zoom - startLod);
         }
