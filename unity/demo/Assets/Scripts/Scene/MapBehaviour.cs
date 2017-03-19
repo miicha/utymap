@@ -75,7 +75,7 @@ namespace Assets.Scripts.Scene
                                 new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Planet),
                 new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[1], startCoord, surfaceScale, 1000),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
-                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[2], startCoord, detailScale, 100),
+                new SurfaceSpace(new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[2], startCoord, detailScale, 500),
                                  new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
             };
 
@@ -97,14 +97,13 @@ namespace Assets.Scripts.Scene
         void Update()
         {
             var space = _spaces[_currentSpaceIndex];
-            var tileController = space.TileController;
 
             space.Update(Time.deltaTime);
 
             // check whether space change is needed
-            if (tileController.IsAboveMax && _currentSpaceIndex > 0)
+            if (space.TileController.IsAboveMax && _currentSpaceIndex > 0)
                 DoTransition(space, _spaces[--_currentSpaceIndex]);
-            else if (tileController.IsBelowMin && _currentSpaceIndex != _spaces.Count - 1)
+            else if (space.TileController.IsBelowMin && _currentSpaceIndex != _spaces.Count - 1)
                 DoTransition(space, _spaces[++_currentSpaceIndex]);
         }
 

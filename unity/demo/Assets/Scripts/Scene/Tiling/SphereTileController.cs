@@ -39,6 +39,7 @@ namespace Assets.Scripts.Scene.Tiling
             _camera = pivot.Find("Camera").transform;
 
             HeightRange = new Range<float>(LodTree.Min, LodTree.Max);
+            ResetToDefaults();
         }
 
         /// <inheritdoc />
@@ -72,7 +73,18 @@ namespace Assets.Scripts.Scene.Tiling
         }
 
         /// <inheritdoc />
-        public override void OnUpdate(Transform planet)
+        public override void Dispose()
+        {
+            ResetToDefaults();
+
+            foreach (var quadkey in _loadedQuadKeys.Keys.ToArray())
+                SafeDestroy(quadkey);
+
+            Resources.UnloadUnusedAssets();
+        }
+
+        /// <inheritdoc />
+        public override void Update(Transform target)
         {
             var position = _camera.localPosition;
             var rotation = Pivot.rotation.eulerAngles;
@@ -86,18 +98,13 @@ namespace Assets.Scripts.Scene.Tiling
             _distanceToOrigin = Vector3.Distance(_position, _origin);
             _zoom = CalculateZoom(_distanceToOrigin);
 
-            if (_loadedQuadKeys.Any())
-                BuildIfNecessary(planet);
-            else
-                BuildInitial(planet);
-        }
+            if (IsAboveMax || IsBelowMin)
+                return;
 
-        /// <inheritdoc />
-        public override void Dispose()
-        {
-            foreach (var quadkey in _loadedQuadKeys.Keys.ToArray())
-                SafeDestroy(quadkey);
-            Resources.UnloadUnusedAssets();
+            if (_loadedQuadKeys.Any())
+                BuildIfNecessary(target);
+            else
+                BuildInitial(target);
         }
 
         #region LOD calculations
@@ -275,6 +282,14 @@ namespace Assets.Scripts.Scene.Tiling
             var go = GameObject.Find(name);
             if (go != null)
                 Object.Destroy(go);
+        }
+
+        private void ResetToDefaults()
+        {
+            _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            _rotation = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            _distanceToOrigin = HeightRange.Minimum + (HeightRange.Maximum - HeightRange.Minimum) / 2;
+            _zoom = 0;
         }
     }
 }

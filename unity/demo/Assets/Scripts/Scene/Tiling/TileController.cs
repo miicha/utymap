@@ -46,8 +46,8 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Is belove minimum zoom level </summary>
         public bool IsBelowMin { get { return HeightRange.Minimum > DistanceToOrigin; } }
 
-        /// <summary> Updates position and rotation. </summary>
-        public abstract void OnUpdate(Transform planet);
+        /// <summary> Updates target. </summary>
+        public abstract void Update(Transform target);
 
         /// <inheritdoc />
         public abstract void Dispose();

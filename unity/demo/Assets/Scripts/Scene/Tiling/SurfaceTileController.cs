@@ -35,6 +35,7 @@ namespace Assets.Scripts.Scene.Tiling
             Projection = CreateProjection();
 
             HeightRange = new Range<float>(LodTree.Min, LodTree.Max);
+            ResetToDefaults();
         }
 
         /// <inheritdoc />
@@ -56,29 +57,34 @@ namespace Assets.Scripts.Scene.Tiling
         public override GeoCoordinate Coordinate { get { return GeoUtils.ToGeoCoordinate(_geoOrigin, _position); } }
 
         /// <inheritdoc />
-        public override void OnUpdate(Transform planet)
+        public override void Dispose()
+        {
+            ResetToDefaults();
+
+            foreach (var tile in _loadedQuadKeys.Values.ToArray())
+                tile.Dispose();
+
+            Resources.UnloadUnusedAssets();
+        }
+
+        /// <inheritdoc />
+        public override void Update(Transform target)
         {
             var position = Pivot.localPosition;
 
             if (Vector3.Distance(position, _position) < PositionSensivity)
                 return;
-            
+
             var oldLod = (int)_zoom;
 
             _position = position;
             _distanceToOrigin = Vector3.Distance(_position, _origin);
             _zoom = CalculateZoom(_distanceToOrigin);
-           
-            Build(planet, oldLod);
-        }
 
-        /// <inheritdoc />
-        public override void Dispose()
-        {
-            foreach (var tile in _loadedQuadKeys.Values)
-                tile.Dispose();
+            if (IsAboveMax || IsBelowMin)
+                return;
 
-            Resources.UnloadUnusedAssets();
+            Build(target, oldLod);
         }
 
         #region Tile processing
@@ -217,6 +223,13 @@ namespace Assets.Scripts.Scene.Tiling
         }
 
         #endregion
+
+        private void ResetToDefaults()
+        {
+            _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            _distanceToOrigin = HeightRange.Minimum + (HeightRange.Maximum - HeightRange.Minimum) / 2;
+            _zoom = 0;
+        }
 
         /// <summary> Gets projection for current georigin and scale. </summary>
         private IProjection CreateProjection()

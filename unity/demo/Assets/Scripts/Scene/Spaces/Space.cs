@@ -49,7 +49,7 @@ namespace Assets.Scripts.Scene.Spaces
         public void Update(float deltaTime)
         {
             Animator.Update(deltaTime);
-            TileController.OnUpdate(Target);
+            TileController.Update(Target);
         }
 
         /// <summary> Performs cleanup actions. </summary>
