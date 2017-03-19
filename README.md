@@ -8,16 +8,18 @@
 
 UtyMap is a library which provides highly customizable API for procedural world generation based on real vector map data, e.g. OpenStreetMap, NaturalEarth. Core logic is written on C++11 and can be used on many platforms as it has no dependency to specific game engine or application framework. It is designed for interactive world creation at different zoom levels, including globe and ground.
 
+<img src="https://cloud.githubusercontent.com/assets/1611077/19216383/4c10f3ee-8db9-11e6-8877-b652aa846734.png" />
+
 <h2> Status </h2>
 
-Current master branch has very experimental version. It is recommended to use the latest release.
+Current master branch has a very experimental version. It is recommended to use the latest release.
 
 <h2> Features </h2>
 
 <h3> Zoom levels </h3>
 utymap can load your scene at different zoom levels:
 
-<img src="https://cloud.githubusercontent.com/assets/1611077/19216383/4c10f3ee-8db9-11e6-8877-b652aa846734.png" />
+[![Zoom:Demo](http://img.youtube.com/vi/kDD45K7XfEY/0.jpg)](https://www.youtube.com/watch?v=kDD45K7XfEY)
 
 <h3> Map data </h3>
 utymap can use various vector map data sources and file formats:
