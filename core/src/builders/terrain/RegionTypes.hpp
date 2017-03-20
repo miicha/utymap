@@ -108,7 +108,7 @@ struct Region final
 /// Represents terrain regions grouped by sort order.
 struct Layer
 {
-    int sortOrder;
+    int sortOrder = 0;
     std::vector<std::shared_ptr<const Region>> regions;
 
     Layer() = default;
