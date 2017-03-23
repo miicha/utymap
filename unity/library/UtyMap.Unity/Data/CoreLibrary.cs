@@ -134,15 +134,11 @@ namespace UtyMap.Unity.Data
         public static void LoadQuadKey(string stylePath, QuadKey quadKey, ElevationDataType elevationDataType,
             OnMeshBuilt onMeshBuilt, OnElementLoaded onElementLoaded, OnError onError, CancellationToken cancelToken)
         {
-            // TODO make native call completely thread safe
-            lock (__lockObj)
-            {
-                GCHandle cancelTokenHandle = GCHandle.Alloc(cancelToken, GCHandleType.Pinned);
-                loadQuadKey(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
-                    (int) elevationDataType, onMeshBuilt, onElementLoaded, onError,
-                    cancelTokenHandle.AddrOfPinnedObject());
-                cancelTokenHandle.Free();
-            }
+            GCHandle cancelTokenHandle = GCHandle.Alloc(cancelToken, GCHandleType.Pinned);
+            loadQuadKey(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
+                (int)elevationDataType, onMeshBuilt, onElementLoaded, onError,
+                cancelTokenHandle.AddrOfPinnedObject());
+            cancelTokenHandle.Free();
         }
 
         /// <summary> Frees resources. Should be called before application stops. </summary>
