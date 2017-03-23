@@ -50,14 +50,14 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Gets current zoom level. </summary>
         public abstract float ZoomLevel { get; }
 
-        // <summary> Gets current geo coordinate. </summary>
-        public abstract GeoCoordinate Coordinate { get; }
-
         /// <summary> Is above maximum zoom level. </summary>
-        public bool IsAboveMax { get { return HeightRange.Maximum < DistanceToOrigin; } }
+        public abstract bool IsAboveMax { get; }
 
         /// <summary> Is belove minimum zoom level </summary>
-        public bool IsBelowMin { get { return HeightRange.Minimum > DistanceToOrigin; } }
+        public abstract bool IsBelowMin { get; }
+
+        // <summary> Gets current geo coordinate. </summary>
+        public abstract GeoCoordinate Coordinate { get; }
 
         /// <summary> Updates target. </summary>
         public abstract void Update(Transform target);

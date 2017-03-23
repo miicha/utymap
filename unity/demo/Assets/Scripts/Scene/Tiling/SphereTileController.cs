@@ -55,6 +55,12 @@ namespace Assets.Scripts.Scene.Tiling
         public override float ZoomLevel { get { return _zoom; } }
 
         /// <inheritdoc />
+        public override bool IsAboveMax { get { return HeightRange.Maximum < DistanceToOrigin; } }
+
+        /// <inheritdoc />
+        public override bool IsBelowMin { get { return HeightRange.Minimum > DistanceToOrigin; } }
+
+        /// <inheritdoc />
         public override GeoCoordinate Coordinate
         {
             get

@@ -53,6 +53,12 @@ namespace Assets.Scripts.Scene.Tiling
         public override float ZoomLevel { get { return _zoom; } }
 
         /// <inheritdoc />
+        public override bool IsAboveMax { get { return HeightRange.Maximum < _position.y; } }
+
+        /// <inheritdoc />
+        public override bool IsBelowMin { get { return HeightRange.Minimum > _position.y; } }
+
+        /// <inheritdoc />
         public override GeoCoordinate Coordinate { get { return GeoUtils.ToGeoCoordinate(_geoOrigin, _position); } }
 
         /// <inheritdoc />
@@ -78,7 +84,7 @@ namespace Assets.Scripts.Scene.Tiling
 
             _position = position;
             _distanceToOrigin = Vector3.Distance(_position, _origin);
-            _zoom = CalculateZoom(_distanceToOrigin);
+            _zoom = CalculateZoom(_position.y);
 
             if (IsAboveMax || IsBelowMin)
                 return;
