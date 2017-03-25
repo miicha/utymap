@@ -48,7 +48,7 @@ canvas|z9-16 {
     path-footway-max-area: 0.1%;
     path-footway-color-noise-freq: 0;
     path-footway-ele-noise-freq: 0;
-    path-footway-color: gradient(#ccff99);
+    path-footway-color: gradient(#ccddcc);
 	path-footway-sort-order: 1003;
     path-footway-mesh-name: terrain_path_footway;
 
