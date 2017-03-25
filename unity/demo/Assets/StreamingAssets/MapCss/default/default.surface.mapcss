@@ -9,49 +9,49 @@ canvas|z9-16 {
     color-noise-freq: 0;
     ele-noise-freq: 0;
     color: gradient(#b5d0d0);
-	
-	path-footway-max-area: 0.1%;
-    path-footway-color-noise-freq: 0;
-    path-footway-ele-noise-freq: 0;
-    path-footway-color: gradient(#ccff99);
-	path-footway-sort-order: 1008;
-    path-footway-mesh-name: terrain_path_footway;
-	
-	road-minor-max-area: 0.1%;
-    road-minor-color-noise-freq: 0;
-    road-minor-ele-noise-freq: 0;
-    road-minor-color: gradient(#999999);
-	road-minor-sort-order: 1007;
-    road-minor-mesh-name: terrain_road_minor;
-	
-	road-major-tertiary-max-area: 0.1%;
-    road-major-tertiary-color-noise-freq: 0;
-    road-major-tertiary-ele-noise-freq: 0;
-    road-major-tertiary-color: gradient(#999999);
-	road-major-tertiary-sort-order: 1006;
-    road-major-tertiary-mesh-name: terrain_road_major_tertiary;
-	
-	road-major-secondary-max-area: 0.1%;
-    road-major-secondary-color-noise-freq: 0;
-    road-major-secondary-ele-noise-freq: 0;
-    road-major-secondary-color: gradient(#a37b48);
-	road-major-secondary-sort-order: 1005;
-    road-major-secondary-mesh-name: terrain_road_major_secondary;
-	
-	road-highway-primary-max-area: 0.1%;
-    road-highway-primary-color-noise-freq: 0;
-    road-highway-primary-ele-noise-freq: 0;
-    road-highway-primary-color: gradient(#8d4346);
-	road-highway-primary-sort-order: 1004;
-    road-highway-primary-mesh-name: terrain_road_highway_primary;
-	
-	railway-max-area: 0.1%;
+
+    railway-max-area: 0.1%;
     railway-color-noise-freq: 0;
     railway-ele-noise-freq: 0;
     railway-color: gray;
-	railway-sort-order: 1003;
+    railway-sort-order: 1008;
     railway-mesh-name: terrain_railway;
-	
+
+    road-highway-primary-max-area: 0.1%;
+    road-highway-primary-color-noise-freq: 0;
+    road-highway-primary-ele-noise-freq: 0;
+    road-highway-primary-color: gradient(#8d4346);
+	road-highway-primary-sort-order: 1007;
+    road-highway-primary-mesh-name: terrain_road_highway_primary;
+
+    road-major-secondary-max-area: 0.1%;
+    road-major-secondary-color-noise-freq: 0;
+    road-major-secondary-ele-noise-freq: 0;
+    road-major-secondary-color: gradient(#a37b48);
+	road-major-secondary-sort-order: 1006;
+    road-major-secondary-mesh-name: terrain_road_major_secondary;
+
+    road-major-tertiary-max-area: 0.1%;
+    road-major-tertiary-color-noise-freq: 0;
+    road-major-tertiary-ele-noise-freq: 0;
+    road-major-tertiary-color: gradient(#999999);
+    road-major-tertiary-sort-order: 1005;
+    road-major-tertiary-mesh-name: terrain_road_major_tertiary;
+
+    road-minor-max-area: 0.1%;
+    road-minor-color-noise-freq: 0;
+    road-minor-ele-noise-freq: 0;
+    road-minor-color: gradient(#999999);
+	road-minor-sort-order: 1004;
+    road-minor-mesh-name: terrain_road_minor;
+
+    path-footway-max-area: 0.1%;
+    path-footway-color-noise-freq: 0;
+    path-footway-ele-noise-freq: 0;
+    path-footway-color: gradient(#ccff99);
+	path-footway-sort-order: 1003;
+    path-footway-mesh-name: terrain_path_footway;
+
 	boundary-country-max-area: 10%;
     boundary-country-color-noise-freq: 0;
     boundary-country-ele-noise-freq: 0;
@@ -66,14 +66,14 @@ canvas|z9-16 {
     boundary-region-color: gradient(#dcbad6);
 	boundary-region-sort-order:1001;
     boundary-region-mesh-name: terrain_boundary_region;
-	
+
 	water-max-area: 0.25%;
     water-color-noise-freq: 0;
     water-ele-noise-freq: 0;
     water-color: gradient(#b5d0d0);
 	water-sort-order: 1000;
     water-mesh-name: water;
-	
+
 	earth-max-area: 0.1%;
     earth-color-noise-freq: 0;
     earth-ele-noise-freq: 0;
