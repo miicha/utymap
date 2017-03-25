@@ -74,7 +74,6 @@ area,relation|z11-16[kind=village_green] {
     mesh-name: village_green;
 }
 
-area,relation|z11-16[kind=wetland],
 area,relation|z11-16[kind=scrub] {
 	color: gradient(#b5e3b5);
     mesh-name: scrub;
@@ -107,10 +106,10 @@ area,relation|z15[kind=building]{
     building: true;
 	multipolygon: true;
     builders: building;
-	
+
 	height: 12m;
     min-height: 0m;
-	
+
 	facade-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
     facade-type: flat;
     facade-texture-index: 0;
@@ -127,4 +126,15 @@ area,relation|z15[kind=building]{
 
 area,relation|z15[kind=building][height] {
     height: eval("tag('height')");
+}
+
+/* Skip small areas to speedup processing. */
+area,relation|z9[area<8096000],
+area,relation|z10[area<2048000],
+area,relation|z11[area<512000],
+area,relation|z12[area<128000],
+area,relation|z13[area<32000],
+area,relation|z14[area<8000],
+area,relation|z15[area<2000] {
+    skip: true;
 }
