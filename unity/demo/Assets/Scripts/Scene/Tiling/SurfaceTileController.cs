@@ -94,9 +94,16 @@ namespace Assets.Scripts.Scene.Tiling
 
         #region Tile processing
 
-        // TODO call this method
+        /// <summary> Moves geo origin. </summary>
+        public void MoveGeoOrigin(GeoCoordinate origin)
+        {
+            _geoOrigin = origin;
+            Projection = CreateProjection();
+        }
+
+        // TODO call this method when tile is moved to far.
         /// <summary> Moves geo origin to specific world position. </summary>
-        private void MoveOrigin(Vector3 position)
+        private void MoveWorldOrigin(Vector3 position)
         {
             _geoOrigin = GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(position.x, position.z) / _scale);
             Projection = CreateProjection();

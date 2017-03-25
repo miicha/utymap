@@ -8,12 +8,15 @@ namespace Assets.Scripts.Scene.Spaces
 {
     internal sealed class SurfaceSpace : Space
     {
+        private readonly SurfaceTileController _tileController;
+
         /// <inheritdoc />
         public override SpaceAnimator Animator { get; protected set; }
 
         public SurfaceSpace(SurfaceTileController tileController, SurfaceGestureStrategy gestureStrategy, Transform surface) :
             base(tileController, gestureStrategy, surface)
         {
+            _tileController = tileController;
             Animator = new SurfaceAnimator(tileController);
         }
 
@@ -25,6 +28,9 @@ namespace Assets.Scripts.Scene.Spaces
                 ? TileController.HeightRange.Maximum
                 : TileController.HeightRange.Minimum,
                 0);
+
+            // surface specific
+            _tileController.MoveGeoOrigin(coordinate);
         }
 
         protected override void OnExit()
