@@ -67,7 +67,11 @@ namespace UtyMap.Unity.Data
         /// <param name="onError"> OnError callback. </param>
         public static void AddToStore(MapDataStorageType dataStorageType, string stylePath, string path, Range<int> levelOfDetails, OnError onError)
         {
-            addToStoreInRange(GetStoreKey(dataStorageType), stylePath, path, levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
+            lock (__lockObj)
+            {
+                addToStoreInRange(GetStoreKey(dataStorageType), stylePath, path, levelOfDetails.Minimum,
+                    levelOfDetails.Maximum, onError);
+            }
         }
 
         /// <summary>
@@ -81,7 +85,11 @@ namespace UtyMap.Unity.Data
         /// <param name="onError"> OnError callback. </param>
         public static void AddToStore(MapDataStorageType dataStorageType, string stylePath, string path, QuadKey quadKey, OnError onError)
         {
-            addToStoreInQuadKey(GetStoreKey(dataStorageType), stylePath, path, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, onError);
+            lock (__lockObj)
+            {
+                addToStoreInQuadKey(GetStoreKey(dataStorageType), stylePath, path, quadKey.TileX, quadKey.TileY,
+                    quadKey.LevelOfDetail, onError);
+            }
         }
 
         public static void AddElementToStore(MapDataStorageType dataStorageType, string stylePath, Element element, Range<int> levelOfDetails, OnError onError)
@@ -101,10 +109,13 @@ namespace UtyMap.Unity.Data
                 tags[i*2 + 1] = element.Tags[tagKeys[i]];
             }
 
-            addToStoreElement(GetStoreKey(dataStorageType), stylePath, element.Id,
-                coordinates, coordinates.Length,
-                tags, tags.Length, 
-                levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
+            lock (__lockObj)
+            {
+                addToStoreElement(GetStoreKey(dataStorageType), stylePath, element.Id,
+                    coordinates, coordinates.Length,
+                    tags, tags.Length,
+                    levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
+            }
         }
 
         /// <summary> Checks whether there is data for given quadkey. </summary>
