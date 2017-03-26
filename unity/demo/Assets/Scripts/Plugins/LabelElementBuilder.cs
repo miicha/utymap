@@ -23,8 +23,7 @@ namespace Assets.Scripts.Plugins
         public GameObject Build(Tile tile, Element element)
         {
             var gameObject = new GameObject(GetName(element));
-            // NOTE should be attached to properly oriented canvas from proper scene.
-            gameObject.transform.SetParent(GameObject.Find("Text Visualizer").transform);
+            gameObject.transform.SetParent(tile.GameObject.transform);
 
             return element.Styles.ContainsKey("type") && element.Styles["type"] == "flat"
                 ? BuildFlatText(gameObject, element)
