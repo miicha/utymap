@@ -29,8 +29,13 @@ public:
         nextId_ = static_cast<std::uint32_t>(indexFile_.tellg() / (sizeof(std::uint32_t) * 2));
         if (nextId_ > 0) {
             std::uint32_t count = nextId_;
-            offsets_.reserve(static_cast<std::size_t>(count));
             indexFile_.seekg(0, ios::beg);
+
+            // NOTE reserve some extra size for possible insertions
+            std::size_t capacity = count + 2048;
+            offsets_.reserve(capacity);
+            map_.reserve(capacity);
+
             for (std::uint32_t i = 0; i < count; ++i) {
                 std::uint32_t hash, offset;
                 indexFile_.read(reinterpret_cast<char*>(&hash), sizeof(hash));
@@ -50,8 +55,9 @@ public:
         std::lock_guard<std::mutex> lock(lock_);
         HashIdMap::iterator hashLookupResult = map_.find(hash);
         if (hashLookupResult != map_.end()) {
+            std::string data;
             for (std::uint32_t id : hashLookupResult->second) {
-                std::string data;
+                data.clear();
                 readString(id, data);
                 if (str == data)
                     return id;
@@ -78,9 +84,6 @@ private:
     {
         if (id < offsets_.size()) {
             std::uint32_t offset = offsets_[id];
-            std::string::size_type size = id + 1 < nextId_ ? offsets_[id] : 8;
-            data.reserve(size);
-
             dataFile_.seekg(offset, ios::beg);
             std::getline(dataFile_, data, '\0');
         }
