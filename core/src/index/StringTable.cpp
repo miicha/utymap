@@ -50,8 +50,9 @@ public:
         std::lock_guard<std::mutex> lock(lock_);
         HashIdMap::iterator hashLookupResult = map_.find(hash);
         if (hashLookupResult != map_.end()) {
+            std::string data;
             for (std::uint32_t id : hashLookupResult->second) {
-                std::string data;
+                data.clear();
                 readString(id, data);
                 if (str == data)
                     return id;
@@ -78,9 +79,6 @@ private:
     {
         if (id < offsets_.size()) {
             std::uint32_t offset = offsets_[id];
-            std::string::size_type size = id + 1 < nextId_ ? offsets_[id] : 8;
-            data.reserve(size);
-
             dataFile_.seekg(offset, ios::beg);
             std::getline(dataFile_, data, '\0');
         }
