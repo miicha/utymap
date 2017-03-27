@@ -37,13 +37,6 @@ namespace Assets.Scripts.Scene.Gestures
         /// <inheritdoc />
         public override void OnTwoFingerTransform(Transform pivot, Transform camera)
         {
-            var rotation = Quaternion.Euler(
-            TwoFingerMoveGesture.DeltaPosition.y / Screen.height * RotationSpeed,
-             -TwoFingerMoveGesture.DeltaPosition.x / Screen.width * RotationSpeed,
-             TwoFingerMoveGesture.DeltaRotation);
-
-            SetRotation(pivot, camera, rotation);
-
             camera.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * ZoomSpeed;
         }
 
