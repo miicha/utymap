@@ -16,7 +16,7 @@ namespace Assets.Scripts.Scene.Gestures
 
         public override void OnManipulationTransform(Transform pivot, Transform camera)
         {
-            pivot.localPosition += new Vector3(ManipulationGesture.DeltaPosition.x, 0, ManipulationGesture.DeltaPosition.y) * _panSpeed;
+            pivot.localPosition += new Vector3(ManipulationGesture.DeltaPosition.x, 0, ManipulationGesture.DeltaPosition.y) * -_panSpeed;
         }
 
         public override void OnTwoFingerTransform(Transform pivot, Transform camera)

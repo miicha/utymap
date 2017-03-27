@@ -27,8 +27,8 @@ namespace Assets.Scripts.Scene.Gestures
         public override void OnManipulationTransform(Transform pivot, Transform camera)
         {
             var rotation = Quaternion.Euler(
-                          ManipulationGesture.DeltaPosition.y / Screen.height * RotationSpeed,
-                          -ManipulationGesture.DeltaPosition.x / Screen.width * RotationSpeed,
+                          -ManipulationGesture.DeltaPosition.y / Screen.height * RotationSpeed,
+                          ManipulationGesture.DeltaPosition.x / Screen.width * RotationSpeed,
                           ManipulationGesture.DeltaRotation);
 
             SetRotation(pivot, camera, rotation);
