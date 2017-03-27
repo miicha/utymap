@@ -9,22 +9,9 @@ namespace Assets.Scripts.Scene.Tiling
 {
     internal abstract class TileController : IDisposable
     {
-        /// <summary> Specifies tile settings. </summary>
-        public struct Settings
-        {
-            public readonly IMapDataStore DataStore;
-            public readonly Stylesheet Stylesheet;
-            public readonly ElevationDataType ElevationType;
-
-            public Settings(IMapDataStore dataStore, Stylesheet stylesheet, ElevationDataType elevationType)
-            {
-                DataStore = dataStore;
-                Stylesheet = stylesheet;
-                ElevationType = elevationType;
-            }
-        }
-
-        private readonly Settings _settings;
+        private readonly IMapDataStore _dataStore;
+        private readonly Stylesheet _stylesheet;
+        private readonly ElevationDataType _elevationType;
 
         /// <summary> Gets distance to origin. </summary>
         protected abstract float DistanceToOrigin { get; }
@@ -65,9 +52,12 @@ namespace Assets.Scripts.Scene.Tiling
         /// <inheritdoc />
         public abstract void Dispose();
 
-        protected TileController(Settings settings, Transform pivot, Range<int> lodRange)
+        protected TileController(IMapDataStore dataStore, Stylesheet stylesheet, ElevationDataType elevationType,
+            Transform pivot, Range<int> lodRange)
         {
-            _settings = settings;
+            _dataStore = dataStore;
+            _stylesheet = stylesheet;
+            _elevationType = elevationType;
 
             Pivot = pivot;
             LodRange = lodRange;
@@ -106,13 +96,13 @@ namespace Assets.Scripts.Scene.Tiling
         /// <summary> Creates tile for given quadkey. </summary>
         protected Tile CreateTile(QuadKey quadKey, GameObject parent)
         {
-            return new Tile(quadKey, _settings.Stylesheet, Projection, _settings.ElevationType, parent);
+            return new Tile(quadKey, _stylesheet, Projection, _elevationType, parent);
         }
 
         /// <summary> Loads given tile. </summary>
         protected void LoadTile(Tile tile)
         {
-            _settings.DataStore.OnNext(tile);
+            _dataStore.OnNext(tile);
         }
 
         /// <summary> Calculates target zoom level for given distance. </summary>

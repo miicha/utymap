@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using UtyMap.Unity;
+using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 
@@ -22,9 +23,9 @@ namespace Assets.Scripts.Scene.Tiling
         private GeoCoordinate _geoOrigin;
         private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
 
-        public SurfaceTileController(Settings settings, Transform pivot, Range<int> lodRange,
-            GeoCoordinate origin, float scale, float maxDistance) :
-            base(settings, pivot, lodRange)
+        public SurfaceTileController(IMapDataStore dataStore, Stylesheet stylesheet, ElevationDataType elevationType,
+            Transform pivot, Range<int> lodRange, GeoCoordinate origin, float scale, float maxDistance) :
+            base(dataStore, stylesheet, elevationType, pivot, lodRange)
         {
             _scale = scale;
             _geoOrigin = origin;

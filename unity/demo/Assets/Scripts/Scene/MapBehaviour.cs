@@ -63,22 +63,21 @@ namespace Assets.Scripts.Scene
             const float surfaceScale = 0.01f;
             const float detailScale = 1f;
 
-            var sphereSettings = new TileController.Settings(mapDataStore, stylesheet, ElevationDataType.Flat);
-            var surfaceSettings = new TileController.Settings(mapDataStore, stylesheet, ElevationDataType.Flat);
-            var detailSettings = new TileController.Settings(mapDataStore, stylesheet, ElevationDataType.Flat);
-
             _lods = new List<Range<int>> { new Range<int>(1, 8), new Range<int>(9, 15), new Range<int>(16, 16) };
+
+            var sphereController = new SphereTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[0], planetRadius);
+            var surfaceController = new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[1], startCoord, surfaceScale, 1000);
+            var detailController = new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot,_lods[2], startCoord, detailScale, 500);
+
+            var sphereGestures = new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius);
+            var surfaceGestures = new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture);
+            var detailGestures = new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture);
 
             _spaces = new List<Space>
             {
-                new SphereSpace(new SphereTileController(sphereSettings, Pivot, _lods[0], planetRadius),
-                                new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius), Planet),
-
-                new SurfaceSpace(new SurfaceTileController(surfaceSettings, Pivot, _lods[1], startCoord, surfaceScale, 1000),
-                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface),
-
-                new SurfaceSpace(new SurfaceTileController(detailSettings, Pivot, _lods[2], startCoord, detailScale, 500),
-                                 new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture), Surface)
+                new SphereSpace(sphereController, sphereGestures, Planet),
+                new SurfaceSpace(surfaceController, surfaceGestures, Surface),
+                new SurfaceSpace(detailController, detailGestures, Surface)
             };
 
             DoTransition(startCoord, StartZoom + 0.5f);
