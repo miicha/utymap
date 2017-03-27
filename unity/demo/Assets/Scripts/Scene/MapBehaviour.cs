@@ -69,9 +69,9 @@ namespace Assets.Scripts.Scene
             var surfaceController = new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot, _lods[1], startCoord, surfaceScale, 1000);
             var detailController = new SurfaceTileController(mapDataStore, stylesheet, ElevationDataType.Flat, Pivot,_lods[2], startCoord, detailScale, 500);
 
-            var sphereGestures = new SphereGestureStrategy(TwoFingerMoveGesture, ManipulationGesture, planetRadius);
-            var surfaceGestures = new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture);
-            var detailGestures = new SurfaceGestureStrategy(TwoFingerMoveGesture, ManipulationGesture);
+            var sphereGestures = new SphereGestureStrategy(sphereController, TwoFingerMoveGesture, ManipulationGesture, planetRadius);
+            var surfaceGestures = new SurfaceGestureStrategy(surfaceController, TwoFingerMoveGesture, ManipulationGesture);
+            var detailGestures = new SurfaceGestureStrategy(detailController, TwoFingerMoveGesture, ManipulationGesture);
 
             _spaces = new List<Space>
             {

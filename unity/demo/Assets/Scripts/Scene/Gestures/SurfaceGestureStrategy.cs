@@ -1,4 +1,5 @@
-﻿using TouchScript.Gestures.TransformGestures;
+﻿using Assets.Scripts.Scene.Tiling;
+using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 
 namespace Assets.Scripts.Scene.Gestures
@@ -8,9 +9,10 @@ namespace Assets.Scripts.Scene.Gestures
         private float _panSpeed = 1f;
         private float _zoomSpeed = 100f;
 
-        public SurfaceGestureStrategy(ScreenTransformGesture twoFingerMoveGesture,
+        public SurfaceGestureStrategy(TileController tileController, 
+                                      ScreenTransformGesture twoFingerMoveGesture,
                                       ScreenTransformGesture manipulationGesture) :
-            base(twoFingerMoveGesture, manipulationGesture)
+            base(tileController, twoFingerMoveGesture, manipulationGesture)
         {
         }
 

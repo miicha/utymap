@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Scene.Tiling;
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 
@@ -15,10 +16,11 @@ namespace Assets.Scripts.Scene.Gestures
         
         private readonly float _radius;
 
-        public SphereGestureStrategy(ScreenTransformGesture twoFingerMoveGesture,
+        public SphereGestureStrategy(TileController tileController,
+                                     ScreenTransformGesture twoFingerMoveGesture,
                                      ScreenTransformGesture manipulationGesture,
                                      float radius) :
-            base(twoFingerMoveGesture, manipulationGesture)
+            base(tileController, twoFingerMoveGesture, manipulationGesture)
         {
             _radius = radius;
         }
