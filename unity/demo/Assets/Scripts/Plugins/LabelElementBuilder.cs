@@ -78,8 +78,7 @@ namespace Assets.Scripts.Plugins
 
         private static string GetName(Element element)
         {
-            return String.Format("place:{0}[{1}]", element.Id,
-                element.Tags.Aggregate("", (s, t) => s += String.Format("{0}={1},", t.Key, t.Value)));
+            return String.Format("place:{0}[{1}]", element.Id, element.Tags["name"]);
         }
 
         private struct FontWrapper
