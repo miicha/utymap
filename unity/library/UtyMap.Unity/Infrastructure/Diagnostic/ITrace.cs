@@ -5,9 +5,6 @@ namespace UtyMap.Unity.Infrastructure.Diagnostic
     /// <summary> Represents a tracer for tracing subsystem. </summary>
     public interface ITrace : IDisposable
     {
-        /// <summary> Level of tracing. </summary>
-        int Level { get; set; }
-
         /// <summary> Writes debug message. </summary>
         void Debug(string category, string message);
 

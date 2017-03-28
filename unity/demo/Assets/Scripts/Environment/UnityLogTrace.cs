@@ -5,7 +5,7 @@ namespace Assets.Scripts.Environment
 {
     internal sealed class UnityLogTrace : DefaultTrace
     {
-        protected override void WriteRecord(RecordType type, string category, string message, Exception exception)
+        protected override void OnWriteRecord(RecordType type, string category, string message, Exception exception)
         {
             switch (type)
             {
