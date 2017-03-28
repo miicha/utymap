@@ -1,9 +1,7 @@
 ﻿using System;
-using Assets.Scripts.Debug;
 using Assets.Scripts.Environment;
 using Assets.Scripts.Environment.Reactive;
 using Assets.Scripts.Plugins;
-using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
@@ -18,7 +16,7 @@ namespace Assets.Scripts.Scene
     internal static class MapInitTask
     {
         /// <summary> Run library initialization logic. </summary>
-        public static CompositionRoot Run(bool isDebug = false)
+        public static CompositionRoot Run()
         {
             const string fatalCategoryName = "Fatal";
 
@@ -26,10 +24,7 @@ namespace Assets.Scripts.Scene
             var container = new Container();
 
             // create trace to log important messages
-            var trace = new DebugConsoleTrace();
-
-            // create debug console if necessary
-            ShowDebugConsole(trace, isDebug);
+            var trace = new UnityLogTrace();
 
             // utymap requires some files/directories to be precreated.
             InstallationApi.EnsureFileHierarchy(trace);
@@ -43,9 +38,7 @@ namespace Assets.Scripts.Scene
             try
             {
                 var compositionRoot = BuildCompositionRoot(container, trace);
-                ExtendDebugConsole(container);
                 SubscribeOnMapData(compositionRoot, trace);
-
                 return compositionRoot;
             }
             catch (Exception ex)
@@ -68,43 +61,18 @@ namespace Assets.Scripts.Scene
             var compositionRoot = new CompositionRoot(container, config)
                 // override default services with unity specific implementation
                 .RegisterAction((c, _) => c.RegisterInstance<ITrace>(trace))
-                .RegisterAction((c, _) => c.Register(UtyDepend.Component.For<IPathResolver>().Use<UnityPathResolver>()))
-                .RegisterAction((c, _) => c.Register(UtyDepend.Component.For<INetworkService>().Use<UnityNetworkService>()))
+                .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<UnityPathResolver>()))
+                .RegisterAction((c, _) => c.Register(Component.For<INetworkService>().Use<UnityNetworkService>()))
                 // register scene specific services (plugins)
-                .RegisterAction((c, _) => c.Register(UtyDepend.Component.For<UnityModelBuilder>().Use<UnityModelBuilder>()))
-                .RegisterAction((c, _) => c.Register(UtyDepend.Component.For<MaterialProvider>().Use<MaterialProvider>()))
+                .RegisterAction((c, _) => c.Register(Component.For<UnityModelBuilder>().Use<UnityModelBuilder>()))
+                .RegisterAction((c, _) => c.Register(Component.For<MaterialProvider>().Use<MaterialProvider>()))
                 // register default mapcss
-                .RegisterAction((c, _) => c.Register(UtyDepend.Component.For<Stylesheet>().Use<Stylesheet>(@"MapCss/default/default.mapcss")));
+                .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"MapCss/default/default.mapcss")));
 
             // setup object graph
             compositionRoot.Setup();
 
             return compositionRoot;
-        }
-
-        /// <summary> Shows debug console in scene. </summary>
-        /// <remarks> Console is way to debug/investigate app behavior on real devices when regular debugger is not applicable. </remarks>
-        private static void ShowDebugConsole(DebugConsoleTrace trace, bool show)
-        {
-            if (!show) return;
-
-            // NOTE DebugConsole is based on some adapted solution found in Internet
-            var consoleGameObject = new GameObject("_DebugConsole_");
-            var console = consoleGameObject.AddComponent<DebugConsole>();
-            console.IsOpen = true;
-            trace.SetConsole(console);
-        }
-
-        /// <summary> Adds extra console commands using container. </summary>
-        private static void ExtendDebugConsole(IContainer container)
-        {
-            var console = GameObject.FindObjectOfType<DebugConsole>();
-            if (console != null)
-            {
-                // that is not nice, but we need to use commands registered in DI with their dependencies
-                console.SetContainer(container);
-                console.IsOpen = true;
-            }
         }
 
         /// <summary> Starts listening for mapdata from core library to convert it into unity game objects. </summary>

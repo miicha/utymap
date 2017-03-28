@@ -32,7 +32,6 @@ namespace Assets.Scripts.Scene
         public ScreenTransformGesture ManipulationGesture;
 
         public bool ShowPosition = true;
-        public bool ShowConsole = false;
 
         #endregion
 
@@ -52,7 +51,7 @@ namespace Assets.Scripts.Scene
 
         void Start()
         {
-            _compositionRoot = MapInitTask.Run(ShowConsole);
+            _compositionRoot = MapInitTask.Run();
 
             var mapDataStore = _compositionRoot.GetService<IMapDataStore>();
             var stylesheet = _compositionRoot.GetService<Stylesheet>();
