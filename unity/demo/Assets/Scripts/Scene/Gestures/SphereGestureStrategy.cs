@@ -10,7 +10,7 @@ namespace Assets.Scripts.Scene.Gestures
         /// <summary> Value depends on radius and camera settings. </summary>
         private const float MagicAngleLimitCoeff = 2;
 
-        private const float RotationSpeed = 100f;
+        private const float RotationSpeed = 150f;
         
         private const float ZoomSpeed = 500f;
         
@@ -28,9 +28,10 @@ namespace Assets.Scripts.Scene.Gestures
         /// <inheritdoc />
         public override void OnManipulationTransform(Transform pivot, Transform camera)
         {
+            var speed = Mathf.Max(RotationSpeed * InterpolateByZoom(0.25f), 1f);
             var rotation = Quaternion.Euler(
-                          -ManipulationGesture.DeltaPosition.y / Screen.height * RotationSpeed,
-                          ManipulationGesture.DeltaPosition.x / Screen.width * RotationSpeed,
+                          -ManipulationGesture.DeltaPosition.y / Screen.height * speed,
+                          ManipulationGesture.DeltaPosition.x / Screen.width * speed,
                           ManipulationGesture.DeltaRotation);
 
             SetRotation(pivot, camera, rotation);
@@ -39,7 +40,8 @@ namespace Assets.Scripts.Scene.Gestures
         /// <inheritdoc />
         public override void OnTwoFingerTransform(Transform pivot, Transform camera)
         {
-            camera.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * ZoomSpeed;
+            var speed =  Mathf.Max(ZoomSpeed * InterpolateByZoom(1f), 5f);
+            camera.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * speed;
         }
 
         /// <summary> Sets rotation to pivot with limit. </summary>
