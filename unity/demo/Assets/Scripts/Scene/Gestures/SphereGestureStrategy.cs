@@ -11,8 +11,12 @@ namespace Assets.Scripts.Scene.Gestures
         private const float MagicAngleLimitCoeff = 2;
 
         private const float RotationSpeed = 150f;
+        private const float RotationMinSpeed = 1f;
+        private const float RotationFactor = 0.25f;
         
         private const float ZoomSpeed = 500f;
+        private const float ZoomMinSpeed = 5f;
+        private const float ZoomFactor = 1f;
         
         private readonly float _radius;
 
@@ -28,7 +32,7 @@ namespace Assets.Scripts.Scene.Gestures
         /// <inheritdoc />
         public override void OnManipulationTransform(Transform pivot, Transform camera)
         {
-            var speed = Mathf.Max(RotationSpeed * InterpolateByZoom(0.25f), 1f);
+            var speed = Mathf.Max(RotationSpeed * InterpolateByZoom(RotationFactor), RotationMinSpeed);
             var rotation = Quaternion.Euler(
                           -ManipulationGesture.DeltaPosition.y / Screen.height * speed,
                           ManipulationGesture.DeltaPosition.x / Screen.width * speed,
@@ -40,7 +44,7 @@ namespace Assets.Scripts.Scene.Gestures
         /// <inheritdoc />
         public override void OnTwoFingerTransform(Transform pivot, Transform camera)
         {
-            var speed =  Mathf.Max(ZoomSpeed * InterpolateByZoom(1f), 5f);
+            var speed = Mathf.Max(ZoomSpeed * InterpolateByZoom(ZoomFactor), ZoomMinSpeed);
             camera.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * speed;
         }
 
