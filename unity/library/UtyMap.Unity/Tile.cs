@@ -74,6 +74,9 @@ namespace UtyMap.Unity
         /// </remarks>
         internal void Register(long id)
         {
+            if (IsDisposed)
+                return;
+
             _localIds.Add(id);
             GlobalIds.Add(id);
         }
