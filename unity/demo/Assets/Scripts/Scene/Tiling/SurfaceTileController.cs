@@ -60,7 +60,10 @@ namespace Assets.Scripts.Scene.Tiling
         public override bool IsBelowMin { get { return HeightRange.Minimum > _position.y; } }
 
         /// <inheritdoc />
-        public override GeoCoordinate Coordinate { get { return GeoUtils.ToGeoCoordinate(_geoOrigin, _position); } }
+        public override GeoCoordinate Coordinate
+        {
+            get { return GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(_position.x, _position.z)); }
+        }
 
         /// <inheritdoc />
         public override void Dispose()
