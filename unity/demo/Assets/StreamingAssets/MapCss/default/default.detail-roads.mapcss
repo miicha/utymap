@@ -59,16 +59,3 @@ way|z16[highway][lanes] {
     width: eval("tag('lanes') * 1.8");
     dimension: 1m;
 }
-
-way|z16[highway][lanes>1] {
-    builders: terrain,lane;
-
-    lane-min-height:-0.2m;
-    lane-height:0.01m;
-    lane-width: 0.1m;
-    lane-length: 2m;
-    lane-color: gradient(white);
-    lane-texture-index: 0;
-    lane-texture-type: background;
-    lane-texture-scale: 200;
-}
