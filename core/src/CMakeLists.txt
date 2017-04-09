@@ -57,6 +57,7 @@ set(HEADER_FILES
         entities/Area.hpp
         formats/FormatTypes.hpp
         formats/osm/BuildingProcessor.hpp
+        formats/osm/CountableOsmDataVisitor.hpp
         formats/osm/MultipolygonProcessor.hpp
         formats/osm/OsmDataContext.hpp
         formats/osm/OsmDataVisitor.hpp
@@ -64,6 +65,7 @@ set(HEADER_FILES
         formats/osm/json/OsmJsonParser.hpp
         formats/osm/pbf/OsmPbfParser.hpp
         formats/osm/xml/OsmXmlParser.hpp
+        formats/shape/CountableShapeDataVisitor.hpp
         formats/shape/ShapeParser.hpp
         formats/shape/ShapeDataVisitor.hpp
         heightmap/ElevationProvider.hpp
@@ -134,6 +136,7 @@ add_library(${LIBRARY_NAME}
         builders/buildings/BuildingBuilder.cpp
         formats/osm/MultipolygonProcessor.cpp
         formats/osm/OsmDataVisitor.cpp
+        formats/osm/xml/OsmXmlParser.cpp
         index/ElementGeometryClipper.cpp
         index/ElementStore.cpp
         index/GeoStore.cpp

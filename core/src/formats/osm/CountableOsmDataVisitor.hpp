@@ -8,9 +8,7 @@
 
 #include <cstdint>
 
-using namespace utymap::formats;
-
-namespace utymap { namespace tests {
+namespace utymap {  namespace formats {
 
 struct CountableOsmDataVisitor : public utymap::entities::ElementVisitor
 {

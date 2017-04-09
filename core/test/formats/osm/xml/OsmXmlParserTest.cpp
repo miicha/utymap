@@ -1,12 +1,11 @@
 #include "BoundingBox.hpp"
 #include "formats/osm/xml/OsmXmlParser.hpp"
-#include "formats/osm/CountableOsmDataVisitor.hpp"
 #include "config.hpp"
 
+#include <fstream>
 #include <boost/test/unit_test.hpp>
 
 using namespace utymap::formats;
-using namespace utymap::tests;
 
 namespace {
     struct Formats_Osm_Xml_OsmXmlParserFixture

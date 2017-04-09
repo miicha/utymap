@@ -6,7 +6,6 @@
 
 using namespace utymap::formats;
 using namespace utymap::index;
-using namespace utymap::tests;
 
 namespace {
     const double Precision = 0.1e-7;
