@@ -303,19 +303,23 @@ namespace {
     };
 }
 
+namespace utymap { namespace formats {
+
 template <typename Visitor>
 void OsmXmlParser<Visitor>::parse(std::istream& istream, Visitor& visitor)
 {
     boost::spirit::istream_iterator begin(istream);
     boost::spirit::istream_iterator end;
-    
+
     OsmGrammar<Visitor, boost::spirit::istream_iterator> grammar(visitor);
     AttributeSkipper<boost::spirit::istream_iterator> skipper;
     int result;
-    
+
     if (!phrase_parse(begin, end, grammar, skipper, result))
         throw std::domain_error(grammar.error.str());
 }
 
 template class OsmXmlParser<OsmDataVisitor>;
 template class OsmXmlParser<CountableOsmDataVisitor>;
+
+}}
