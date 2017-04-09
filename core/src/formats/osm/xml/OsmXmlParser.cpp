@@ -33,7 +33,6 @@ BOOST_FUSION_ADAPT_STRUCT(
 )
 
 namespace {
-
     typedef boost::tuple<double, double, double, double> BoundsType;
     typedef Tag TagType;
     typedef boost::tuple<std::uint64_t, double, double, std::vector<TagType>> NodeType;
@@ -303,25 +302,6 @@ namespace {
         }
     };
 }
-
-//template <typename Visitor>
-//void OsmXmlParser<Visitor>::parse(Visitor& visitor, boost::spirit::istream_iterator begin, boost::spirit::istream_iterator end)
-//{
-//    auto grammar = OsmGrammar<Visitor, boost::spirit::istream_iterator>(visitor);
-//    AttributeSkipper<boost::spirit::istream_iterator> skipper;
-//    int result;
-//
-//    if (!phrase_parse(begin, end, grammar, skipper, result))
-//        throw std::domain_error(grammar.error.str());
-//}
-//
-//template <typename Visitor>
-//void parse(std::istream& istream, Visitor& visitor)
-//{
-//    boost::spirit::istream_iterator begin(istream);
-//    boost::spirit::istream_iterator end;
-//    parse(visitor, begin, end);
-//}
 
 template <typename Visitor>
 void OsmXmlParser<Visitor>::parse(std::istream& istream, Visitor& visitor)
