@@ -48,7 +48,7 @@ struct CountableShapeDataVisitor
         lastMembers = members;
         lastTags = tags;
         relations++;
-    }
+    }   
 };
 
 }}

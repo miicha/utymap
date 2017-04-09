@@ -10,7 +10,7 @@
 
 namespace utymap {  namespace formats {
 
-struct CountableOsmDataVisitor : public utymap::entities::ElementVisitor
+struct CountableOsmDataVisitor
 {
     int bounds;
     int nodes;
@@ -43,29 +43,9 @@ struct CountableOsmDataVisitor : public utymap::entities::ElementVisitor
         relations++;
     }
 
-    void visitNode(const utymap::entities::Node&) override 
-    { 
-        ++nodes; 
-    }
-
-    void visitWay(const utymap::entities::Way&) override
-    { 
-        ++ways;
-    }
-
-    void visitArea(const utymap::entities::Area&) override 
-    { 
-        ++areas;
-    }
-
-    void visitRelation(const utymap::entities::Relation&) override 
-    { 
-        ++relations;
-    }
-
     void add(utymap::entities::Element& element)
     {
-        element.accept(*this);
+
     }
 };
 
