@@ -231,11 +231,12 @@ namespace {
         {
             osm =
                 ascii::string("<?") > *(qi::char_ - '>') > '>' >
-                "<osm" > qi::lit('>') >
-                qi::omit[bounds[boost::bind(&OsmGrammar::onBounds, this, _1)]] >
-                *qi::omit[node[boost::bind(&OsmGrammar::onNode, this, _1)]] >
-                *qi::omit[way[boost::bind(&OsmGrammar::onWay, this, _1)]] >
-                *qi::omit[relation[boost::bind(&OsmGrammar::onRelation, this, _1)]] >
+                "<osm" > '>' >
+                    -(qi::lexeme[+(qi::char_ - (ascii::string("<node") | "<bounds"))]) >
+                    -qi::omit[bounds[boost::bind(&OsmGrammar::onBounds, this, _1)]] >
+                    *qi::omit[node[boost::bind(&OsmGrammar::onNode, this, _1)]] >
+                    *qi::omit[way[boost::bind(&OsmGrammar::onWay, this, _1)]] >
+                    *qi::omit[relation[boost::bind(&OsmGrammar::onRelation, this, _1)]] >
                 "</osm>" > qi::eps;
 
             BOOST_SPIRIT_DEBUG_NODE(osm);

@@ -16,6 +16,7 @@
   <member type="way" ref="226015236" role=""/>
   <member type="node" ref="42424605" role="view"/>
   <tag k="name" v="Manhattan Waterfront Greenway"/>
+  <tag k="name:ru" v="Мантхеттен"/>
   <tag k="wikipedia" v="en:Manhattan Waterfront Greenway"/>
  </relation>
 </osm>

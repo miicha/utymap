@@ -73,7 +73,7 @@ namespace {
 
 BOOST_FIXTURE_TEST_SUITE(Formats_Osm_Xml_Parser, Formats_Osm_Xml_OsmXmlParserFixture)
 
-BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount)
+BOOST_AUTO_TEST_CASE(GivenDefaultOsmXml_WhenParserParse_ThenHasExpectedElementCount)
 {
     std::ifstream istream(TEST_XML_FILE, std::ios::in);
     OsmXmlParser<CountableOsmDataVisitor> parser;
@@ -87,7 +87,21 @@ BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount
     BOOST_CHECK_EQUAL(92, visitor.relations);
 }
 
-BOOST_AUTO_TEST_CASE(GivenTestDummyXml_WhenParserParse_ThenHasProperNodes)
+BOOST_AUTO_TEST_CASE(GivenDummyOverpassXml_WhenParserParse_ThenHasExpectedElementCount)
+{
+    std::ifstream istream(TEST_OVERPASS_DUMMY_FILE, std::ios::in);
+    OsmXmlParser<CountableOsmDataVisitor> parser;
+    CountableOsmDataVisitor visitor;
+
+    parser.parse(istream, visitor);
+
+    BOOST_CHECK_EQUAL(0, visitor.bounds);
+    BOOST_CHECK_EQUAL(2, visitor.nodes);
+    BOOST_CHECK_EQUAL(1, visitor.ways);
+    BOOST_CHECK_EQUAL(1, visitor.relations);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTestDummyOsmXml_WhenParserParse_ThenHasProperNodes)
 {
     std::vector<bool> checkList { false, false };
     std::ifstream istream(TEST_OSM_DUMMY_FILE, std::ios::in);
@@ -114,7 +128,7 @@ BOOST_AUTO_TEST_CASE(GivenTestDummyXml_WhenParserParse_ThenHasProperNodes)
     BOOST_CHECK(reduce(checkList.begin(), checkList.end()));
 }
 
-BOOST_AUTO_TEST_CASE(GivenTestDummyXml_WhenParserParse_ThenHasProperWay)
+BOOST_AUTO_TEST_CASE(GivenTestDummyOsmXml_WhenParserParse_ThenHasProperWay)
 {
     std::vector<bool> checkList { false };
     std::ifstream istream(TEST_OSM_DUMMY_FILE, std::ios::in);

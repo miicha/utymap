@@ -11,6 +11,7 @@
 #define TEST_XML_FILE TEST_EXTERNAL_ASSETS_PATH "Osm/berlin.osm.xml"
 
 #define TEST_OSM_DUMMY_FILE TEST_ASSETS_PATH "osm/test.dummy.osm.xml"
+#define TEST_OVERPASS_DUMMY_FILE TEST_ASSETS_PATH "osm/test.dummy.overpass.xml"
 
 #define TEST_SHAPE_POINT_FILE TEST_ASSETS_PATH "shape/artificial/point"
 #define TEST_SHAPE_LINE_FILE TEST_ASSETS_PATH "shape/artificial/line"
