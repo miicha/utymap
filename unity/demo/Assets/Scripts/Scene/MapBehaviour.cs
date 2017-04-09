@@ -118,16 +118,6 @@ namespace Assets.Scripts.Scene
 
                 GUI.contentColor = Color.red;
                 GUI.Label(new Rect(0, 0, Screen.width, Screen.height), labelText);
-
-                if (GUI.Button(new Rect(0, 40, 50, 30), "Zoom"))
-                {
-                    var targetZoom = 16f;
-                    var timeInterpolator = targetZoom < tileController.ZoomLevel
-                        ? (ITimeInterpolator) new AccelerateInterpolator()
-                        : new DecelerateInterpolator();
-                    _spaces[_currentSpaceIndex].Animator
-                        .AnimateTo(new GeoCoordinate(StartLatitude, StartLongitude), targetZoom, TimeSpan.FromSeconds(60), timeInterpolator);
-                }
             }
         }
 
