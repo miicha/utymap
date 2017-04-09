@@ -13,10 +13,6 @@ public:
     /// Parses osm xml data from stream calling visitor.
     void parse(std::istream& istream, Visitor& visitor);
 };
-
-template class OsmXmlParser<OsmDataVisitor>;
-template class OsmXmlParser<CountableOsmDataVisitor>;
-
 }}
 
 #endif  // FORMATS_XML_OSMXMLPARSER_HPP_INCLUDED

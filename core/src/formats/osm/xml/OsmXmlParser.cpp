@@ -316,3 +316,6 @@ void OsmXmlParser<Visitor>::parse(std::istream& istream, Visitor& visitor)
     if (!phrase_parse(begin, end, grammar, skipper, result))
         throw std::domain_error(grammar.error.str());
 }
+
+template class OsmXmlParser<OsmDataVisitor>;
+template class OsmXmlParser<CountableOsmDataVisitor>;
