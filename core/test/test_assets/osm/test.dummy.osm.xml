@@ -9,12 +9,8 @@
   <nd ref="42421951"/>
   <nd ref="42424605"/>
   <tag k="alt_name" v="Franklin Delano Roosevelt Drive"/>
-  <tag k="highway" v="motorway"/>
   <tag k="lanes" v="3"/>
-  <tag k="maxspeed" v="35 mph"/>
-  <tag k="name" v="FDR Drive"/>
-  <tag k="name_1" v="South Street Viaduct"/>
-  <tag k="tiger:reviewed" v="no"/>
+   <tag k="tiger:reviewed" v="no"/>
  </way>
  <relation id="32934353" visible="true" version="16" changeset="46018890" timestamp="2017-02-12T12:55:11Z" user="Aleks-Berlin" uid="85218">
   <member type="way" ref="226015236" role=""/>
