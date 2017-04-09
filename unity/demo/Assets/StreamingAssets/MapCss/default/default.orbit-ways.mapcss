@@ -5,16 +5,9 @@ way,relation|z3-7[kind=country][kind_detail=2] {
     width: 0.3%;
 }
 
-way,relation|z5-7[kind=region][kind_detail=4] {
+way,relation|z6-8[kind=region][kind_detail=4] {
     clip:true;
     builders: terrain;
     terrain-layer: boundary-region;
     width: 0.4%;
-}
-
-way,relation|z6-7[kind=highway][kind_detail=motorway] {
-    clip:true;
-    builders: terrain;
-    terrain-layer: road-highway;
-    width: 0.2%;
 }

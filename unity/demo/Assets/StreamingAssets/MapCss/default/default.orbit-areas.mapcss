@@ -1,10 +1,10 @@
-area,relation|z1-7[kind=earth] {
+area,relation|z1-8[kind=earth] {
     clip:true;
     builders: terrain;
     terrain-layer: earth;
 }
 
-area,relation|z4-7[kind=lake] {
+area,relation|z4-8[kind=lake] {
     clip:true;
     builders: terrain;
     terrain-layer: water;
