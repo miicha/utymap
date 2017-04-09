@@ -329,7 +329,7 @@ void OsmXmlParser<Visitor>::parse(std::istream& istream, Visitor& visitor)
     boost::spirit::istream_iterator begin(istream);
     boost::spirit::istream_iterator end;
     
-    auto grammar = OsmGrammar<Visitor, boost::spirit::istream_iterator>(visitor);
+    OsmGrammar<Visitor, boost::spirit::istream_iterator> grammar(visitor);
     AttributeSkipper<boost::spirit::istream_iterator> skipper;
     int result;
     
