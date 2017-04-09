@@ -14,9 +14,6 @@ using namespace utymap::entities;
 using namespace utymap::formats;
 
 namespace {
-
-    //typedef std::vector<std::pair<std::string, std::string>> RawTags;
-
     struct Formats_Osm_Xml_OsmXmlParserFixture
     {
         utymap::tests::DependencyProvider dependencyProvider;
