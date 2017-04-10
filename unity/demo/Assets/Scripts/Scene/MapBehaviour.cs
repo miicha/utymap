@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts.Plugins;
 using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Spaces;
 using Assets.Scripts.Scene.Tiling;
@@ -55,6 +56,7 @@ namespace Assets.Scripts.Scene
 
             var mapDataStore = _compositionRoot.GetService<IMapDataStore>();
             var stylesheet = _compositionRoot.GetService<Stylesheet>();
+            var materialProvider = _compositionRoot.GetService<MaterialProvider>();
             var startCoord = new GeoCoordinate(StartLatitude, StartLongitude);
 
             // scaled radius of Earth in meters, approx. 1:1000
@@ -74,9 +76,9 @@ namespace Assets.Scripts.Scene
 
             _spaces = new List<Space>
             {
-                new SphereSpace(sphereController, sphereGestures, Planet),
-                new SurfaceSpace(surfaceController, surfaceGestures, Surface),
-                new SurfaceSpace(detailController, detailGestures, Surface)
+                new SphereSpace(sphereController, sphereGestures, Planet, materialProvider),
+                new SurfaceSpace(surfaceController, surfaceGestures, Surface, materialProvider),
+                new SurfaceSpace(detailController, detailGestures, Surface, materialProvider)
             };
 
             DoTransition(startCoord, StartZoom + 0.5f);

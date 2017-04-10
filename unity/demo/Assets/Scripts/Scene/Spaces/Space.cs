@@ -1,4 +1,5 @@
 ﻿using System;
+using Assets.Scripts.Plugins;
 using Assets.Scripts.Scene.Animations;
 using Assets.Scripts.Scene.Gestures;
 using Assets.Scripts.Scene.Tiling;
@@ -13,15 +14,19 @@ namespace Assets.Scripts.Scene.Spaces
         public readonly GestureStrategy GestureStrategy;
         public abstract SpaceAnimator Animator { get; protected set; }
 
+        protected readonly MaterialProvider MaterialProvider;
+
         protected readonly Transform Target;
         protected readonly Transform Pivot;
         protected readonly Camera Camera;
         protected readonly Transform Light;
 
-        public Space(TileController tileController, GestureStrategy gestureStrategy, Transform target)
+        public Space(TileController tileController, GestureStrategy gestureStrategy, 
+            Transform target, MaterialProvider materialProvider)
         {
             Target = target;
             TileController = tileController;
+            MaterialProvider = materialProvider;
             GestureStrategy = gestureStrategy;
 
             Pivot = tileController.Pivot;
