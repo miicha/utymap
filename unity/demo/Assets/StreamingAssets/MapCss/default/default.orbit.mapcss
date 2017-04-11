@@ -2,14 +2,14 @@
 @import url("default.orbit-ways.mapcss");
 @import url("default.orbit-areas.mapcss");
 
-canvas|z1-7 {
+canvas|z1-8 {
     grid-cell-size: 10%;
 
     max-area: 0.25%;
     color-noise-freq: 0;
     ele-noise-freq: 0;
     color: gradient(#b5d0d0);
-	
+
 	road-highway-max-area: 0.5%;
     road-highway-color-noise-freq: 0;
     road-highway-ele-noise-freq: 0;
@@ -17,7 +17,7 @@ canvas|z1-7 {
     road-highway-height-offset: 10.5m;
 	road-sort-order: 1003;
     road-highway-mesh-name: terrain_road_highway;
-	
+
 	boundary-country-max-area: 10%;
     boundary-country-color-noise-freq: 0;
     boundary-country-ele-noise-freq: 0;
@@ -33,7 +33,7 @@ canvas|z1-7 {
     boundary-region-height-offset: 11m;
 	boundary-region-sort-order: 1001;
     boundary-region-mesh-name: terrain_boundary_region;
-	
+
 	water-max-area: 0.5%;
     water-color-noise-freq: 0;
     water-ele-noise-freq: 0;
