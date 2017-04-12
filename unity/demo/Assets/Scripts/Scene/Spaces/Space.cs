@@ -34,17 +34,6 @@ namespace Assets.Scripts.Scene.Spaces
             Light = tileController.Pivot.Find("Directional Light");
         }
 
-        /// <summary> Simply resets pivot, camera, light to zero values. </summary>
-        protected void ResetTransforms()
-        {
-            Camera.transform.localPosition = Vector3.zero;
-            Camera.transform.localRotation = Quaternion.Euler(0, 0, 0);
-            Pivot.localPosition = Vector3.zero;
-            Pivot.localRotation = Quaternion.Euler(0, 0, 0);
-            Light.localPosition = Vector3.zero;
-            Light.localRotation = Quaternion.Euler(0, 0, 0);
-        }
-
         /// <summary> Called when space is entered. </summary>
         protected abstract void OnEnter(GeoCoordinate coordinate, bool isFromTop);
 
@@ -92,7 +81,14 @@ namespace Assets.Scripts.Scene.Spaces
         private void SetDefaults()
         {
             Target.gameObject.SetActive(true);
-            ResetTransforms();
+            
+            Camera.transform.localPosition = Vector3.zero;
+            Camera.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            Pivot.localPosition = Vector3.zero;
+            Pivot.localRotation = Quaternion.Euler(0, 0, 0);
+            Light.localPosition = Vector3.zero;
+            Light.localRotation = Quaternion.Euler(0, 0, 0);
+
             Camera.fieldOfView = TileController.FieldOfView;
         }
     }

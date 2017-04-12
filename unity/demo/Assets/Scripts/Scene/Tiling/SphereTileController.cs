@@ -11,9 +11,6 @@ namespace Assets.Scripts.Scene.Tiling
 {
     internal sealed class SphereTileController : TileController
     {
-        private const float RotationSensivity = 5f;
-        private const float HeightSensivity = 50f;
-
         private readonly Vector3 _origin = Vector3.zero;
 
         private readonly Transform _camera;
@@ -94,8 +91,8 @@ namespace Assets.Scripts.Scene.Tiling
             var position = _camera.localPosition;
             var rotation = Pivot.rotation.eulerAngles;
 
-            if (Vector3.Distance(_rotation, rotation) < RotationSensivity &&
-                Vector3.Distance(position, _position) < HeightSensivity)
+            if (Vector3.Distance(_rotation, rotation) < float.Epsilon &&
+                Vector3.Distance(position, _position) < float.Epsilon)
                 return;
 
             _position = position;

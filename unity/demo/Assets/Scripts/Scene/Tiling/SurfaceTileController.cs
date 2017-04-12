@@ -11,8 +11,6 @@ namespace Assets.Scripts.Scene.Tiling
     /// <summary>  </summary>
     internal sealed class SurfaceTileController : TileController
     {
-        // TODO this value zoom specific
-        private readonly float _positionSensivity = 10f;
         private readonly float _scale;
 
         private readonly Vector3 _origin = Vector3.zero;
@@ -29,7 +27,6 @@ namespace Assets.Scripts.Scene.Tiling
         {
             _scale = scale;
             _geoOrigin = origin;
-            _positionSensivity *= _scale;
 
             LodTree = GetLodTree(pivot.Find("Camera").GetComponent<Camera>().aspect, maxDistance);
             Projection = CreateProjection();
@@ -62,7 +59,10 @@ namespace Assets.Scripts.Scene.Tiling
         /// <inheritdoc />
         public override GeoCoordinate Coordinate
         {
-            get { return GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(_position.x, _position.z)); }
+            get
+            {
+                return GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(_position.x, _position.z) / _scale);
+            }
         }
 
         /// <inheritdoc />
@@ -81,7 +81,7 @@ namespace Assets.Scripts.Scene.Tiling
         {
             var position = Pivot.localPosition;
 
-            if (Vector3.Distance(position, _position) < _positionSensivity)
+            if (Vector3.Distance(position, _position) < float.Epsilon)
                 return;
 
             var oldLod = (int)_zoom;
