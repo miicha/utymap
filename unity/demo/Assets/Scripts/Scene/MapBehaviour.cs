@@ -81,7 +81,7 @@ namespace Assets.Scripts.Scene
                 new SurfaceSpace(detailController, detailGestures, Surface, materialProvider)
             };
 
-            DoTransition(startCoord, StartZoom + 0.5f);
+            DoTransition(startCoord, StartZoom);
         }
 
         void OnEnable()

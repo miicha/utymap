@@ -67,22 +67,25 @@ namespace Assets.Scripts.Scene.Tiling
         public float GetHeight(float zoom)
         {
             var startLod = Math.Max((int)Math.Floor(zoom), LodRange.Minimum);
-            var endLod = Math.Min((int)Math.Ceiling(zoom), LodRange.Maximum);
+            var endLod = startLod + 1;
 
-            var startHeight = float.MinValue;
-            var endHeight = float.MinValue;
+            var minHeight = float.MinValue;
+            var maxHeight = float.MinValue;
 
             foreach (var rangeValuePair in LodTree)
             {
                 if (rangeValuePair.Value == startLod)
-                    startHeight = rangeValuePair.To;
-                if (rangeValuePair.Value == endLod)
-                    endHeight = rangeValuePair.From;
+                {
+                    minHeight = rangeValuePair.From;
+                    maxHeight = rangeValuePair.To;
+                    break;
+                }
             }
 
             // NOTE extrapolate height for zoom outside lod range.
-            if (Math.Abs(startHeight - float.MinValue) < float.Epsilon ||
-                Math.Abs(endHeight - float.MinValue) < float.Epsilon)
+            // This happens in case of inter-space animation.
+            if (Math.Abs(minHeight - float.MinValue) < float.Epsilon ||
+                Math.Abs(maxHeight - float.MinValue) < float.Epsilon)
             {
                 var ratio = (HeightRange.Maximum - HeightRange.Minimum) / (LodRange.Maximum - LodRange.Minimum + 1);
                 return zoom > LodRange.Maximum
@@ -90,7 +93,12 @@ namespace Assets.Scripts.Scene.Tiling
                     : HeightRange.Maximum - (zoom - LodRange.Minimum) * ratio;
             }
 
-            return endHeight - (endHeight - startHeight) * (zoom - startLod);
+            // NOTE: we clamp with some tolerance to prevent issues with float precision when
+            // the distance is huge (planet level). Theoretically, double type will fix 
+            // the problem but it will force to use casting to float in multiple places.
+            var range = maxHeight - minHeight;
+            var tolerance = range * 0.00001f;
+            return Mathf.Clamp(minHeight + range * (endLod - zoom), minHeight + tolerance, maxHeight - tolerance);
         }
 
         /// <summary> Creates tile for given quadkey. </summary>
