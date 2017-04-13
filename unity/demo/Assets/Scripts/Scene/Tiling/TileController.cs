@@ -63,12 +63,19 @@ namespace Assets.Scripts.Scene.Tiling
             LodRange = lodRange;
         }
 
+        #region Height calculation
+
         /// <summary> Gets height in scaled world coordinates for given zoom. </summary>
         public float GetHeight(float zoom)
         {
-            var startLod = Math.Max((int)Math.Floor(zoom), LodRange.Minimum);
-            var endLod = startLod + 1;
+            int lod = (int) Math.Floor(zoom);
+            return LodRange.Contains(lod) 
+                ? InterpolateHeight(lod, zoom) 
+                : ExtrapolateHeight(lod, zoom);
+        }
 
+        private float InterpolateHeight(int startLod, float zoom)
+        {
             var minHeight = float.MinValue;
             var maxHeight = float.MinValue;
 
@@ -82,24 +89,23 @@ namespace Assets.Scripts.Scene.Tiling
                 }
             }
 
-            // NOTE extrapolate height for zoom outside lod range.
-            // This happens in case of inter-space animation.
-            if (Math.Abs(minHeight - float.MinValue) < float.Epsilon ||
-                Math.Abs(maxHeight - float.MinValue) < float.Epsilon)
-            {
-                var ratio = (HeightRange.Maximum - HeightRange.Minimum) / (LodRange.Maximum - LodRange.Minimum + 1);
-                return zoom > LodRange.Maximum
-                    ? HeightRange.Minimum - (zoom - LodRange.Maximum) * ratio
-                    : HeightRange.Maximum - (zoom - LodRange.Minimum) * ratio;
-            }
-
             // NOTE: we clamp with some tolerance to prevent issues with float precision when
             // the distance is huge (planet level). Theoretically, double type will fix 
             // the problem but it will force to use casting to float in multiple places.
             var range = maxHeight - minHeight;
             var tolerance = range * 0.00001f;
-            return Mathf.Clamp(minHeight + range * (endLod - zoom), minHeight + tolerance, maxHeight - tolerance);
+            return Mathf.Clamp(minHeight + range * (startLod + 1 - zoom), minHeight + tolerance, maxHeight - tolerance);
         }
+
+        private float ExtrapolateHeight(int startLod, float zoom)
+        {
+            var ratio = (HeightRange.Maximum - HeightRange.Minimum) / (LodRange.Maximum - LodRange.Minimum + 1);
+            return zoom > LodRange.Maximum
+                ? HeightRange.Minimum - (zoom - LodRange.Maximum) * ratio
+                : HeightRange.Maximum - (zoom - LodRange.Minimum) * ratio;
+        }
+
+        #endregion
 
         /// <summary> Creates tile for given quadkey. </summary>
         protected Tile CreateTile(QuadKey quadKey, GameObject parent)
