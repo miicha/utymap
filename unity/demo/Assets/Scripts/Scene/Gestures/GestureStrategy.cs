@@ -28,7 +28,7 @@ namespace Assets.Scripts.Scene.Gestures
         protected float InterpolateByZoom(float factor = 1f)
         {
             var lodRange = TileController.LodRange;
-            var value = (lodRange.Maximum - TileController.ZoomLevel + 1) / (lodRange.Maximum - lodRange.Minimum + 1);
+            var value = (lodRange.Maximum - TileController.Zoom + 1) / (lodRange.Maximum - lodRange.Minimum + 1);
             value = Mathf.Clamp(value, 0, 1f);
             
             return Mathf.Abs(factor - 1.0f) < float.Epsilon

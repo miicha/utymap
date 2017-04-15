@@ -13,10 +13,7 @@ namespace Assets.Scripts.Scene.Tiling
     {
         private readonly float _scale;
 
-        private readonly Vector3 _origin = Vector3.zero;
-
         private float _zoom;
-        private float _distanceToOrigin;
         private Vector3 _position;
         private GeoCoordinate _geoOrigin;
         private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
@@ -36,7 +33,7 @@ namespace Assets.Scripts.Scene.Tiling
         }
 
         /// <inheritdoc />
-        protected override float DistanceToOrigin { get { return _distanceToOrigin; } }
+        protected override float Height { get { return _position.y; } }
 
         /// <inheritdoc />
         public override Range<float> HeightRange { get; protected set; }
@@ -48,7 +45,7 @@ namespace Assets.Scripts.Scene.Tiling
         public override IProjection Projection { get; protected set; }
 
         /// <inheritdoc />
-        public override float ZoomLevel { get { return _zoom; } }
+        public override float Zoom { get { return _zoom; } }
 
         /// <inheritdoc />
         public override bool IsAboveMax { get { return HeightRange.Maximum < _position.y; } }
@@ -87,7 +84,6 @@ namespace Assets.Scripts.Scene.Tiling
             var oldLod = (int)_zoom;
 
             _position = position;
-            _distanceToOrigin = Vector3.Distance(_position, _origin);
             _zoom = CalculateZoom(_position.y);
 
             if (IsAboveMax || IsBelowMin)
@@ -243,7 +239,6 @@ namespace Assets.Scripts.Scene.Tiling
         private void ResetToDefaults()
         {
             _position = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-            _distanceToOrigin = HeightRange.Minimum + (HeightRange.Maximum - HeightRange.Minimum) / 2;
             _zoom = 0;
         }
 

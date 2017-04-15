@@ -39,7 +39,7 @@ namespace Assets.Scripts.Scene.Tiling
         }
 
         /// <inheritdoc />
-        protected override float DistanceToOrigin { get { return _distanceToOrigin; } }
+        protected override float Height { get { return _distanceToOrigin; } }
 
         /// <inheritdoc />
         public override Range<float> HeightRange { get; protected set; }
@@ -51,13 +51,13 @@ namespace Assets.Scripts.Scene.Tiling
         public override IProjection Projection { get; protected set; }
 
         /// <inheritdoc />
-        public override float ZoomLevel { get { return _zoom; } }
+        public override float Zoom { get { return _zoom; } }
 
         /// <inheritdoc />
-        public override bool IsAboveMax { get { return HeightRange.Maximum < DistanceToOrigin; } }
+        public override bool IsAboveMax { get { return HeightRange.Maximum < Height; } }
 
         /// <inheritdoc />
-        public override bool IsBelowMin { get { return HeightRange.Minimum > DistanceToOrigin; } }
+        public override bool IsBelowMin { get { return HeightRange.Minimum > Height; } }
 
         /// <inheritdoc />
         public override GeoCoordinate Coordinate

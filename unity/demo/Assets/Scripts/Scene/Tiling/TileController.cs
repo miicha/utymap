@@ -13,11 +13,11 @@ namespace Assets.Scripts.Scene.Tiling
         private readonly Stylesheet _stylesheet;
         private readonly ElevationDataType _elevationType;
 
-        /// <summary> Gets distance to origin. </summary>
-        protected abstract float DistanceToOrigin { get; }
-
         /// <summary> Contains LOD values mapped for height ranges. </summary>
         protected RangeTree<float, int> LodTree;
+
+        /// <summary> Gets height in scaled coordinates. </summary>
+        protected abstract float Height { get; }
 
         /// <summary> Scaled height range. </summary>
         public abstract Range<float> HeightRange { get; protected set; }
@@ -35,7 +35,7 @@ namespace Assets.Scripts.Scene.Tiling
         public abstract IProjection Projection { get; protected set; }
 
         /// <summary> Gets current zoom level. </summary>
-        public abstract float ZoomLevel { get; }
+        public abstract float Zoom { get; }
 
         /// <summary> Is above maximum zoom level. </summary>
         public abstract bool IsAboveMax { get; }
@@ -66,12 +66,12 @@ namespace Assets.Scripts.Scene.Tiling
         #region Height calculation
 
         /// <summary> Calculates height in scaled world coordinates for given zoom using height provided. </summary>
-        public float CalculateHeightForZoom(float zoom, float currentHeight)
+        public float GetHeight(float zoom)
         {
             int lod = (int) Math.Floor(zoom);
             return LodRange.Contains(lod)
                 ? InterpolateHeight(zoom, lod)
-                : ExtrapolateHeight(zoom, lod, currentHeight);
+                : ExtrapolateHeight(zoom, lod);
         }
 
         private float InterpolateHeight(float zoom, int lod)
@@ -97,17 +97,17 @@ namespace Assets.Scripts.Scene.Tiling
             return Mathf.Clamp(minHeight + range * (lod + 1 - zoom), minHeight + tolerance, maxHeight - tolerance);
         }
 
-        private float ExtrapolateHeight(float zoom, int lod, float currentHeight)
+        private float ExtrapolateHeight(float zoom, int lod)
         {
             bool isZoomIn = lod > LodRange.Maximum;
             
             var distanceInsideSpace = isZoomIn
-                ? currentHeight - HeightRange.Minimum
-                : HeightRange.Maximum - currentHeight;
+                ? Height - HeightRange.Minimum
+                : HeightRange.Maximum - Height;
 
             var zoomInsideSpace = (isZoomIn
-                ? LodRange.Maximum - ZoomLevel + 1
-                : ZoomLevel - LodRange.Minimum) ;
+                ? LodRange.Maximum - Zoom + 1
+                : Zoom - LodRange.Minimum) ;
 
             var zoomOutsideSpace = (isZoomIn
                 ? zoom - LodRange.Maximum - 1

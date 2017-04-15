@@ -25,7 +25,7 @@ namespace Assets.Scripts.Scene.Animations
                 CreatePathAnimation(Camera, duration, timeInterpolator, new List<Vector3>()
                 {
                     position,
-                    new Vector3(position.x, position.y, -TileController.CalculateHeightForZoom(zoom, position.z))
+                    new Vector3(position.x, position.y, -TileController.GetHeight(zoom))
                 }),
                 CreateRotationAnimation(Pivot, duration, timeInterpolator, new List<Quaternion>()
                 {
