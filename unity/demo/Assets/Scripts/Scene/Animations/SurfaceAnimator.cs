@@ -22,7 +22,7 @@ namespace Assets.Scripts.Scene.Animations
             return CreatePathAnimation(Pivot, duration, timeInterpolator, new List<Vector3>()
             {
                 position,
-                new Vector3(position.x, TileController.GetHeight(zoom), position.z)
+                new Vector3(position.x, TileController.CalculateHeightForZoom(zoom, position.y), position.z)
             });
         }
     }

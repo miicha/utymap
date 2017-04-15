@@ -65,23 +65,23 @@ namespace Assets.Scripts.Scene.Tiling
 
         #region Height calculation
 
-        /// <summary> Gets height in scaled world coordinates for given zoom. </summary>
-        public float GetHeight(float zoom)
+        /// <summary> Calculates height in scaled world coordinates for given zoom using height provided. </summary>
+        public float CalculateHeightForZoom(float zoom, float currentHeight)
         {
             int lod = (int) Math.Floor(zoom);
-            return LodRange.Contains(lod) 
-                ? InterpolateHeight(lod, zoom) 
-                : ExtrapolateHeight(lod, zoom);
+            return LodRange.Contains(lod)
+                ? InterpolateHeight(zoom, lod)
+                : ExtrapolateHeight(zoom, lod, currentHeight);
         }
 
-        private float InterpolateHeight(int startLod, float zoom)
+        private float InterpolateHeight(float zoom, int lod)
         {
             var minHeight = float.MinValue;
             var maxHeight = float.MinValue;
 
             foreach (var rangeValuePair in LodTree)
             {
-                if (rangeValuePair.Value == startLod)
+                if (rangeValuePair.Value == lod)
                 {
                     minHeight = rangeValuePair.From;
                     maxHeight = rangeValuePair.To;
@@ -94,15 +94,30 @@ namespace Assets.Scripts.Scene.Tiling
             // the problem but it will force to use casting to float in multiple places.
             var range = maxHeight - minHeight;
             var tolerance = range * 0.00001f;
-            return Mathf.Clamp(minHeight + range * (startLod + 1 - zoom), minHeight + tolerance, maxHeight - tolerance);
+            return Mathf.Clamp(minHeight + range * (lod + 1 - zoom), minHeight + tolerance, maxHeight - tolerance);
         }
 
-        private float ExtrapolateHeight(int startLod, float zoom)
+        private float ExtrapolateHeight(float zoom, int lod, float currentHeight)
         {
-            var ratio = (HeightRange.Maximum - HeightRange.Minimum) / (LodRange.Maximum - LodRange.Minimum + 1);
-            return zoom > LodRange.Maximum
-                ? HeightRange.Minimum - (zoom - LodRange.Maximum) * ratio
-                : HeightRange.Maximum - (zoom - LodRange.Minimum) * ratio;
+            bool isZoomIn = lod > LodRange.Maximum;
+            
+            var distanceInsideSpace = isZoomIn
+                ? currentHeight - HeightRange.Minimum
+                : HeightRange.Maximum - currentHeight;
+
+            var zoomInsideSpace = (isZoomIn
+                ? LodRange.Maximum - ZoomLevel + 1
+                : ZoomLevel - LodRange.Minimum) ;
+
+            var zoomOutsideSpace = (isZoomIn
+                ? zoom - LodRange.Maximum - 1
+                : LodRange.Minimum - zoom) ;
+
+            var distanceOtsideSpace = distanceInsideSpace * zoomOutsideSpace / zoomInsideSpace;
+
+            return isZoomIn
+                ? HeightRange.Minimum - distanceOtsideSpace
+                : HeightRange.Maximum + distanceOtsideSpace;
         }
 
         #endregion
