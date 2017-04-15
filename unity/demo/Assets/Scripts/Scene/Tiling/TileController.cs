@@ -100,10 +100,15 @@ namespace Assets.Scripts.Scene.Tiling
         private float ExtrapolateHeight(float zoom, int lod)
         {
             bool isZoomIn = lod > LodRange.Maximum;
+
+            // NOTE prevent no height yet known case.
+            var currentHeight = Math.Abs(Height - float.MinValue) < float.Epsilon
+                ? (isZoomIn ? HeightRange.Minimum : HeightRange.Maximum)
+                : Height;
             
             var distanceInsideSpace = isZoomIn
-                ? Height - HeightRange.Minimum
-                : HeightRange.Maximum - Height;
+                ? currentHeight - HeightRange.Minimum
+                : HeightRange.Maximum - currentHeight;
 
             var zoomInsideSpace = (isZoomIn
                 ? LodRange.Maximum - Zoom + 1
