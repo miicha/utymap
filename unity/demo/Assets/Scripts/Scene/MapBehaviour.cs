@@ -116,7 +116,7 @@ namespace Assets.Scripts.Scene
                 var tileController = _spaces[_currentSpaceIndex].TileController;
                 var labelText = String.Format("Position: {0}\nZoom: {1}",
                     tileController.Coordinate,
-                    tileController.ZoomLevel);
+                    tileController.Zoom);
 
                 GUI.contentColor = Color.red;
                 GUI.Label(new Rect(0, 0, Screen.width, Screen.height), labelText);
