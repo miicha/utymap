@@ -19,10 +19,11 @@ namespace Assets.Scripts.Scene.Animations
         protected override Animation CreateAnimationTo(GeoCoordinate coordinate, float zoom, TimeSpan duration, ITimeInterpolator timeInterpolator)
         {
             var position = Pivot.localPosition;
+            var position2D = TileController.Projection.Project(coordinate, 0);
             return CreatePathAnimation(Pivot, duration, timeInterpolator, new List<Vector3>()
             {
                 position,
-                new Vector3(position.x, TileController.GetHeight(zoom), position.z)
+                new Vector3(position2D.x, TileController.GetHeight(zoom), position2D.z)
             });
         }
     }
