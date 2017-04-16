@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using UtyMap.Unity.Data;
-using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyRx;
 
 namespace UtyMap.Unity.Tests.Data
@@ -11,14 +9,22 @@ namespace UtyMap.Unity.Tests.Data
     public class MapTileAdapterTests
     {
         private Mock<IObserver<MapData>> _observer;
-        private MapDataAdapter _adapter;
+        private Tile _tile;
             
         [TestFixtureSetUp]
-        public void SetUp()
+        public void Setup()
         {
-            var tile = new Tile(new QuadKey(), new Mock<Stylesheet>("").Object, new Mock<IProjection>().Object, ElevationDataType.Flat);
+            _tile = new Tile(new QuadKey(), new Mock<Stylesheet>("").Object, new Mock<IProjection>().Object, ElevationDataType.Flat);
             _observer = new Mock<IObserver<MapData>>();
-            _adapter = new MapDataAdapter(tile, new List<IObserver<MapData>>() { _observer.Object }, new DefaultTrace());
+
+            MapDataAdapter.Add(_tile);
+            MapDataAdapter.Add(_observer.Object);
+        }
+
+        [TestFixtureTearDown]
+        public void TearDown()
+        {
+            MapDataAdapter.Clear();
         }
 
         [TestCase("building")]
@@ -27,8 +33,13 @@ namespace UtyMap.Unity.Tests.Data
             name += ":42";
 
             for (int i = 0; i < 2; ++i)
-                _adapter.AdaptMesh(name, new[] {.0, 0, 0}, 3, new[] {0, 0, 0}, 3, new[] {0, 0, 0}, 3, 
-                    new[] {.0, 0, 0, .0, 0, 0}, 6, new int[0], 0);
+                MapDataAdapter.AdaptMesh(_tile.GetHashCode(), 
+                    name,
+                    new[] { .0, 0, 0 }, 3,
+                    new[] { 0, 0, 0 }, 3,
+                    new[] { 0, 0, 0 }, 3,
+                    new[] {.0, 0, 0, .0, 0, 0}, 6,
+                    new int[0], 0);
 
             _observer.Verify(o => o.OnNext(It.IsAny<MapData>()), Times.Once);
         }

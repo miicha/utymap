@@ -66,6 +66,7 @@
     <Compile Include="BoundingBox.cs" />
     <Compile Include="GeoCoordinate.cs" />
     <Compile Include="Infrastructure\Primitives\RangeTree.cs" />
+    <Compile Include="Infrastructure\Primitives\SafeDictionary.cs" />
     <Compile Include="IProjection.cs" />
     <Compile Include="Element.cs" />
     <Compile Include="MapData.cs" />

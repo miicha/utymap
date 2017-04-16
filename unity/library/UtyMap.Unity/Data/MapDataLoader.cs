@@ -8,7 +8,7 @@ using UtyRx;
 namespace UtyMap.Unity.Data
 {
     /// <summary> Loads data from core library. </summary>
-    internal class MapDataLoader : ISubject<Tile, MapData>, IObservable<Tile>, IConfigurable
+    internal class MapDataLoader : ISubject<Tile, MapData>, IObservable<Tile>, IConfigurable, IDisposable
     {
         private const string TraceCategory = "mapdata.loader";
 
@@ -44,16 +44,19 @@ namespace UtyMap.Unity.Data
             var stylesheetPathResolved = _pathResolver.Resolve(tile.Stylesheet.Path);
 
             _trace.Info(TraceCategory, "loading tile: {0} using style: {1}", tile.ToString(), stylesheetPathResolved);
+            MapDataAdapter.Add(tile);
 
-            var adapter = new MapDataAdapter(tile, _dataObservers, _trace);
             CoreLibrary.LoadQuadKey(
+                tile.GetHashCode(),
                 stylesheetPathResolved,
                 tile.QuadKey,
                 tile.ElevationType,
-                adapter.AdaptMesh,
-                adapter.AdaptElement,
-                adapter.AdaptError,
+                MapDataAdapter.AdaptMesh,
+                MapDataAdapter.AdaptElement,
+                MapDataAdapter.AdaptError,
                 tile.CancelationToken);
+
+            MapDataAdapter.Remove(tile);
             _trace.Info(TraceCategory, "tile loaded: {0}", tile.ToString());
 
             _tileObservers.ForEach(o => o.OnNext(tile));
@@ -62,6 +65,7 @@ namespace UtyMap.Unity.Data
         /// <summary> Subscribes on mesh/element data loaded events. </summary>
         public IDisposable Subscribe(IObserver<MapData> observer)
         {
+            MapDataAdapter.Add(observer);
             _dataObservers.Add(observer);
             return Disposable.Empty;
         }
@@ -76,7 +80,13 @@ namespace UtyMap.Unity.Data
         /// <inheritdoc />
         public void Configure(IConfigSection configSection)
         {
-            // empty so far
+            MapDataAdapter.UseTrace(_trace);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            MapDataAdapter.Clear();
         }
     }
 }

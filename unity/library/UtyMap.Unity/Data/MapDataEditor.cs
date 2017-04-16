@@ -39,10 +39,10 @@ namespace UtyMap.Unity.Data
         {
             CoreLibrary.AddElementToStore(dataStorageType,
                 _resolver.Resolve(_stylesheet.Path),
-                element, levelOfDetails, message =>
+                element, levelOfDetails, error =>
                 {
-                    if (!String.IsNullOrEmpty(message))
-                        throw new MapDataException(message);
+                    if (!String.IsNullOrEmpty(error))
+                        throw new MapDataException(error);
                 });
         }
 

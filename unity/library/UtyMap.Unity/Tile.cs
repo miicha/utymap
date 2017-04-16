@@ -112,5 +112,33 @@ namespace UtyMap.Unity
         }
 
         #endregion
+
+        #region Equality overrides
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            var tile = obj as Tile;
+            if (tile == null)
+                return false;
+
+            return QuadKey.Equals(tile.QuadKey) &&
+                   ElevationType == tile.ElevationType &&
+                   Projection.Equals(tile.Projection) &&
+                   Stylesheet.Equals(tile.Stylesheet);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            int hash = 13;
+            hash = hash * 7 + QuadKey.GetHashCode();
+            hash = hash * 7 + ElevationType.GetHashCode();
+            hash = hash * 7 + Projection.GetHashCode();
+            hash = hash * 7 + Stylesheet.GetHashCode();
+            return hash;
+        }
+
+        #endregion
     }
 }

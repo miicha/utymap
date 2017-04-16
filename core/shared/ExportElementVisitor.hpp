@@ -20,12 +20,13 @@ struct ExportElementVisitor : public utymap::entities::ElementVisitor
     using Tags = std::vector<utymap::formats::Tag>;
     using Coordinates = std::vector<utymap::GeoCoordinate>;
 
-    ExportElementVisitor(const utymap::QuadKey& quadKey,
+    ExportElementVisitor(int tag,
+                         const utymap::QuadKey& quadKey,
                          utymap::index::StringTable& stringTable,
                          const utymap::mapcss::StyleProvider& styleProvider,
                          const utymap::heightmap::ElevationProvider& eleProvider,
                          OnElementLoaded* elementCallback) :
-        quadKey_(quadKey), stringTable_(stringTable), styleProvider_(styleProvider), 
+        tag_(tag), quadKey_(quadKey), stringTable_(stringTable), styleProvider_(styleProvider),
         eleProvider_(eleProvider), elementCallback_(elementCallback)
     {
     }
@@ -85,7 +86,7 @@ private:
             cstyles.push_back(styleStrings_[styleStrings_.size() - 1].c_str());
         }
 
-        elementCallback_(element.id,
+        elementCallback_(tag_, element.id,
             ctags.data(), static_cast<int>(ctags.size()),
             vertices_.data(), static_cast<int>(vertices_.size()),
             cstyles.data(), static_cast<int>(cstyles.size()));
@@ -96,6 +97,7 @@ private:
         styleStrings_.clear();
     }
 
+    const int tag_;
     const utymap::QuadKey& quadKey_;
     utymap::index::StringTable& stringTable_;
     const utymap::mapcss::StyleProvider& styleProvider_;

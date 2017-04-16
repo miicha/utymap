@@ -75,7 +75,7 @@ namespace UtyMap.Unity.Data
         }
 
         /// <summary>
-        ///     Adds map data to in-memory dataStorage to specific quadkey.
+        ///     Adds map data to data storage only to specific quadkey.
         ///     Supported formats: shapefile, osm xml, osm pbf.
         /// </summary>
         /// <param name="dataStorageType"> Map data dataStorage. </param>
@@ -92,6 +92,15 @@ namespace UtyMap.Unity.Data
             }
         }
 
+        /// <summary>
+        ///     Adda elemet to data storage to specific level of details.
+        ///     Supported formats: shapefile, osm xml, osm pbf.
+        /// </summary>
+        /// <param name="dataStorageType"> Map data dataStorage. </param>
+        /// <param name="stylePath"> Stylesheet path. </param>
+        /// <param name="element"> Element to add. </param>
+        /// <param name="levelOfDetails"> Level of detail range. </param>
+        /// <param name="onError"> OnError callback. </param>
         public static void AddElementToStore(MapDataStorageType dataStorageType, string stylePath, Element element, Range<int> levelOfDetails, OnError onError)
         {
             double[] coordinates = new double[element.Geometry.Length*2];
@@ -135,6 +144,7 @@ namespace UtyMap.Unity.Data
         }
 
         /// <summary> Loads quadkey. </summary>
+        /// <param name="tag"> A tag which is used to match an object to requested tile in response. </param>
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="quadKey"> QuadKey</param>
         /// <param name="elevationDataType"> Elevation data type.</param>
@@ -142,13 +152,12 @@ namespace UtyMap.Unity.Data
         /// <param name="onElementLoaded"> Element callback. </param>
         /// <param name="onError"> Error callback. </param>
         /// <param name="cancelToken"> Cancellation token. </param>
-        public static void LoadQuadKey(string stylePath, QuadKey quadKey, ElevationDataType elevationDataType,
+        public static void LoadQuadKey(int tag, string stylePath, QuadKey quadKey, ElevationDataType elevationDataType,
             OnMeshBuilt onMeshBuilt, OnElementLoaded onElementLoaded, OnError onError, CancellationToken cancelToken)
         {
-            GCHandle cancelTokenHandle = GCHandle.Alloc(cancelToken, GCHandleType.Pinned);
-            loadQuadKey(stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
-                (int)elevationDataType, onMeshBuilt, onElementLoaded, onError,
-                cancelTokenHandle.AddrOfPinnedObject());
+            var cancelTokenHandle = GCHandle.Alloc(cancelToken, GCHandleType.Pinned);
+            loadQuadKey(tag, stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
+                (int) elevationDataType, onMeshBuilt, onElementLoaded, onError, cancelTokenHandle.AddrOfPinnedObject());
             cancelTokenHandle.Free();
         }
 
@@ -172,18 +181,18 @@ namespace UtyMap.Unity.Data
         #region PInvoke import
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void OnMeshBuilt([In] string name,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] [In] double[] vertices, [In] int vertexCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] [In] int[] triangles, [In] int triangleCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 6)] [In] int[] colors, [In] int colorCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 8)] [In] double[] uvs, [In] int uvCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 10)] [In] int[] uvMap, [In] int uvMapCount);
+        internal delegate void OnMeshBuilt([In] int tag, [In] string name,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] [In] double[] vertices, [In] int vertexCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] [In] int[] triangles, [In] int triangleCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] [In] int[] colors, [In] int colorCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 9)] [In] double[] uvs, [In] int uvCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 11)] [In] int[] uvMap, [In] int uvMapCount);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void OnElementLoaded([In] long id,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] [In] string[] tags, [In] int tagCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] [In] double[] vertices, [In] int vertexCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 6)] [In] string[] styles, [In] int styleCount);
+        internal delegate void OnElementLoaded([In] int tag, [In] long id,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] [In] string[] tags, [In] int tagCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] [In] double[] vertices, [In] int vertexCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] [In] string[] styles, [In] int styleCount);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void OnError([In] string message);
@@ -214,7 +223,7 @@ namespace UtyMap.Unity.Data
         private static extern double getElevation(int tileX, int tileY, int levelOfDetails, int eleDataType, double latitude, double longitude);
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
-        private static extern void loadQuadKey(string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,
+        private static extern void loadQuadKey(int tag, string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,
             OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
 
         [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]

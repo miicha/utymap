@@ -124,7 +124,8 @@ public:
     }
 
     /// Loads given quadKey.
-    void loadQuadKey(const char* styleFile,
+    void loadQuadKey(int tag,
+                     const char* styleFile,
                      const utymap::QuadKey& quadKey,
                      const ElevationDataType& eleDataType,
                      OnMeshBuilt* meshCallback,
@@ -135,12 +136,12 @@ public:
         safeExecute([&]() {
             auto& styleProvider = getStyleProvider(styleFile);
             auto& eleProvider = getElevationProvider(quadKey, eleDataType);
-            ExportElementVisitor elementVisitor(quadKey, stringTable_, styleProvider, eleProvider, elementCallback);
+            ExportElementVisitor elementVisitor(tag, quadKey, stringTable_, styleProvider, eleProvider, elementCallback);
             quadKeyBuilder_.build(quadKey, styleProvider, eleProvider,
-                [&meshCallback](const utymap::math::Mesh& mesh) {
+                [&meshCallback, tag](const utymap::math::Mesh& mesh) {
                 // NOTE do not notify if mesh is empty.
                 if (!mesh.vertices.empty()) {
-                    meshCallback(mesh.name.data(),
+                    meshCallback(tag, mesh.name.data(),
                         mesh.vertices.data(), static_cast<int>(mesh.vertices.size()),
                         mesh.triangles.data(), static_cast<int>(mesh.triangles.size()),
                         mesh.colors.data(), static_cast<int>(mesh.colors.size()),

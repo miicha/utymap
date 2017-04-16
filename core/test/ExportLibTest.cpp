@@ -31,8 +31,9 @@ namespace {
             utymap::CancellationToken cancelToken;
             for (int i = startX; i <= endX; ++i) {
                 for (int j = startY; j <= endY; ++j) {
-                    ::loadQuadKey(mapcss, i, j, levelOfDetails, 0,
-                        [](const char* name, 
+                    ::loadQuadKey(0, mapcss, i, j, levelOfDetails, 0,
+                        [](int tag,
+                           const char* name, 
                            const double* vertices, int vertexCount,
                            const int* triangles, int triCount,
                            const int* colors, int colorCount,
@@ -44,7 +45,7 @@ namespace {
                         BOOST_CHECK_GT(colorCount, 0);
                         // NOTE ignore uvs as it is optional
                     },
-                        [](uint64_t id, const char** tags, int size, const double* vertices,
+                        [](int tag, uint64_t id, const char** tags, int size, const double* vertices,
                         int vertexCount, const char** style, int styleSize) {
                         isCalled = true;
                     },

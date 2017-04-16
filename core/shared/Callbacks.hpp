@@ -4,7 +4,8 @@
 #include <cstdint>
 
 /// Callback which is called when mesh is built.
-typedef void OnMeshBuilt(const char* name,                       // name 
+typedef void OnMeshBuilt(int tag,                                // a request tag
+                         const char* name,                       // name 
                          const double* vertices, int vertexSize, // vertices (x, y, elevation)
                          const int* triangles, int triSize,      // triangle indices
                          const int* colors, int colorSize,       // rgba colors
@@ -12,12 +13,13 @@ typedef void OnMeshBuilt(const char* name,                       // name
                          const int* uvMap, int uvMapSize);       // map with info about used atlas and texture region
 
 /// Callback which is called when element is loaded.
-typedef void OnElementLoaded(std::uint64_t id,                       // element id
+typedef void OnElementLoaded(int tag,                                // a request tag
+                             std::uint64_t id,                       // element id
                              const char** tags, int tagsSize,        // tags
                              const double* vertices, int vertexSize, // vertices (x, y, elevation)
                              const char** style, int styleSize);     // mapcss styles (key, value)
 
-/// Callback which is called when operation is completed.
+/// Callback which is called when error is occured.
 typedef void OnError(const char* errorMessage);
 
 #endif // CALLBACKS_HPP_DEFINED

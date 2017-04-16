@@ -137,7 +137,8 @@ extern "C"
     }
 
     /// Loads quadkey.
-    void EXPORT_API loadQuadKey(const char* styleFile,                   // style file
+    void EXPORT_API loadQuadKey(int tag,                                 // request tag
+                                const char* styleFile,                   // style file
                                 int tileX, int tileY, int levelOfDetail, // quadkey info
                                 int eleDataType,                         // elevation data type
                                 OnMeshBuilt* meshCallback,               // mesh callback
@@ -146,7 +147,7 @@ extern "C"
                                 utymap::CancellationToken* cancellationToken)    // cancellation token
     {
         utymap::QuadKey quadKey(levelOfDetail, tileX, tileY);
-        applicationPtr->loadQuadKey(styleFile, quadKey, static_cast<Application::ElevationDataType>(eleDataType),
+        applicationPtr->loadQuadKey(tag, styleFile, quadKey, static_cast<Application::ElevationDataType>(eleDataType),
             meshCallback, elementCallback, errorCallback, cancellationToken);
     }
 
