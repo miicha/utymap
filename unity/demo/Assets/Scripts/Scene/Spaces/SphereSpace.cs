@@ -27,6 +27,8 @@ namespace Assets.Scripts.Scene.Spaces
             Camera.transform.localPosition = new Vector3(0, 0, isFromTop
                 ? -TileController.HeightRange.Maximum
                 : -TileController.HeightRange.Minimum);
+
+            TileController.Update(Target);
         }
 
         protected override void OnExit()

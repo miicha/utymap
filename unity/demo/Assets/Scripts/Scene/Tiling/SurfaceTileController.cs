@@ -54,8 +54,7 @@ namespace Assets.Scripts.Scene.Tiling
         public override bool IsBelowMin { get { return HeightRange.Minimum > _position.y; } }
 
         /// <inheritdoc />
-        public override GeoCoordinate Coordinate
-        {
+        public override GeoCoordinate Coordinate {
             get
             {
                 return GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(_position.x, _position.z) / _scale);
@@ -71,6 +70,13 @@ namespace Assets.Scripts.Scene.Tiling
                 tile.Dispose();
 
             Resources.UnloadUnusedAssets();
+        }
+
+        /// <summary> Moves view center to given coordinate. </summary>
+        public void MoveGeoOrigin(GeoCoordinate origin)
+        {
+            _geoOrigin = origin;
+            Projection = CreateProjection();
         }
 
         /// <inheritdoc />
@@ -94,19 +100,12 @@ namespace Assets.Scripts.Scene.Tiling
 
         #region Tile processing
 
-        /// <summary> Moves geo origin. </summary>
-        public void MoveGeoOrigin(GeoCoordinate origin)
-        {
-            _geoOrigin = origin;
-            Projection = CreateProjection();
-        }
-
-        // TODO call this method when tile is moved to far.
+        // TODO call this method when tile is moved too far.
         /// <summary> Moves geo origin to specific world position. </summary>
         private void MoveWorldOrigin(Vector3 position)
         {
-            _geoOrigin = GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(position.x, position.z) / _scale);
-            Projection = CreateProjection();
+            var geoOrigin = GeoUtils.ToGeoCoordinate(_geoOrigin, new Vector2(position.x, position.z) / _scale);
+            MoveGeoOrigin(geoOrigin);
         }
 
         /// <summary> Builds quadkeys if necessary. Decision is based on current position and lod level. </summary>

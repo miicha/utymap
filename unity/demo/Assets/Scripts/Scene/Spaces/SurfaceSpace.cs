@@ -35,6 +35,7 @@ namespace Assets.Scripts.Scene.Spaces
 
             // surface specific
             _tileController.MoveGeoOrigin(coordinate);
+            TileController.Update(Target);
         }
 
         protected override void OnExit()
