@@ -93,67 +93,14 @@ namespace UtyMap.Unity.Data
 
             // NOTE process terrain differently to emulate flat shading effect by avoiding 
             // triangles to share the same vertex. Remove "if" branch if you don't need it
-            if (name.Contains("terrain"))
-            {
-                worldPoints = new Vector3[triangleCount];
-                unityColors = new Color[triangleCount];
+            bool isCreated = name.Contains("terrain")
+                ? BuildTerrainMesh(tile, name, vertices, triangles, colors, uvs, uvMap,
+                    out worldPoints, out unityColors, out unityUvs, out unityUvs2, out unityUvs3)
+                : BuildObjectMesh(tile, name, vertices, triangles, colors, uvs, uvMap,
+                    out worldPoints, out unityColors, out unityUvs, out unityUvs2, out unityUvs3);
 
-                unityUvs = new Vector2[triangleCount];
-                unityUvs2 = new Vector2[triangleCount];
-                unityUvs3 = new Vector2[triangleCount];
-
-                var textureMapper = CreateTextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, uvMap);
-
-                for (int i = 0; i < triangles.Length; ++i)
-                {
-                    int vertIndex = triangles[i] * 3;
-                    worldPoints[i] = tile.Projection
-                        .Project(new GeoCoordinate(vertices[vertIndex + 1], vertices[vertIndex]), vertices[vertIndex + 2]);
-
-                    unityColors[i] = ColorUtils.FromInt(colors[triangles[i]]);
-                    textureMapper.SetUvs(i, triangles[i] * 2);
-                    triangles[i] = i;
-                }
-            }
-            else
-            {
-                long id;
-                if (!ShouldLoad(tile, name, out id))
-                    return;
-
-                worldPoints = new Vector3[vertexCount / 3];
-                for (int i = 0; i < vertices.Length; i += 3)
-                    worldPoints[i / 3] = tile.Projection
-                        .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
-
-                unityColors = new Color[colorCount];
-                for (int i = 0; i < colorCount; ++i)
-                    unityColors[i] = ColorUtils.FromInt(colors[i]);
-
-                if (uvCount > 0)
-                {
-                    unityUvs = new Vector2[uvCount/2];
-                    unityUvs2 = new Vector2[uvCount/2];
-                    unityUvs3 = new Vector2[uvCount/2];
-
-                    var textureMapper = CreateTextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, uvMap);
-                    for (int i = 0; i < uvCount; i += 2)
-                    {
-                        unityUvs[i/2] = new Vector2((float) uvs[i], (float) uvs[i + 1]);
-                        textureMapper.SetUvs(i/2, i);
-                    }
-                }
-                else
-                {
-                    unityUvs = new Vector2[worldPoints.Length];
-                    unityUvs2 = new Vector2[worldPoints.Length];
-                    unityUvs3 = new Vector2[worldPoints.Length];
-                }
-
-                tile.Register(id);
-            }
-
-            BuildMesh(tile, name, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
+            if (isCreated)
+                BuildMesh(tile, name, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
         }
 
         /// <summary> Adapts element data received from utymap. </summary>
@@ -193,6 +140,96 @@ namespace UtyMap.Unity.Data
         }
 
         #region Private members
+
+        private static bool BuildTerrainMesh(Tile tile, string name,
+            double[] vertices, int[] triangles, int[] colors,
+            double[] uvs, int[] uvMap, out Vector3[] worldPoints, out Color[] unityColors,
+            out Vector2[] unityUvs, out Vector2[] unityUvs2, out Vector2[] unityUvs3)
+        {
+            int triangleCount = triangles.Length;
+
+            worldPoints = new Vector3[triangleCount];
+            unityColors = new Color[triangleCount];
+
+            unityUvs = new Vector2[triangleCount];
+            unityUvs2 = new Vector2[triangleCount];
+            unityUvs3 = new Vector2[triangleCount];
+
+            var textureMapper = CreateTextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, uvMap);
+
+            for (int i = 0; i < triangles.Length; ++i)
+            {
+                int vertIndex = triangles[i] * 3;
+                worldPoints[i] = tile.Projection
+                    .Project(new GeoCoordinate(vertices[vertIndex + 1], vertices[vertIndex]), vertices[vertIndex + 2]);
+
+                unityColors[i] = ColorUtils.FromInt(colors[triangles[i]]);
+                textureMapper.SetUvs(i, triangles[i] * 2);
+                triangles[i] = i;
+            }
+
+            return true;
+        }
+
+        private static bool BuildObjectMesh(Tile tile, string name,
+            double[] vertices,
+            int[] triangles,
+            int[] colors,
+            double[] uvs,
+            int[] uvMap,
+            out Vector3[] worldPoints,
+            out Color[] unityColors,
+            out Vector2[] unityUvs,
+            out Vector2[] unityUvs2,
+            out Vector2[] unityUvs3)
+        {
+            long id;
+            if (!ShouldLoad(tile, name, out id))
+            {
+                worldPoints = null;
+                unityColors = null; ;
+                unityUvs = null;
+                unityUvs2 = null;
+                unityUvs3 = null;
+                return false;
+            }
+
+            int uvCount = uvs.Length;
+            int colorCount = colors.Length;
+
+            worldPoints = new Vector3[vertices.Length / 3];
+            for (int i = 0; i < vertices.Length; i += 3)
+                worldPoints[i / 3] = tile.Projection
+                    .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
+
+            unityColors = new Color[colorCount];
+            for (int i = 0; i < colorCount; ++i)
+                unityColors[i] = ColorUtils.FromInt(colors[i]);
+            
+            if (uvCount > 0)
+            {
+                unityUvs = new Vector2[uvCount / 2];
+                unityUvs2 = new Vector2[uvCount / 2];
+                unityUvs3 = new Vector2[uvCount / 2];
+
+                var textureMapper = CreateTextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, uvMap);
+                for (int i = 0; i < uvCount; i += 2)
+                {
+                    unityUvs[i / 2] = new Vector2((float)uvs[i], (float)uvs[i + 1]);
+                    textureMapper.SetUvs(i / 2, i);
+                }
+            }
+            else
+            {
+                unityUvs = new Vector2[worldPoints.Length];
+                unityUvs2 = new Vector2[worldPoints.Length];
+                unityUvs3 = new Vector2[worldPoints.Length];
+            }
+
+            tile.Register(id);
+
+            return true;
+        }
 
         private static string[] ReadStrings(IntPtr ptr, int size)
         {
