@@ -198,53 +198,50 @@ namespace UtyMap.Unity.Data
 
         #region PInvoke import
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void OnMeshBuilt([In] int tag, [In] string name,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] [In] double[] vertices, [In] int vertexCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] [In] int[] triangles, [In] int triangleCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] [In] int[] colors, [In] int colorCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 9)] [In] double[] uvs, [In] int uvCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 11)] [In] int[] uvMap, [In] int uvMapCount);
+        internal delegate void OnMeshBuilt(int tag, string name,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] double[] vertices, int vertexCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] int[] triangles, int triangleCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] int[] colors, int colorCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 9)] double[] uvs, int uvCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 11)] int[] uvMap, int uvMapCount);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void OnElementLoaded([In] int tag, [In] long id,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] [In] string[] tags, [In] int tagCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] [In] double[] vertices, [In] int vertexCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] [In] string[] styles, [In] int styleCount);
+        internal delegate void OnElementLoaded(int tag, long id,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] string[] tags, int tagCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] double[] vertices, int vertexCount,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] string[] styles, int styleCount);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void OnError([In] string message);
+        internal delegate void OnError(string message);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern void configure(string stringPath, OnError errorHandler);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern void registerInMemoryStore(string key);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern void registerPersistentStore(string key, string path);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern void addToStoreInRange(string key, string stylePath, string path, int startLod, int endLod, OnError errorHandler);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern void addToStoreInQuadKey(string key, string stylePath, string path, int tileX, int tileY, int lod, OnError errorHandler);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern void addToStoreElement(string key, string stylePath, long id, double[] vertices, int vertexLength, 
             string[] tags, int tagLength, int startLod, int endLod, OnError errorHandler);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern bool hasData(int tileX, int tileY, int levelOfDetails);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern double getElevation(int tileX, int tileY, int levelOfDetails, int eleDataType, double latitude, double longitude);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern void loadQuadKey(int tag, string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,
             OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
 
-        [DllImport("UtyMap.Shared", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("UtyMap.Shared")]
         private static extern void cleanup();
 
         #endregion
