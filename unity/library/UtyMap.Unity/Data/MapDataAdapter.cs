@@ -59,6 +59,7 @@ namespace UtyMap.Unity.Data
         }
 
         /// <summary> Adapts mesh data received from utymap. </summary>
+        [AOT.MonoPInvokeCallback(typeof(CoreLibrary.OnMeshBuilt))]
         public static void AdaptMesh(int tag, string name, double[] vertices, int vertexCount,
             int[] triangles, int triangleCount, int[] colors, int colorCount,
             double[] uvs, int uvCount, int[] uvMap, int uvMapCount)
@@ -140,6 +141,7 @@ namespace UtyMap.Unity.Data
         }
 
         /// <summary> Adapts element data received from utymap. </summary>
+        [AOT.MonoPInvokeCallback(typeof(CoreLibrary.OnElementLoaded))]
         public static void AdaptElement(int tag, long id, string[] tags, int tagCount, double[] vertices, int vertexCount, 
             string[] styles, int styleCount)
         {
@@ -160,6 +162,7 @@ namespace UtyMap.Unity.Data
         }
 
         /// <summary> Adapts error message </summary>
+        [AOT.MonoPInvokeCallback(typeof(CoreLibrary.OnError))]
         public static void AdaptError(string message)
         {
             var exception = new MapDataException(message);

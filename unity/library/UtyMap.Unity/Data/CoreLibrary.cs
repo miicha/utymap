@@ -188,6 +188,7 @@ namespace UtyMap.Unity.Data
             _lastError = null;
         }
 
+        [AOT.MonoPInvokeCallback(typeof(OnError))]
         private static void OnErrorHandler(string message)
         {
             _lastError = message;
