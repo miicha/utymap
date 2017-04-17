@@ -79,24 +79,17 @@ namespace UtyMap.Unity.Data
         {
             return Add(dataStorageType, dataPath, stylesheet, (style, data) =>
             {
-                string errorMsg = null;
-                CoreLibrary.AddToStore(dataStorageType, style, data, levelOfDetails, error => errorMsg = error);
-                return errorMsg;
+                return CoreLibrary.AddToStore(dataStorageType, style, data, levelOfDetails);
             });
         }
 
         /// <inheritdoc />
         public IObservable<int> Add(MapDataStorageType dataStorageType, string dataPath, Stylesheet stylesheet, QuadKey quadKey)
         {
-            return Add(dataStorageType, dataPath, stylesheet, (style, data) =>
-            {
-                string errorMsg = null;
-                // NOTE checks data in all registered stores
-                // TODO add API to check in specific store.
-                if (!CoreLibrary.HasData(quadKey))
-                    CoreLibrary.AddToStore(dataStorageType, style, data, quadKey, error => errorMsg = error);
-                return errorMsg;
-            });
+            return Add(dataStorageType, dataPath, stylesheet, 
+                (style, data) => CoreLibrary.HasData(quadKey)
+                    ? null
+                    : CoreLibrary.AddToStore(dataStorageType, style, data, quadKey));
         }
 
         /// <inheritdoc />
@@ -145,9 +138,8 @@ namespace UtyMap.Unity.Data
             
             _mapDataStorageType = MapDataStorageType.Persistent;
 
-            string errorMsg = null;
-            CoreLibrary.Configure(stringPath, mapDataPath, error => errorMsg = error);
-            if (errorMsg != null)
+            string errorMsg = CoreLibrary.Configure(stringPath, mapDataPath);
+            if (!String.IsNullOrEmpty(errorMsg))
                 throw new MapDataException(errorMsg);
         }
 

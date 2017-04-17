@@ -37,13 +37,12 @@ namespace UtyMap.Unity.Data
         /// <inheritdoc />
         public void Add(MapDataStorageType dataStorageType, Element element, Range<int> levelOfDetails)
         {
-            CoreLibrary.AddElementToStore(dataStorageType,
+            var errorMsg = CoreLibrary.AddElementToStore(dataStorageType,
                 _resolver.Resolve(_stylesheet.Path),
-                element, levelOfDetails, error =>
-                {
-                    if (!String.IsNullOrEmpty(error))
-                        throw new MapDataException(error);
-                });
+                element, levelOfDetails);
+
+            if (!String.IsNullOrEmpty(errorMsg))
+                throw new MapDataException(errorMsg);
         }
 
         /// <inheritdoc />

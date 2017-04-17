@@ -29,12 +29,12 @@ namespace UtyMap.Unity.Data
         // NOTE: protection flag against multiple configuration.
         // TODO: maybe support multiple calls?
         private static volatile bool _isConfigured;
+        private static string _lastError;
 
         /// <summary> Configure utymap. Should be called before any core API usage. </summary>
         /// <param name="stringPath"> Path to string table. </param>
         /// <param name="mapDataPath">Path for map data. </param>
-        /// <param name="onError"> OnError callback. </param>
-        public static void Configure(string stringPath, string mapDataPath, OnError onError)
+        public static string Configure(string stringPath, string mapDataPath)
         {
             lock (__lockObj)
             {
@@ -43,16 +43,20 @@ namespace UtyMap.Unity.Data
                     throw new DirectoryNotFoundException(String.Format("Cannot find {0} or {1}", stringPath, mapDataPath));
 
                 if (_isConfigured)
-                    return;
+                    return null;
 
-                configure(stringPath, onError);
-
+                ResetLastError();
+                configure(stringPath, OnErrorHandler);
+                if (!String.IsNullOrEmpty(_lastError))
+                    return _lastError;
+                
                 // NOTE actually, it is possible to have multiple in-memory and persistent 
                 // storages at the same time.
                 registerInMemoryStore(InMemoryStoreKey);
                 registerPersistentStore(PersistentStoreKey, mapDataPath);
 
                 _isConfigured = true;
+                return null;
             }
         }
 
@@ -64,13 +68,14 @@ namespace UtyMap.Unity.Data
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="path"> Path to file. </param>
         /// <param name="levelOfDetails"> Specifies level of details for which data should be imported. </param>
-        /// <param name="onError"> OnError callback. </param>
-        public static void AddToStore(MapDataStorageType dataStorageType, string stylePath, string path, Range<int> levelOfDetails, OnError onError)
+        public static string AddToStore(MapDataStorageType dataStorageType, string stylePath, string path, Range<int> levelOfDetails)
         {
             lock (__lockObj)
             {
+                ResetLastError();
                 addToStoreInRange(GetStoreKey(dataStorageType), stylePath, path, levelOfDetails.Minimum,
-                    levelOfDetails.Maximum, onError);
+                    levelOfDetails.Maximum, OnErrorHandler);
+                return _lastError;
             }
         }
 
@@ -82,13 +87,14 @@ namespace UtyMap.Unity.Data
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="path"> Path to file. </param>
         /// <param name="quadKey"> QuadKey. </param>
-        /// <param name="onError"> OnError callback. </param>
-        public static void AddToStore(MapDataStorageType dataStorageType, string stylePath, string path, QuadKey quadKey, OnError onError)
+        public static string AddToStore(MapDataStorageType dataStorageType, string stylePath, string path, QuadKey quadKey)
         {
             lock (__lockObj)
             {
+                ResetLastError();
                 addToStoreInQuadKey(GetStoreKey(dataStorageType), stylePath, path, quadKey.TileX, quadKey.TileY,
-                    quadKey.LevelOfDetail, onError);
+                    quadKey.LevelOfDetail, OnErrorHandler);
+                return _lastError;
             }
         }
 
@@ -100,8 +106,7 @@ namespace UtyMap.Unity.Data
         /// <param name="stylePath"> Stylesheet path. </param>
         /// <param name="element"> Element to add. </param>
         /// <param name="levelOfDetails"> Level of detail range. </param>
-        /// <param name="onError"> OnError callback. </param>
-        public static void AddElementToStore(MapDataStorageType dataStorageType, string stylePath, Element element, Range<int> levelOfDetails, OnError onError)
+        public static string AddElementToStore(MapDataStorageType dataStorageType, string stylePath, Element element, Range<int> levelOfDetails)
         {
             double[] coordinates = new double[element.Geometry.Length*2];
             for (int i = 0; i < element.Geometry.Length; ++i)
@@ -120,10 +125,12 @@ namespace UtyMap.Unity.Data
 
             lock (__lockObj)
             {
+                ResetLastError();
                 addToStoreElement(GetStoreKey(dataStorageType), stylePath, element.Id,
                     coordinates, coordinates.Length,
                     tags, tags.Length,
-                    levelOfDetails.Minimum, levelOfDetails.Maximum, onError);
+                    levelOfDetails.Minimum, levelOfDetails.Maximum, OnErrorHandler);
+                return _lastError;
             }
         }
 
@@ -174,6 +181,16 @@ namespace UtyMap.Unity.Data
         private static string GetStoreKey(MapDataStorageType dataStorageType)
         {
             return dataStorageType == MapDataStorageType.InMemory ? InMemoryStoreKey : PersistentStoreKey;
+        }
+
+        private static void ResetLastError()
+        {
+            _lastError = null;
+        }
+
+        private static void OnErrorHandler(string message)
+        {
+            _lastError = message;
         }
 
         #endregion
