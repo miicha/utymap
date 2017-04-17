@@ -189,8 +189,8 @@ namespace Assets.Scripts.Scene
             else
             {
                 var zoom = isFromTopSpace
-                    ? to.TileController.LodRange.Minimum + 0.99f
-                    : to.TileController.LodRange.Maximum;
+                    ? to.TileController.LodRange.Minimum
+                    : to.TileController.LodRange.Maximum + 0.99f;
                 to.Animator.AnimateTo(coordinate, zoom, TimeSpan.Zero, new LinearInterpolator());
             }
         }
