@@ -199,16 +199,16 @@ namespace UtyMap.Unity.Data
         #region PInvoke import
 
         internal delegate void OnMeshBuilt(int tag, string name,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] double[] vertices, int vertexCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] int[] triangles, int triangleCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] int[] colors, int colorCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 9)] double[] uvs, int uvCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 11)] int[] uvMap, int uvMapCount);
+            IntPtr vertexPtr, int vertexCount,
+            IntPtr trianglePtr, int triangleCount,
+            IntPtr colorPtr, int colorCount,
+            IntPtr uvPtr, int uvCount,
+            IntPtr uvMapPtr, int uvMapCount);
 
         internal delegate void OnElementLoaded(int tag, long id,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] string[] tags, int tagCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] double[] vertices, int vertexCount,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] string[] styles, int styleCount);
+            IntPtr tagPtr, int tagCount,
+            IntPtr vertexPtr, int vertexCount,
+            IntPtr stylePtr, int styleCount);
 
         internal delegate void OnError(string message);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UtyMap.Unity.Infrastructure.Diagnostic;
@@ -60,9 +61,9 @@ namespace UtyMap.Unity.Data
 
         /// <summary> Adapts mesh data received from utymap. </summary>
         [AOT.MonoPInvokeCallback(typeof(CoreLibrary.OnMeshBuilt))]
-        public static void AdaptMesh(int tag, string name, double[] vertices, int vertexCount,
-            int[] triangles, int triangleCount, int[] colors, int colorCount,
-            double[] uvs, int uvCount, int[] uvMap, int uvMapCount)
+        public static void AdaptMesh(int tag, string name, IntPtr vertexPtr, int vertexCount,
+            IntPtr trianglePtr, int triangleCount, IntPtr colorPtr, int colorCount,
+            IntPtr uvPtr, int uvCount, IntPtr uvMapPtr, int uvMapCount)
         {
             Tile tile;
             if (!Tiles.TryGetValue(tag, out tile) || tile.IsDisposed)
@@ -74,6 +75,21 @@ namespace UtyMap.Unity.Data
             Vector2[] unityUvs;
             Vector2[] unityUvs2;
             Vector2[] unityUvs3;
+
+            // NOTE ideally, arrays should be marshalled automatically which could enable some optimizations,
+            // especially, for il2cpp. However, I was not able to make it work using il2cpp setting: all arrays
+            // were passed to this method with just one element. I gave up and decided to use manual marshalling 
+            // here and in AdaptElement method below.
+            var vertices = new double[vertexCount];
+            Marshal.Copy(vertexPtr, vertices, 0, vertexCount);
+            var triangles = new int[triangleCount];
+            Marshal.Copy(trianglePtr, triangles, 0, triangleCount);
+            var colors = new int[colorCount];
+            Marshal.Copy(colorPtr, colors, 0, colorCount);
+            var uvs = new double[uvCount];
+            Marshal.Copy(uvPtr, uvs, 0, uvCount);
+            var uvMap = new int[uvMapCount];
+            Marshal.Copy(uvMapPtr, uvMap, 0, uvMapCount);
 
             // NOTE process terrain differently to emulate flat shading effect by avoiding 
             // triangles to share the same vertex. Remove "if" branch if you don't need it
@@ -142,18 +158,24 @@ namespace UtyMap.Unity.Data
 
         /// <summary> Adapts element data received from utymap. </summary>
         [AOT.MonoPInvokeCallback(typeof(CoreLibrary.OnElementLoaded))]
-        public static void AdaptElement(int tag, long id, string[] tags, int tagCount, double[] vertices, int vertexCount, 
-            string[] styles, int styleCount)
+        public static void AdaptElement(int tag, long id, IntPtr tagPtr, int tagCount,
+            IntPtr vertexPtr, int vertexCount, IntPtr stylePtr, int styleCount)
         {
             Tile tile;
             if (!Tiles.TryGetValue(tag, out tile) || tile.IsDisposed)
                 return;
 
+            // NOTE see note above
+            var vertices = new double[vertexCount];
+            Marshal.Copy(vertexPtr, vertices, 0, vertexCount);
+            var tags = ReadStrings(tagPtr, tagCount);
+            var styles = ReadStrings(stylePtr, styleCount);
+
             var geometry = new GeoCoordinate[vertexCount / 3];
-            var heights = new double[vertexCount/3];
+            var heights = new double[vertexCount / 3];
             for (int i = 0; i < vertexCount; i += 3)
             {
-                geometry[i/3] = new GeoCoordinate(vertices[i + 1], vertices[i]);
+                geometry[i / 3] = new GeoCoordinate(vertices[i + 1], vertices[i]);
                 heights[i / 3] = vertices[i + 2];
             }
 
@@ -171,6 +193,18 @@ namespace UtyMap.Unity.Data
         }
 
         #region Private members
+
+        private static string[] ReadStrings(IntPtr ptr, int size)
+        {
+            var strings = new string[size];
+            var address = IntPtr.Size == 4 ? ptr.ToInt32() : ptr.ToInt64();
+            for (int i = 0; i < size; ++i)
+            {
+                ptr = new IntPtr(address + IntPtr.Size * i);
+                strings[i] = Marshal.PtrToStringAnsi(Marshal.ReadIntPtr(ptr));
+            }
+            return strings;
+        }
 
         private static Dictionary<string, string> ReadDict(string[] data)
         {
