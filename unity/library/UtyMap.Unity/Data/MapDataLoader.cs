@@ -41,22 +41,8 @@ namespace UtyMap.Unity.Data
         /// <inheritdoc />
         public void OnNext(Tile tile)
         {
-            var stylesheetPathResolved = _pathResolver.Resolve(tile.Stylesheet.Path);
-
-            _trace.Info(TraceCategory, "loading tile: {0} using style: {1}", tile.ToString(), stylesheetPathResolved);
-            MapDataAdapter.Add(tile);
-
-            CoreLibrary.LoadQuadKey(
-                tile.GetHashCode(),
-                stylesheetPathResolved,
-                tile.QuadKey,
-                tile.ElevationType,
-                MapDataAdapter.AdaptMesh,
-                MapDataAdapter.AdaptElement,
-                MapDataAdapter.AdaptError,
-                tile.CancelationToken);
-
-            MapDataAdapter.Remove(tile);
+            _trace.Info(TraceCategory, "loading tile: {0}", tile.ToString());
+            CoreLibrary.LoadTile(tile, _pathResolver);
             _trace.Info(TraceCategory, "tile loaded: {0}", tile.ToString());
 
             _tileObservers.ForEach(o => o.OnNext(tile));

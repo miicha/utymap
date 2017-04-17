@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
 
 namespace UtyMap.Unity.Data
@@ -150,22 +151,21 @@ namespace UtyMap.Unity.Data
                 (int) elevationDataType, coordinate.Latitude, coordinate.Longitude);
         }
 
-        /// <summary> Loads quadkey. </summary>
-        /// <param name="tag"> A tag which is used to match an object to requested tile in response. </param>
-        /// <param name="stylePath"> Stylesheet path. </param>
-        /// <param name="quadKey"> QuadKey</param>
-        /// <param name="elevationDataType"> Elevation data type.</param>
-        /// <param name="onMeshBuilt"> Mesh callback. </param>
-        /// <param name="onElementLoaded"> Element callback. </param>
-        /// <param name="onError"> Error callback. </param>
-        /// <param name="cancelToken"> Cancellation token. </param>
-        public static void LoadQuadKey(int tag, string stylePath, QuadKey quadKey, ElevationDataType elevationDataType,
-            OnMeshBuilt onMeshBuilt, OnElementLoaded onElementLoaded, OnError onError, CancellationToken cancelToken)
+        /// <summary> Loads tile. </summary>
+        /// <param name="tile"> Tile to load. </param>
+        /// <param name="pathResolver"> Path resolver. </param>
+        public static void LoadTile(Tile tile, IPathResolver pathResolver)
         {
-            var cancelTokenHandle = GCHandle.Alloc(cancelToken, GCHandleType.Pinned);
-            loadQuadKey(tag, stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
-                (int) elevationDataType, onMeshBuilt, onElementLoaded, onError, cancelTokenHandle.AddrOfPinnedObject());
+            MapDataAdapter.Add(tile);
+            var stylePath = pathResolver.Resolve(tile.Stylesheet.Path);
+            var quadKey = tile.QuadKey;
+            var cancelTokenHandle = GCHandle.Alloc(tile.CancelationToken, GCHandleType.Pinned);
+            loadQuadKey(tile.GetHashCode(), stylePath,
+                quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, (int)tile.ElevationType,
+                MapDataAdapter.AdaptMesh, MapDataAdapter.AdaptElement, MapDataAdapter.AdaptError,
+                cancelTokenHandle.AddrOfPinnedObject());
             cancelTokenHandle.Free();
+            MapDataAdapter.Remove(tile);
         }
 
         /// <summary> Frees resources. Should be called before application stops. </summary>
