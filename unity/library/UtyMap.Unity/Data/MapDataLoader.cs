@@ -42,7 +42,15 @@ namespace UtyMap.Unity.Data
         public void OnNext(Tile tile)
         {
             _trace.Info(TraceCategory, "loading tile: {0}", tile.ToString());
-            CoreLibrary.LoadTile(tile, _pathResolver);
+
+            MapDataAdapter.Add(tile);
+            CoreLibrary.LoadTile(tile,
+                MapDataAdapter.AdaptMesh,
+                MapDataAdapter.AdaptElement,
+                MapDataAdapter.AdaptError,
+                _pathResolver);
+            MapDataAdapter.Remove(tile);
+
             _trace.Info(TraceCategory, "tile loaded: {0}", tile.ToString());
 
             _tileObservers.ForEach(o => o.OnNext(tile));

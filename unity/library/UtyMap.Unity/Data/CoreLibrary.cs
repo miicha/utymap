@@ -153,19 +153,21 @@ namespace UtyMap.Unity.Data
 
         /// <summary> Loads tile. </summary>
         /// <param name="tile"> Tile to load. </param>
+        /// <param name="onMeshBuilt"> Mesh callback. </param>
+        /// <param name="onElementLoaded"> Element callback. </param>
+        /// <param name="onError"> Error callback. </param>
         /// <param name="pathResolver"> Path resolver. </param>
-        public static void LoadTile(Tile tile, IPathResolver pathResolver)
+        public static void LoadTile(Tile tile, OnMeshBuilt onMeshBuilt,
+            OnElementLoaded onElementLoaded, OnError onError, IPathResolver pathResolver)
         {
-            MapDataAdapter.Add(tile);
             var stylePath = pathResolver.Resolve(tile.Stylesheet.Path);
             var quadKey = tile.QuadKey;
             var cancelTokenHandle = GCHandle.Alloc(tile.CancelationToken, GCHandleType.Pinned);
             loadQuadKey(tile.GetHashCode(), stylePath,
                 quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, (int)tile.ElevationType,
-                MapDataAdapter.AdaptMesh, MapDataAdapter.AdaptElement, MapDataAdapter.AdaptError,
+                onMeshBuilt, onElementLoaded, onError,
                 cancelTokenHandle.AddrOfPinnedObject());
             cancelTokenHandle.Free();
-            MapDataAdapter.Remove(tile);
         }
 
         /// <summary> Frees resources. Should be called before application stops. </summary>
