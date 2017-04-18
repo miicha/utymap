@@ -76,6 +76,7 @@
     <Compile Include="Tile.cs" />
     <Compile Include="Utils\ColorUtils.cs" />
     <Compile Include="Utils\GeoUtils.cs" />
+    <Compile Include="Utils\MarshalUtils.cs" />
     <Compile Include="Utils\MathUtils.cs" />
     <Compile Include="Data\MapDataException.cs" />
     <Compile Include="Infrastructure\Config\CodeConfigSection.cs" />

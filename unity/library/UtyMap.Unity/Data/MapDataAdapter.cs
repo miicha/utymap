@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UtyMap.Unity.Infrastructure.Diagnostic;
@@ -28,30 +27,15 @@ namespace UtyMap.Unity.Data
 
         private static ITrace _trace = new DefaultTrace();
 
-        public static void UseTrace(ITrace trace)
-        {
-            _trace = trace;
-        }
+        public static void UseTrace(ITrace trace) { _trace = trace; }
 
-        public static bool Add(IObserver<MapData> observer)
-        {
-            return Observers.Add(observer);
-        }
+        public static bool Add(IObserver<MapData> observer) { return Observers.Add(observer); }
 
-        public static bool Remove(IObserver<MapData> observer)
-        {
-            return Observers.Remove(observer);
-        }
+        public static bool Remove(IObserver<MapData> observer) { return Observers.Remove(observer); }
 
-        public static bool Add(Tile tile)
-        {
-            return Tiles.TryAdd(tile.GetHashCode(), tile);
-        }
+        public static bool Add(Tile tile) { return Tiles.TryAdd(tile.GetHashCode(), tile); }
 
-        public static bool Remove(Tile tile)
-        {
-            return Tiles.TryRemove(tile.GetHashCode());
-        }
+        public static bool Remove(Tile tile) { return Tiles.TryRemove(tile.GetHashCode()); }
 
         public static void Clear()
         {
@@ -80,16 +64,11 @@ namespace UtyMap.Unity.Data
             // especially, for il2cpp. However, I was not able to make it work using il2cpp setting: all arrays
             // were passed to this method with just one element. I gave up and decided to use manual marshalling 
             // here and in AdaptElement method below.
-            var vertices = new double[vertexCount];
-            Marshal.Copy(vertexPtr, vertices, 0, vertexCount);
-            var triangles = new int[triangleCount];
-            Marshal.Copy(trianglePtr, triangles, 0, triangleCount);
-            var colors = new int[colorCount];
-            Marshal.Copy(colorPtr, colors, 0, colorCount);
-            var uvs = new double[uvCount];
-            Marshal.Copy(uvPtr, uvs, 0, uvCount);
-            var uvMap = new int[uvMapCount];
-            Marshal.Copy(uvMapPtr, uvMap, 0, uvMapCount);
+            var vertices = MarshalUtils.ReadDoubles(vertexPtr, vertexCount);
+            var triangles = MarshalUtils.ReadInts(trianglePtr, triangleCount);
+            var colors = MarshalUtils.ReadInts(colorPtr, colorCount);
+            var uvs = MarshalUtils.ReadDoubles(uvPtr, uvCount);
+            var uvMap = MarshalUtils.ReadInts(uvMapPtr, uvMapCount);
 
             // NOTE process terrain differently to emulate flat shading effect by avoiding 
             // triangles to share the same vertex. Remove "if" branch if you don't need it
@@ -113,10 +92,9 @@ namespace UtyMap.Unity.Data
                 return;
 
             // NOTE see note above
-            var vertices = new double[vertexCount];
-            Marshal.Copy(vertexPtr, vertices, 0, vertexCount);
-            var tags = ReadStrings(tagPtr, tagCount);
-            var styles = ReadStrings(stylePtr, styleCount);
+            var vertices = MarshalUtils.ReadDoubles(vertexPtr, vertexCount);
+            var tags = MarshalUtils.ReadStrings(tagPtr, tagCount);
+            var styles = MarshalUtils.ReadStrings(stylePtr, styleCount);
 
             var geometry = new GeoCoordinate[vertexCount / 3];
             var heights = new double[vertexCount / 3];
@@ -172,16 +150,9 @@ namespace UtyMap.Unity.Data
         }
 
         private static bool BuildObjectMesh(Tile tile, string name,
-            double[] vertices,
-            int[] triangles,
-            int[] colors,
-            double[] uvs,
-            int[] uvMap,
-            out Vector3[] worldPoints,
-            out Color[] unityColors,
-            out Vector2[] unityUvs,
-            out Vector2[] unityUvs2,
-            out Vector2[] unityUvs3)
+            double[] vertices, int[] triangles, int[] colors, double[] uvs, int[] uvMap,
+            out Vector3[] worldPoints, out Color[] unityColors, out Vector2[] unityUvs,
+            out Vector2[] unityUvs2, out Vector2[] unityUvs3)
         {
             long id;
             if (!ShouldLoad(tile, name, out id))
@@ -229,18 +200,6 @@ namespace UtyMap.Unity.Data
             tile.Register(id);
 
             return true;
-        }
-
-        private static string[] ReadStrings(IntPtr ptr, int size)
-        {
-            var strings = new string[size];
-            var address = IntPtr.Size == 4 ? ptr.ToInt32() : ptr.ToInt64();
-            for (int i = 0; i < size; ++i)
-            {
-                ptr = new IntPtr(address + IntPtr.Size * i);
-                strings[i] = Marshal.PtrToStringAnsi(Marshal.ReadIntPtr(ptr));
-            }
-            return strings;
         }
 
         private static Dictionary<string, string> ReadDict(string[] data)
