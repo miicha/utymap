@@ -11,7 +11,6 @@ namespace Assets.Scripts.Environment.Data
     partial class MapDataLibrary
     {
 #if !ENABLE_IL2CPP
-        private volatile bool _isConfigured;
         private readonly ITrace _trace;
 
         /// <inheritdoc />

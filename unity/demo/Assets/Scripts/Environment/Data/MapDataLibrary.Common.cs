@@ -19,6 +19,7 @@ namespace Assets.Scripts.Environment.Data
         private const string PersistentStoreKey = "Persistent";
 
         private static readonly object __lockObj = new object();
+        private volatile bool _isConfigured;
         private readonly IPathResolver _pathResolver;
 
         [Dependency]
