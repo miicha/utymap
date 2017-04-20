@@ -33,10 +33,11 @@ namespace Assets.Scripts.Scene.Gestures
         public override void OnManipulationTransform(Transform pivot, Transform camera)
         {
             var speed = Mathf.Max(RotationSpeed * InterpolateByZoom(RotationFactor), RotationMinSpeed);
+
             var rotation = Quaternion.Euler(
-                          -ManipulationGesture.DeltaPosition.y / Screen.height * speed,
-                          ManipulationGesture.DeltaPosition.x / Screen.width * speed,
-                          ManipulationGesture.DeltaRotation);
+                -ManipulationGesture.DeltaPosition.y / Screen.height * speed,
+                ManipulationGesture.DeltaPosition.x / Screen.width * speed,
+                ManipulationGesture.DeltaRotation);
 
             SetRotation(pivot, camera, rotation);
         }
@@ -45,7 +46,17 @@ namespace Assets.Scripts.Scene.Gestures
         public override void OnTwoFingerTransform(Transform pivot, Transform camera)
         {
             var speed = Mathf.Max(ZoomSpeed * InterpolateByZoom(ZoomFactor), ZoomMinSpeed);
+            
+            // zoom
             camera.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * speed;
+
+            // rotation
+            var rotation = Quaternion.Euler(
+                -TwoFingerMoveGesture.DeltaPosition.y / Screen.height * speed,
+                TwoFingerMoveGesture.DeltaPosition.x / Screen.width * speed,
+                TwoFingerMoveGesture.DeltaRotation / 10);
+
+            SetRotation(pivot, camera, rotation);
         }
 
         /// <summary> Sets rotation to pivot with limit. </summary>
