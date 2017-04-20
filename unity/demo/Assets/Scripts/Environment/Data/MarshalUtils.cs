@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
 
-namespace UtyMap.Unity.Utils
+namespace Assets.Scripts.Environment.Data
 {
     internal static class MarshalUtils
     {

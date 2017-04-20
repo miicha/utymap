@@ -64,6 +64,7 @@
     <Compile Include="Animations\Time\LinearInterpolator.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="BoundingBox.cs" />
+    <Compile Include="Data\MapDataLibrary.cs" />
     <Compile Include="GeoCoordinate.cs" />
     <Compile Include="Infrastructure\Primitives\RangeTree.cs" />
     <Compile Include="Infrastructure\Primitives\SafeDictionary.cs" />
@@ -76,7 +77,6 @@
     <Compile Include="Tile.cs" />
     <Compile Include="Utils\ColorUtils.cs" />
     <Compile Include="Utils\GeoUtils.cs" />
-    <Compile Include="Utils\MarshalUtils.cs" />
     <Compile Include="Utils\MathUtils.cs" />
     <Compile Include="Data\MapDataException.cs" />
     <Compile Include="Infrastructure\Config\CodeConfigSection.cs" />
@@ -99,12 +99,9 @@
     <Compile Include="Infrastructure\Primitives\Union.cs" />
     <Compile Include="Data\MapDataEditor.cs" />
     <Compile Include="Data\ElevationDataType.cs" />
-    <Compile Include="Data\MapDataLoader.cs" />
     <Compile Include="Data\MapDataStore.cs" />
-    <Compile Include="Data\MapDataAdapter.cs" />
     <Compile Include="Geocoding\IGeocoder.cs" />
     <Compile Include="Geocoding\NominatimGeocoder.cs" />
-    <Compile Include="Data\CoreLibrary.cs" />
     <Compile Include="Data\MapDataStorageType.cs" />
     <Compile Include="Data\Providers\AggregateMapDataProvider.cs" />
     <Compile Include="Data\Providers\IMapDataProvider.cs" />

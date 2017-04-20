@@ -15,17 +15,18 @@ namespace UtyMap.Unity.Data.Providers
     /// </summary>
     internal sealed class AggregateMapDataProvider : MapDataProvider
     {
-        private IMapDataProvider _eleProvider;
-        private IMapDataProvider _dataProvider;
+        private readonly IMapDataProvider _eleProvider;
+        private readonly IMapDataProvider _dataProvider;
        
         [Dependency]
-        public AggregateMapDataProvider(IFileSystemService fileSystemService, INetworkService networkService, ITrace trace)
+        public AggregateMapDataProvider(IFileSystemService fileSystemService, INetworkService networkService, 
+            IMapDataLibrary mapDataLibrary, ITrace trace)
         {
             _eleProvider = new ElevationProvider(
                 new MapzenElevationDataProvider(fileSystemService, networkService, trace),
                 new SrtmElevationDataProvider(fileSystemService, networkService, trace));
 
-            _dataProvider = new DataProvider(
+            _dataProvider = new DataProvider(mapDataLibrary,
                 new OpenStreetMapDataProvider(fileSystemService, networkService, trace),
                 new MapzenMapDataProvider(fileSystemService, networkService, trace));
         }
@@ -93,17 +94,20 @@ namespace UtyMap.Unity.Data.Providers
 
             private readonly IMapDataProvider _osmMapDataProvider;
             private readonly IMapDataProvider _mapzenMapDataProvider;
+            private readonly IMapDataLibrary _mapDataLibrary;
 
-            public DataProvider(IMapDataProvider osmMapDataProvider, IMapDataProvider mapzenMapDataProvider)
+            public DataProvider(IMapDataLibrary mapDataLibrary,
+                IMapDataProvider osmMapDataProvider, IMapDataProvider mapzenMapDataProvider)
             {
                 _osmMapDataProvider = osmMapDataProvider;
                 _mapzenMapDataProvider = mapzenMapDataProvider;
+                _mapDataLibrary = mapDataLibrary;
             }
 
             /// <inheritdoc />
             public override void OnNext(Tile value)
             {
-                if (CoreLibrary.HasData(value.QuadKey))
+                if (_mapDataLibrary.Exists(value.QuadKey))
                 {
                     Notify(new Tuple<Tile, string>(value, ""));
                     return;

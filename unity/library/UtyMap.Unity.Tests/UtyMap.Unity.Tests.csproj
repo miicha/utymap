@@ -65,7 +65,6 @@
     <Compile Include="Animations\TransformAnimationTests.cs" />
     <Compile Include="Data\TileLoadingTests.cs" />
     <Compile Include="Data\MapDataEditorTests.cs" />
-    <Compile Include="Data\MapTileAdapterTests.cs" />
     <Compile Include="Infrastructure\Primitives\RangeTreeTests.cs" />
     <Compile Include="Providers\MapzenElevationDataProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,72 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UtyMap.Unity;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 using UtyRx;
+using Mesh = UtyMap.Unity.Mesh;
 
-namespace UtyMap.Unity.Data
+namespace Assets.Scripts.Environment.Data
 {
     /// <summary> Adapts map tile data received from utymap API to the type used by the app. </summary>
     /// <remarks>
-    ///     It has to be static as neither il2cpp nor mono AOT support marshaling delegates that point to 
-    ///     instance methods to native code. A tag is used to match mapdata to specific tile object.
     ///     TODO refactor this class to reduce complexity and uglyness
     /// </remarks>
     internal static class MapDataAdapter
     {
+        private static readonly Regex ElementNameRegex = new Regex("^(building):([0-9]*)");
         private const int VertexLimit = 64998;
         private const string TraceCategory = "mapdata.loader";
-        private static readonly Regex ElementNameRegex = new Regex("^(building):([0-9]*)");
-
-        private static readonly HashSet<IObserver<MapData>> Observers = new HashSet<IObserver<MapData>>();
-        private static readonly SafeDictionary<int, Tile> Tiles = new SafeDictionary<int, Tile>();
-
-        private static ITrace _trace = new DefaultTrace();
-
-        public static void UseTrace(ITrace trace) { _trace = trace; }
-
-        public static bool Add(IObserver<MapData> observer) { return Observers.Add(observer); }
-
-        public static bool Remove(IObserver<MapData> observer) { return Observers.Remove(observer); }
-
-        public static bool Add(Tile tile) { return Tiles.TryAdd(tile.GetHashCode(), tile); }
-
-        public static bool Remove(Tile tile) { return Tiles.TryRemove(tile.GetHashCode()); }
-
-        public static void Clear()
+        
+        /// <summary> Adapts mesh data received in raw form. </summary>
+        public static void AdaptMesh(Tile tile, IList<IObserver<MapData>> observers, ITrace trace,
+            string name, double[] vertices, int[] triangles, int[] colors, double[] uvs, int[] uvMap)
         {
-            Observers.Clear();
-            Tiles.Clear();
-        }
-
-        /// <summary> Adapts mesh data received from utymap. </summary>
-        [AOT.MonoPInvokeCallback(typeof(CoreLibrary.OnMeshBuilt))]
-        public static void AdaptMesh(int tag, string name, IntPtr vertexPtr, int vertexCount,
-            IntPtr trianglePtr, int triangleCount, IntPtr colorPtr, int colorCount,
-            IntPtr uvPtr, int uvCount, IntPtr uvMapPtr, int uvMapCount)
-        {
-            Tile tile;
-            if (!Tiles.TryGetValue(tag, out tile) || tile.IsDisposed)
-                return;
-
             Vector3[] worldPoints;
             Color[] unityColors;
-
             Vector2[] unityUvs;
             Vector2[] unityUvs2;
             Vector2[] unityUvs3;
-
-            // NOTE ideally, arrays should be marshalled automatically which could enable some optimizations,
-            // especially, for il2cpp. However, I was not able to make it work using il2cpp setting: all arrays
-            // were passed to this method with just one element. I gave up and decided to use manual marshalling 
-            // here and in AdaptElement method below.
-            var vertices = MarshalUtils.ReadDoubles(vertexPtr, vertexCount);
-            var triangles = MarshalUtils.ReadInts(trianglePtr, triangleCount);
-            var colors = MarshalUtils.ReadInts(colorPtr, colorCount);
-            var uvs = MarshalUtils.ReadDoubles(uvPtr, uvCount);
-            var uvMap = MarshalUtils.ReadInts(uvMapPtr, uvMapCount);
 
             // NOTE process terrain differently to emulate flat shading effect by avoiding 
             // triangles to share the same vertex. Remove "if" branch if you don't need it
@@ -79,23 +41,15 @@ namespace UtyMap.Unity.Data
                     out worldPoints, out unityColors, out unityUvs, out unityUvs2, out unityUvs3);
 
             if (isCreated)
-                BuildMesh(tile, name, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
+                BuildMesh(tile, observers, trace, name,
+                    worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
         }
 
         /// <summary> Adapts element data received from utymap. </summary>
-        [AOT.MonoPInvokeCallback(typeof(CoreLibrary.OnElementLoaded))]
-        public static void AdaptElement(int tag, long id, IntPtr tagPtr, int tagCount,
-            IntPtr vertexPtr, int vertexCount, IntPtr stylePtr, int styleCount)
+        public static void AdaptElement(Tile tile, IList<IObserver<MapData>> observers, ITrace trace, 
+            long id, double[] vertices, string[] tags, string[] styles)
         {
-            Tile tile;
-            if (!Tiles.TryGetValue(tag, out tile) || tile.IsDisposed)
-                return;
-
-            // NOTE see note above
-            var vertices = MarshalUtils.ReadDoubles(vertexPtr, vertexCount);
-            var tags = MarshalUtils.ReadStrings(tagPtr, tagCount);
-            var styles = MarshalUtils.ReadStrings(stylePtr, styleCount);
-
+            int vertexCount = vertices.Length;
             var geometry = new GeoCoordinate[vertexCount / 3];
             var heights = new double[vertexCount / 3];
             for (int i = 0; i < vertexCount; i += 3)
@@ -105,16 +59,7 @@ namespace UtyMap.Unity.Data
             }
 
             Element element = new Element(id, geometry, heights, ReadDict(tags), ReadDict(styles));
-            NotifyObservers(new MapData(tile, new Union<Element, Mesh>(element)));
-        }
-
-        /// <summary> Adapts error message </summary>
-        [AOT.MonoPInvokeCallback(typeof(CoreLibrary.OnError))]
-        public static void AdaptError(string message)
-        {
-            var exception = new MapDataException(message);
-            _trace.Error(TraceCategory, exception, "cannot adapt mapdata.");
-            NotifyObservers(exception);
+            NotifyObservers(new MapData(tile, new Union<Element, Mesh>(element)), observers);
         }
 
         #region Private members
@@ -254,22 +199,23 @@ namespace UtyMap.Unity.Data
 
         /// <summary> Builds mesh object and notifies observers. </summary>
         /// <remarks> Unity has vertex count limit and spliiting meshes here is quite expensive operation. </remarks>
-        private static void BuildMesh(Tile tile, string name, Vector3[] worldPoints, int[] triangles, Color[] unityColors, 
+        private static void BuildMesh(Tile tile, IList<IObserver<MapData>> observers, ITrace trace, 
+            string name, Vector3[] worldPoints, int[] triangles, Color[] unityColors, 
             Vector2[] unityUvs, Vector2[] unityUvs2, Vector2[] unityUvs3)
         {
             if (worldPoints.Length < VertexLimit)
             {
                 Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
-               NotifyObservers(new MapData(tile, new Union<Element, Mesh>(mesh)));
+                NotifyObservers(new MapData(tile, new Union<Element, Mesh>(mesh)), observers);
                 return;
             }
 
-            _trace.Warn(TraceCategory, "Mesh '{0}' has more vertices than allowed by Unity: {1}. Will try to split..",
+            trace.Warn(TraceCategory, "Mesh '{0}' has more vertices than allowed by Unity: {1}. Will try to split..",
                    name, worldPoints.Length.ToString());
             if (worldPoints.Length != triangles.Length)
             {
                 // TODO handle this case properly
-                _trace.Warn(TraceCategory, "Cannot split mesh {0}: vertecies count != triangles count", name);
+                trace.Warn(TraceCategory, "Cannot split mesh {0}: vertecies count != triangles count", name);
                 return;
             }
 
@@ -287,19 +233,19 @@ namespace UtyMap.Unity.Data
                     unityUvs.Skip(start).Take(end - start).ToArray(),
                     unityUvs2.Skip(start).Take(end - start).ToArray(),
                     unityUvs3.Skip(start).Take(end - start).ToArray());
-                NotifyObservers(new MapData(tile, new Union<Element, Mesh>(mesh)));
+                NotifyObservers(new MapData(tile, new Union<Element, Mesh>(mesh)), observers);
             }
         }
 
-        private static void NotifyObservers(MapData mapData)
+        private static void NotifyObservers(MapData mapData, IList<IObserver<MapData>> observers)
         {
-            foreach (var observer in Observers)
+            foreach (var observer in observers)
                 observer.OnNext(mapData);
         }
 
-        private static void NotifyObservers(Exception ex)
+        private static void NotifyObservers(Exception ex, IList<IObserver<MapData>> observers)
         {
-            foreach (var observer in Observers)
+            foreach (var observer in observers)
                 observer.OnError(ex);
         }
 

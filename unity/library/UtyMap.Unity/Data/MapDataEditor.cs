@@ -2,6 +2,7 @@
 using UtyDepend;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
+using UtyRx;
 
 namespace UtyMap.Unity.Data
 {
@@ -9,50 +10,45 @@ namespace UtyMap.Unity.Data
     public interface IMapDataEditor
     {
         /// <summary> Adds element. </summary>
-        void Add(MapDataStorageType dataStorageType, Element element, Range<int> levelOfDetails);
+        void Add(MapDataStorageType type, Element element, Range<int> levelOfDetails);
 
         /// <summary> Edits element. </summary>
-        void Edit(MapDataStorageType dataStorageType, Element element, Range<int> levelOfDetails);
+        void Edit(MapDataStorageType type, Element element, Range<int> levelOfDetails);
 
         /// <summary> Marks element with given id. </summary>
-        void Delete(MapDataStorageType dataStorageType, long elementId, Range<int> levelOfDetails);
+        void Delete(MapDataStorageType type, long elementId, Range<int> levelOfDetails);
     }
 
     /// <summary>
-    ///     Default implementation of <see cref="IMapDataEditor"/> which
-    ///     works with in-memory store.
+    ///     Default implementation of <see cref="IMapDataEditor"/> which works with in-memory store.
     /// </summary>
     internal class MapDataEditor : IMapDataEditor
     {
+        private readonly IMapDataLibrary _mapDataLibrary;
         private readonly Stylesheet _stylesheet;
-        private readonly IPathResolver _resolver;
 
         [Dependency]
-        public MapDataEditor(Stylesheet stylesheet, IPathResolver resolver)
+        public MapDataEditor(IMapDataLibrary mapDataLibrary, Stylesheet stylesheet)
         {
+            _mapDataLibrary = mapDataLibrary;
             _stylesheet = stylesheet;
-            _resolver = resolver;
         }
 
         /// <inheritdoc />
-        public void Add(MapDataStorageType dataStorageType, Element element, Range<int> levelOfDetails)
+        public void Add(MapDataStorageType type, Element element, Range<int> levelOfDetails)
         {
-            var errorMsg = CoreLibrary.AddElementToStore(dataStorageType,
-                _resolver.Resolve(_stylesheet.Path),
-                element, levelOfDetails);
-
-            if (!String.IsNullOrEmpty(errorMsg))
-                throw new MapDataException(errorMsg);
+            _mapDataLibrary.Add(type, element, _stylesheet, levelOfDetails)
+                .Wait();
         }
 
         /// <inheritdoc />
-        public void Edit(MapDataStorageType dataStorageType, Element element, Range<int> levelOfDetails)
+        public void Edit(MapDataStorageType type, Element element, Range<int> levelOfDetails)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
-        public void Delete(MapDataStorageType dataStorageType, long elementId, Range<int> levelOfDetails)
+        public void Delete(MapDataStorageType type, long elementId, Range<int> levelOfDetails)
         {
             throw new NotImplementedException();
         }

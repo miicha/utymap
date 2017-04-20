@@ -64,6 +64,7 @@ namespace UtyMap.Unity
             // core services
             _container.Register(Component.For<IMapDataEditor>().Use<MapDataEditor>());
             _container.Register(Component.For<IMapDataProvider>().Use<AggregateMapDataProvider>().SetConfig(_configSection));
+            _container.Register(Component.For<IMapDataLibrary>().Use<MapDataLibrary>());
             _container.Register(Component.For<IMapDataStore>().Use<MapDataStore>().SetConfig(_configSection));
 
             // additional sevices

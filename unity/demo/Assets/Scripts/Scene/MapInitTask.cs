@@ -1,7 +1,9 @@
 ﻿using System;
 using Assets.Scripts.Environment;
+using Assets.Scripts.Environment.Data;
 using Assets.Scripts.Environment.Reactive;
 using Assets.Scripts.Plugins;
+using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
@@ -9,6 +11,7 @@ using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
+using Component = UtyDepend.Component;
 
 namespace Assets.Scripts.Scene
 {
@@ -53,8 +56,7 @@ namespace Assets.Scripts.Scene
         {
             // create configuration from default overriding some properties
             var config = ConfigBuilder.GetDefault()
-                .SetStringIndex("Index/")
-                .SetSpatialIndex("Index/")
+                .SetIndex("Index/")
                 .Build();
 
             // create entry point for utymap functionallity
@@ -63,6 +65,7 @@ namespace Assets.Scripts.Scene
                 .RegisterAction((c, _) => c.RegisterInstance<ITrace>(trace))
                 .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<UnityPathResolver>()))
                 .RegisterAction((c, _) => c.Register(Component.For<INetworkService>().Use<UnityNetworkService>()))
+                .RegisterAction((c, _) => c.Register(Component.For<IMapDataLibrary>().Use<MapDataLibrary>()))
                 // register scene specific services (plugins)
                 .RegisterAction((c, _) => c.Register(Component.For<UnityModelBuilder>().Use<UnityModelBuilder>()))
                 .RegisterAction((c, _) => c.Register(Component.For<MaterialProvider>().Use<MaterialProvider>()))

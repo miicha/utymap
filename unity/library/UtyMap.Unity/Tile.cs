@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
@@ -9,11 +10,26 @@ namespace UtyMap.Unity
     /// <summary> Represents map tile. </summary>
     public sealed class Tile : IDisposable
     {
+        /// <summary> Cancellation token is used to cancel processing in native code. </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public class CancellationToken
+        {
+            internal int IsCancelled;
+
+            internal void SetCancelled(bool isCancelled)
+            {
+                IsCancelled = (byte) (isCancelled ? 1 : 0);
+            }
+        }
+
         /// <summary> Stores element ids loaded in this tile. </summary>
         private readonly SafeHashSet<long> _localIds = new SafeHashSet<long>();
 
         /// <summary> Stores element ids loaded for all tiles. </summary>
         private static readonly SafeHashSet<long> GlobalIds = new SafeHashSet<long>();
+
+        /// <summary> Used to cancel tile loading in native code. </summary>
+        public readonly CancellationToken CancelationToken;
 
         /// <summary> Tile geo bounding box. </summary>
         public BoundingBox BoundingBox { get; private set; }
@@ -36,9 +52,6 @@ namespace UtyMap.Unity
         /// <summary> True if tile was disposed. </summary>
         public bool IsDisposed { get; private set; }
 
-        /// <summary> Used to cancel tile loading in native code. </summary>
-        internal CancellationToken CancelationToken;
-
         /// <summary> Creates <see cref="Tile"/>. </summary>
         /// <param name="quadKey"></param>
         /// <param name="stylesheet"></param>
@@ -60,9 +73,9 @@ namespace UtyMap.Unity
         }
 
         /// <summary> Checks whether element with specific id is registered. </summary>
-        /// <param name="id">Element id.</param>
+        /// <param name="id"> Element id. </param>
         /// <returns> True if registration is found. </returns>
-        internal bool Has(long id)
+        public bool Has(long id)
         {
             return GlobalIds.Contains(id) || _localIds.Contains(id);
         }
@@ -72,7 +85,7 @@ namespace UtyMap.Unity
         ///     Mostly used for objects which cross tile borders, but their geometry is 
         ///     not clipped (buildings one of examples) 
         /// </remarks>
-        internal void Register(long id)
+        public void Register(long id)
         {
             if (IsDisposed)
                 return;

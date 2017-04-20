@@ -41,8 +41,7 @@ namespace UtyMap.Unity.Tests.Helpers
 
             // create default application configuration
             var config = ConfigBuilder.GetDefault()
-                .SetStringIndex("Index/")
-                .SetSpatialIndex("Index/")
+                .SetIndex("Index/")
                 .Build();
 
             // initialize services
