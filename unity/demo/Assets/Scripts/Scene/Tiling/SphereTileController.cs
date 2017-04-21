@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UtyMap.Unity;
@@ -113,36 +114,18 @@ namespace Assets.Scripts.Scene.Tiling
 
         private RangeTree<float, int> GetLodTree()
         {
-            var baseValue = 2f * _radius;
             var lodTree = new RangeTree<float, int>();
+
             for (int lod = LodRange.Minimum; lod <= LodRange.Maximum; ++lod)
             {
-                if (lod == 1)
-                    lodTree.Add(baseValue, 2 * baseValue, lod);
-                else if (lod == 2)
-                    lodTree.Add(baseValue - 1 / 3f * _radius, baseValue, lod);
-                else
-                {
-                    float fib1 = GetFibonacciNumber(lod - 1);
-                    float fib2 = GetFibonacciNumber(lod);
-                    var max = baseValue - _radius * (lod == 3 ? 1 / 3f : fib1 / (fib1 + 1));
-                    var min = baseValue - _radius * fib2 / (fib2 + 1);
-
-                    lodTree.Add(min, max, lod);
-                }
+                lodTree.Add(_radius + _radius * Mathf.Pow(2, 1 - lod),
+                            _radius + _radius * Mathf.Pow(2, 2 - lod),
+                            lod);
             }
 
             lodTree.Rebuild();
 
             return lodTree;
-        }
-
-        /// <summary> Naive implementation of algorithm to find nth Fibonacci number. </summary>
-        private int GetFibonacciNumber(int n)
-        {
-            if (n == 0) return 0;
-            if (n == 1) return 1;
-            return GetFibonacciNumber(n - 2) + GetFibonacciNumber(n - 1);
         }
 
         #endregion
