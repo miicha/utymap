@@ -51,7 +51,7 @@ namespace Assets.Scripts.Scene.Gestures
             camera.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * speed;
 
             // rotation
-            var rotation = Quaternion.Euler(0, 0, TwoFingerMoveGesture.DeltaRotation / 10);
+            var rotation = Quaternion.Euler(0, 0, TwoFingerMoveGesture.DeltaRotation / 2);
 
             SetRotation(pivot, camera, rotation);
         }
@@ -63,7 +63,7 @@ namespace Assets.Scripts.Scene.Gestures
             pivot.localEulerAngles = new Vector3(
                 LimitAngle(pivot.eulerAngles.x, CalculateLimit(camera)),
                 pivot.eulerAngles.y,
-                LimitAngle(pivot.eulerAngles.z, 10));
+                LimitAngle(pivot.eulerAngles.z, 23.5f));
         }
 
         private static float LimitAngle(float angle, float limit)
