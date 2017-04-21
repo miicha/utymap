@@ -99,10 +99,11 @@ namespace Assets.Scripts.Scene.Tiling
             _position = position;
             _rotation = rotation;
             _distanceToOrigin = Vector3.Distance(_position, _origin);
-            _zoom = CalculateZoom(_distanceToOrigin);
-
+            
             if (IsAboveMax || IsBelowMin)
                 return;
+
+            _zoom = CalculateZoom(_distanceToOrigin);
 
             if (_loadedQuadKeys.Any())
                 BuildIfNecessary(target);
