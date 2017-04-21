@@ -10,9 +10,9 @@ namespace Assets.Scripts.Scene.Gestures
         /// <summary> Value depends on radius and camera settings. </summary>
         private const float MagicAngleLimitCoeff = 2;
 
-        private const float RotationSpeed = 100f;
+        private const float RotationSpeed = 1000f;
         private const float RotationMinSpeed = 1f;
-        private const float RotationFactor = 0.2f;
+        private const float RotationFactor = 0.01f;
         
         private const float ZoomSpeed = 1000f;
         private const float ZoomMinSpeed = 5f;
@@ -33,7 +33,6 @@ namespace Assets.Scripts.Scene.Gestures
         public override void OnManipulationTransform(Transform pivot, Transform camera)
         {
             var speed = Mathf.Max(RotationSpeed * InterpolateByZoom(RotationFactor), RotationMinSpeed);
-
             var rotation = Quaternion.Euler(
                 -ManipulationGesture.DeltaPosition.y / Screen.height * speed,
                 ManipulationGesture.DeltaPosition.x / Screen.width * speed,

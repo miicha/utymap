@@ -12,7 +12,7 @@ namespace Assets.Scripts.Scene.Gestures
 
         private const float ZoomMaxSpeed = 100f;
         private const float ZoomMinSpeed = 1f;
-        private const float ZoomFactor = 0.2f;
+        private const float ZoomFactor = 0.5f;
 
         public SurfaceGestureStrategy(TileController tileController, 
                                       ScreenTransformGesture twoFingerMoveGesture,
