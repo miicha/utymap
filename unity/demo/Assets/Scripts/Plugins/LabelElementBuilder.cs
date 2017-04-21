@@ -54,8 +54,9 @@ namespace Assets.Scripts.Plugins
         {
             var text = gameObject.AddComponent<TextMesh>();
 
-            // TODO determine correct height
-            gameObject.transform.position = _mapBehaviour.TileController.Projection.Project(element.Geometry[0], 100);
+            var controller = _mapBehaviour.TileController;
+            var height = controller.HeightRange.Minimum + 1;
+            gameObject.transform.position = controller.Projection.Project(element.Geometry[0], height);
             gameObject.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             var font = new FontWrapper(element.Styles);
