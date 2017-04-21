@@ -10,11 +10,11 @@ namespace Assets.Scripts.Scene.Gestures
         /// <summary> Value depends on radius and camera settings. </summary>
         private const float MagicAngleLimitCoeff = 2;
 
-        private const float RotationSpeed = 150f;
+        private const float RotationSpeed = 100f;
         private const float RotationMinSpeed = 1f;
-        private const float RotationFactor = 0.25f;
+        private const float RotationFactor = 0.2f;
         
-        private const float ZoomSpeed = 500f;
+        private const float ZoomSpeed = 1000f;
         private const float ZoomMinSpeed = 5f;
         private const float ZoomFactor = 1f;
         
@@ -51,7 +51,7 @@ namespace Assets.Scripts.Scene.Gestures
             camera.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * speed;
 
             // rotation
-            var rotation = Quaternion.Euler(0, 0,TwoFingerMoveGesture.DeltaRotation / 10);
+            var rotation = Quaternion.Euler(0, 0, TwoFingerMoveGesture.DeltaRotation / 10);
 
             SetRotation(pivot, camera, rotation);
         }
