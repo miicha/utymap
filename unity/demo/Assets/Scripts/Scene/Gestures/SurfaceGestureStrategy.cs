@@ -15,8 +15,7 @@ namespace Assets.Scripts.Scene.Gestures
         private const float ZoomMinSpeed = 1f;
         private const float ZoomFactor = 0.5f;
 
-        private const float TintMax = 0f;
-        private const float TintMin = -22.5f;
+        private const float TintLimit= 22.5f;
         private const float TintSpeed = 0.1f;
 
         public SurfaceGestureStrategy(TileController tileController, 
@@ -47,9 +46,7 @@ namespace Assets.Scripts.Scene.Gestures
             pivot.localRotation *= Quaternion.Euler(0, TwoFingerMoveGesture.DeltaRotation / 2, 0);
         }
 
-        /// <remarks>
-        ///     Experimental. Should be replaced with custom gesture.
-        /// </remarks>
+        /// <remarks> Experimental. Should be replaced with custom gesture. </remarks>
         private bool SetTint(Transform pivot, Transform camera)
         {
             var pointer1 = TwoFingerMoveGesture.ActivePointers[0];
@@ -74,9 +71,8 @@ namespace Assets.Scripts.Scene.Gestures
             if (Mathf.Abs(delta1.y - delta2.y) > 1)
                 return false;
 
-            var angle = pivot.rotation.eulerAngles.x + (delta1.y + delta2.y) * TintSpeed / 2 - 360;
-            pivot.rotation = Quaternion.Euler(Mathf.Clamp(angle, TintMin, TintMax), 0, 0);
-
+            var angle = pivot.localRotation.eulerAngles.x + (delta1.y + delta2.y) * TintSpeed / 2;
+            pivot.localRotation = Quaternion.Euler(LimitAngle(angle, TintLimit), 0, 0);
             return true;
         }
     }

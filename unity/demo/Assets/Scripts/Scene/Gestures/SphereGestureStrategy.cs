@@ -65,13 +65,6 @@ namespace Assets.Scripts.Scene.Gestures
                 LimitAngle(pivot.eulerAngles.z, 23.5f));
         }
 
-        private static float LimitAngle(float angle, float limit)
-        {
-            angle = angle > 180 ? angle - 360 : angle;
-            var sign = angle < 0 ? -1 : 1;
-            return limit - sign * angle > 0 ? angle : sign * limit;
-        }
-
         private float CalculateLimit(Transform camera)
         {
             var pole = new Vector3(0, _radius, 0);

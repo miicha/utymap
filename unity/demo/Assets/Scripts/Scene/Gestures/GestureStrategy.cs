@@ -35,5 +35,13 @@ namespace Assets.Scripts.Scene.Gestures
                 ? 1.0f - (1.0f - value) * (1.0f - value)
                 : 1.0f - Mathf.Pow(1.0f - value, 2 * factor);
         }
+
+        /// <summary> Limits angle in range. </summary>
+        protected static float LimitAngle(float angle, float limit)
+        {
+            angle = angle > 180 ? angle - 360 : angle;
+            var sign = angle < 0 ? -1 : 1;
+            return limit - sign * angle > 0 ? angle : sign * limit;
+        }
     }
 }
