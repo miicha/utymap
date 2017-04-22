@@ -87,7 +87,7 @@ namespace Assets.Scripts.Plugins
             public readonly Font Font;
             public readonly int Size;
             public readonly Color Color;
-            public readonly int Scale;
+            public readonly float Scale;
 
             public FontWrapper(Dictionary<string, string> styles)
             {
@@ -95,7 +95,7 @@ namespace Assets.Scripts.Plugins
                 Font = UnityEngine.Font.CreateDynamicFontFromOSFont(styles["font-name"], Size);
                 Color = ColorUtils.FromUnknown(styles["font-color"]);
 
-                if (!styles.ContainsKey("font-scale") || !int.TryParse(styles["font-scale"], out Scale))
+                if (!styles.ContainsKey("font-scale") || !float.TryParse(styles["font-scale"], out Scale))
                     Scale = 1;
             }
         }
