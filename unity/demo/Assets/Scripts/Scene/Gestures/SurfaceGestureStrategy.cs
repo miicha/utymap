@@ -43,7 +43,7 @@ namespace Assets.Scripts.Scene.Gestures
             pivot.localPosition += Vector3.up * (1 - TwoFingerMoveGesture.DeltaScale) * speed;
 
             // rotation
-            pivot.localRotation *= Quaternion.Euler(0, TwoFingerMoveGesture.DeltaRotation / 2, 0);
+            pivot.localRotation *= Quaternion.Euler(0, TwoFingerMoveGesture.DeltaRotation / 5, 0);
         }
 
         /// <remarks> Experimental. Should be replaced with custom gesture. </remarks>
