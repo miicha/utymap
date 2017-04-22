@@ -28,17 +28,23 @@ namespace Assets.Scripts.Scene.Gestures
 
         public override void OnManipulationTransform(Transform pivot, Transform camera)
         {
+            // pan
             var speed = Mathf.Max(PanMaxSpeed * InterpolateByZoom(PanFactor), PanMinSpeed);
             pivot.localPosition += new Vector3(ManipulationGesture.DeltaPosition.x, 0, ManipulationGesture.DeltaPosition.y) * -speed;
         }
 
         public override void OnTwoFingerTransform(Transform pivot, Transform camera)
         {
+            // tint
             if (SetTint(pivot, camera))
                 return;
 
+            // zoom
             var speed = Mathf.Max(ZoomMaxSpeed * InterpolateByZoom(ZoomFactor), ZoomMinSpeed);
-            pivot.localPosition += Vector3.up * (1 - TwoFingerMoveGesture.DeltaScale) * speed;  
+            pivot.localPosition += Vector3.up * (1 - TwoFingerMoveGesture.DeltaScale) * speed;
+
+            // rotation
+            pivot.localRotation *= Quaternion.Euler(0, TwoFingerMoveGesture.DeltaRotation / 2, 0);
         }
 
         /// <remarks>
