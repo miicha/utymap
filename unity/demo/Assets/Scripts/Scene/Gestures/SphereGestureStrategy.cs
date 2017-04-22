@@ -50,7 +50,7 @@ namespace Assets.Scripts.Scene.Gestures
             camera.transform.localPosition += Vector3.forward * (TwoFingerMoveGesture.DeltaScale - 1f) * speed;
 
             // rotation
-            var rotation = Quaternion.Euler(0, 0, TwoFingerMoveGesture.DeltaRotation / 2);
+            var rotation = Quaternion.Euler(0, 0, TwoFingerMoveGesture.DeltaRotation / 5);
 
             SetRotation(pivot, camera, rotation);
         }
