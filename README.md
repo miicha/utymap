@@ -3,6 +3,9 @@
 [![Coverity](https://scan.coverity.com/projects/10159/badge.svg)](https://scan.coverity.com/projects/reinterpretcat-utymap)
 [![Release](https://img.shields.io/github/release/reinterpretcat/utymap.svg)](https://github.com/reinterpretcat/utymap/releases/latest)
 [![Join the chat at https://gitter.im/reinterpretcat/utymap](https://badges.gitter.im/reinterpretcat/utymap.svg)](https://gitter.im/reinterpretcat/utymap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+<a href="https://play.google.com/store/apps/details?id=com.utymap.demo">
+    <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="" height="48" />
+</a>
 
 <h2> Description </h2>
 
@@ -64,7 +67,7 @@ area,relation|z16[building:material=brick] {
     facade-texture-type: brick;
 }
 ```
-        
+
 For example, you can have different styles for different seasons of year. Or you can vary textures based on region
 
 <img src="https://cloud.githubusercontent.com/assets/1611077/19216355/3730d936-8db8-11e6-9c51-29b097b97bb7.png" />
@@ -72,7 +75,7 @@ For example, you can have different styles for different seasons of year. Or you
 <h3>Tree generation</h3>
 
 utymap can consume map data to generate more complex tries via custom [L-System implementation](https://github.com/reinterpretcat/utymap/wiki/Tree-generation-via-L-System)
-        
+
 <img src="https://cloud.githubusercontent.com/assets/1611077/21949038/692a8b16-d9ef-11e6-9ff9-b03e5b052f73.png" />
 
 <h3>Flexible extension</h3>
@@ -84,9 +87,9 @@ public GameObject Build(Tile tile, Element element)
 {
     GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
     gameObject.name = GetName(element);
-    
+
     var transform = gameObject.transform;
-    transform.position = tile.Projection.Project(element.Geometry[0], 
+    transform.position = tile.Projection.Project(element.Geometry[0],
         GetMinHeight(element) + element.Heights[0]);
     transform.localScale = new Vector3(2, 2, 2);
 
@@ -98,7 +101,7 @@ public GameObject Build(Tile tile, Element element)
 ```
 
 Map data is encapsulated via Element class which provides access to raw geometry and attributes.
-        
+
 <h3>Map editor</h3>
 
 You can build your own objects (buildings, roads, etc.) on top of generated objects:
@@ -107,13 +110,13 @@ You can build your own objects (buildings, roads, etc.) on top of generated obje
 IMapDataEditor editor = _compositionRoot.GetService<IMapDataEditor>();
 var node = new Element(7,
     new GeoCoordinate[] { new GeoCoordinate(52.53182, 13.38762) },
-    new double[] { 0 }, 
-    new Dictionary<string, string>() { { "name", "Near me" } }, 
+    new double[] { 0 },
+    new Dictionary<string, string>() { { "name", "Near me" } },
     new Dictionary<string, string>());
 
 editor.Add(MapStorageType.InMemory, node, new Range<int>(minLevelOfDetail, maxLevelOfDetail));
 ```
-        
+
 This data can be stored in multiple data storages located on disk or memory to keep original map data untouched.
 
 <h2> Project structure </h2>
@@ -124,8 +127,8 @@ Project consists of two sub-projects:
 </ul>
 
 <h2> Install </h2>
-See instructions [here] (https://github.com/reinterpretcat/utymap/wiki#install).
+See instructions [here](https://github.com/reinterpretcat/utymap/wiki#install).
 
 <h2> License </h2>
 
-Licensed under GPLv3
+Licensed under GPLv3. Ask me if license is not applicable for your needs.
