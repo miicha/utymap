@@ -1,11 +1,13 @@
+<a href="https://play.google.com/store/apps/details?id=com.utymap.demo">
+    <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="" height="48" />
+</a>
+
 [![experimental](https://img.shields.io/badge/stability-experimental-orange.svg?style=flat)](https://github.com/reinterpretcat/utymap)
 [![Build Status](https://travis-ci.org/reinterpretcat/utymap.svg?branch=master)](https://travis-ci.org/reinterpretcat/utymap)
 [![Coverity](https://scan.coverity.com/projects/10159/badge.svg)](https://scan.coverity.com/projects/reinterpretcat-utymap)
 [![Release](https://img.shields.io/github/release/reinterpretcat/utymap.svg)](https://github.com/reinterpretcat/utymap/releases/latest)
 [![Join the chat at https://gitter.im/reinterpretcat/utymap](https://badges.gitter.im/reinterpretcat/utymap.svg)](https://gitter.im/reinterpretcat/utymap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-<a href="https://play.google.com/store/apps/details?id=com.utymap.demo">
-    <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="" height="48" />
-</a>
+
 
 <h2> Description </h2>
 
@@ -19,10 +21,9 @@ Current master branch has a very experimental version. It is recommended to use 
 
 <h2> Features </h2>
 
-<h3> Zoom levels </h3>
-utymap can load your scene at different zoom levels:
+<h3> Mobile platform support </h3>
 
-[![Zoom:Demo](http://img.youtube.com/vi/kDD45K7XfEY/0.jpg)](https://www.youtube.com/watch?v=kDD45K7XfEY)
+Performance is constantly in main focus. As result, utymap can be used on mobile phone: just check demo app in play store. Of course, there are still areas for improvements.
 
 <h3> Map data </h3>
 utymap can use various vector map data sources and file formats:
@@ -34,6 +35,13 @@ utymap can use various vector map data sources and file formats:
 
 Theoretically, you can extend utymap with any vector map data format support.
 
+<h3> Zoom levels </h3>
+utymap can load your scene at different zoom levels:
+
+[![Zoom:Demo](http://img.youtube.com/vi/683Q876QrO0/0.jpg)](https://www.youtube.com/watch?v=683Q876QrO0)
+
+In this demo, mapzen data is used for zoom levels from 1 till 15 and OpenStreetMap for zoom level 16.
+
 <h3> Non flat world </h3>
 utymap encapsulates elevation processing internally to support different elevation data providers:
 <ul>
@@ -41,6 +49,8 @@ utymap encapsulates elevation processing internally to support different elevati
     <li>mapzen elevation data</li>
     <li>your own elevation data by conversion in simple text format.</li>
 </ul>
+
+This old demo is built using elevation data provided by mapzen:
 
 [![Elevation:Prague](http://img.youtube.com/vi/mZzOWsoM5EY/0.jpg)](https://www.youtube.com/watch?v=mZzOWsoM5EY)
 
@@ -127,8 +137,8 @@ Project consists of two sub-projects:
 </ul>
 
 <h2> Install </h2>
-See instructions [here](https://github.com/reinterpretcat/utymap/wiki#install).
+See instructions [here](https://github.com/reinterpretcat/utymap/wiki#install)
 
 <h2> License </h2>
 
-Licensed under GPLv3. Ask me if license is not applicable for your needs.
+Licensed under GPLv3. Please contact me if license is not applicable for you.
