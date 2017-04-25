@@ -137,8 +137,4 @@ Project consists of two sub-projects:
 </ul>
 
 <h2> Install </h2>
-See instructions [here](https://github.com/reinterpretcat/utymap/wiki#install)
-
-<h2> License </h2>
-
-Licensed under GPLv3. Please contact me if license is not applicable for you.
+See instructions [here] (https://github.com/reinterpretcat/utymap/wiki#install).
