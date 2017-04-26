@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts.Scene;
 using Assets.Scripts.UI;
 using UnityEngine;
@@ -13,6 +12,7 @@ namespace Assets.Scripts.Plugins
     internal sealed class LabelElementBuilder : IElementBuilder
     {
         private readonly MapBehaviour _mapBehaviour;
+        private readonly Dictionary<string, Font> _fontCache = new Dictionary<string, Font>();
 
         public LabelElementBuilder()
         {
@@ -39,7 +39,7 @@ namespace Assets.Scripts.Plugins
             // NOTE should be in sync with sphere size and offsetted polygons
             sphereText.Radius = 6371f + 25f;
 
-            var font = new FontWrapper(element.Styles);
+            var font = new FontWrapper(element.Styles, _fontCache);
             sphereText.font = font.Font;
             sphereText.fontSize = font.Size;
             sphereText.color = font.Color;
@@ -59,7 +59,7 @@ namespace Assets.Scripts.Plugins
             gameObject.transform.position = controller.Projection.Project(element.Geometry[0], height);
             gameObject.transform.rotation = Quaternion.Euler(90, 0, 0);
 
-            var font = new FontWrapper(element.Styles);
+            var font = new FontWrapper(element.Styles, _fontCache);
             //text.font = font.Font;
             text.fontSize = font.Size;
             text.color = font.Color;
@@ -89,10 +89,13 @@ namespace Assets.Scripts.Plugins
             public readonly Color Color;
             public readonly float Scale;
 
-            public FontWrapper(Dictionary<string, string> styles)
+            public FontWrapper(Dictionary<string, string> styles, Dictionary<string, Font> fontCache)
             {
                 Size = int.Parse(styles["font-size"]);
-                Font = UnityEngine.Font.CreateDynamicFontFromOSFont(styles["font-name"], Size);
+                var fontName = styles["font-name"];
+                if (!fontCache.ContainsKey(fontName))
+                    fontCache.Add(fontName, Font.CreateDynamicFontFromOSFont(fontName, Size));
+                Font = fontCache[fontName];
                 Color = ColorUtils.FromUnknown(styles["font-color"]);
 
                 if (!styles.ContainsKey("font-scale") || !float.TryParse(styles["font-scale"], out Scale))
