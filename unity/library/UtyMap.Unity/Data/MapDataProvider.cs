@@ -7,7 +7,7 @@ using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
 
-namespace UtyMap.Unity.Data.Providers
+namespace UtyMap.Unity.Data
 {
     /// <summary> Provides file path to map data. </summary>
     public interface IMapDataProvider : ISubject<Tile, Tuple<Tile, string>>, IConfigurable
