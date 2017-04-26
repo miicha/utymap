@@ -69,7 +69,7 @@ namespace Assets.Scripts.Scene.Tiling
             foreach (var tile in _loadedQuadKeys.Values.ToArray())
                 tile.Dispose();
 
-            Resources.UnloadUnusedAssets();
+            UnloadAssets(int.MaxValue);
         }
 
         /// <summary> Moves view center to given coordinate. </summary>
@@ -121,7 +121,7 @@ namespace Assets.Scripts.Scene.Tiling
                 foreach (var tile in _loadedQuadKeys.Values)
                     tile.Dispose();
 
-                Resources.UnloadUnusedAssets();
+                UnloadAssets(_loadedQuadKeys.Count);
                 _loadedQuadKeys.Clear();
 
                 foreach (var quadKey in GetNeighbours(currentQuadKey))
@@ -138,11 +138,15 @@ namespace Assets.Scripts.Scene.Tiling
                         ? _loadedQuadKeys[quadKey]
                         : BuildQuadKey(parent, quadKey));
 
+                int tilesDisposed = 0;
                 foreach (var quadKeyPair in _loadedQuadKeys)
                     if (!quadKeys.Contains(quadKeyPair.Key))
+                    {
+                        ++tilesDisposed;
                         quadKeyPair.Value.Dispose();
+                    }
 
-                Resources.UnloadUnusedAssets();
+                UnloadAssets(tilesDisposed);
                 _loadedQuadKeys = newlyLoadedQuadKeys;
             }
         }

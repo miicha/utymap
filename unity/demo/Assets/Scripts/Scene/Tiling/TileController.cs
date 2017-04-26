@@ -13,6 +13,8 @@ namespace Assets.Scripts.Scene.Tiling
         private readonly Stylesheet _stylesheet;
         private readonly ElevationDataType _elevationType;
 
+        private int _disposedTilesCounter = 0;
+
         /// <summary> Contains LOD values mapped for height ranges. </summary>
         protected RangeTree<float, int> LodTree;
 
@@ -150,6 +152,21 @@ namespace Assets.Scripts.Scene.Tiling
 
             var lodRange = LodTree[distance].Single();
             return lodRange.Value + (lodRange.To - distance) / (lodRange.To - lodRange.From);
+        }
+
+        /// <summary> Unloads assets if necessary. </summary>
+        /// <remarks> This method calls Resources.UnloadUnusedAssets which is expensive to do frequently. </remarks>
+        protected void UnloadAssets(int tilesDisposed)
+        {
+            const int disposedTileThreshold = 20;
+
+            _disposedTilesCounter += tilesDisposed;
+
+            if (disposedTileThreshold > tilesDisposed)
+            {
+                _disposedTilesCounter = 0;
+                Resources.UnloadUnusedAssets();
+            }
         }
     }
 }

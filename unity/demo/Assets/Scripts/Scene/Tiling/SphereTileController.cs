@@ -83,7 +83,7 @@ namespace Assets.Scripts.Scene.Tiling
             foreach (var quadkey in _loadedQuadKeys.Keys.ToArray())
                 SafeDestroy(quadkey);
 
-            Resources.UnloadUnusedAssets();
+            UnloadAssets(int.MaxValue);
         }
 
         /// <inheritdoc />
@@ -149,15 +149,15 @@ namespace Assets.Scripts.Scene.Tiling
             var quadKeys = new List<QuadKey>();
 
             // zoom in
+            int disposedTiles = 0;
             if (actualQuadKey.LevelOfDetail < lod)
             {
                 quadKeys.AddRange(GetChildren(actualQuadKey));
                 var oldParent = actualGameObject.transform.parent;
-                SafeDestroy(actualQuadKey, actualName);
+                disposedTiles = SafeDestroy(actualQuadKey, actualName) ? 1 : 0;
 
                 parent = new GameObject(actualName).transform;
                 parent.transform.parent = oldParent;
-                Resources.UnloadUnusedAssets();
             }
             // zoom out
             else if (actualQuadKey.LevelOfDetail > lod)
@@ -166,14 +166,14 @@ namespace Assets.Scripts.Scene.Tiling
                 var quadKey = QuadKey.FromString(name);
                 // destroy all siblings
                 foreach (var child in GetChildren(quadKey))
-                    SafeDestroy(child, child.ToString());
+                    disposedTiles += SafeDestroy(child, child.ToString()) ? 1 : 0;
                 // destroy current as it might be just placeholder.
                 SafeDestroy(actualQuadKey, name);
                 parent = GetParent(planet, quadKey);
                 quadKeys.Add(quadKey);
-                Resources.UnloadUnusedAssets();
             }
 
+            UnloadAssets(disposedTiles);
             BuildQuadKeys(parent, quadKeys);
         }
 
@@ -256,18 +256,19 @@ namespace Assets.Scripts.Scene.Tiling
         #endregion
 
         /// <summary> Destroys gameobject by its name if it exists. </summary>
-        private void SafeDestroy(QuadKey quadKey, string name = null)
+        private bool SafeDestroy(QuadKey quadKey, string name = null)
         {
             if (_loadedQuadKeys.ContainsKey(quadKey))
             {
                 _loadedQuadKeys[quadKey].Dispose();
                 _loadedQuadKeys.Remove(quadKey);
-                return;
+                return true;
             }
 
             var go = GameObject.Find(name);
             if (go != null)
                 Object.Destroy(go);
+            return false;
         }
 
         private void ResetToDefaults()
