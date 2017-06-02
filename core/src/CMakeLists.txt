@@ -7,6 +7,7 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
 set(HEADER_FILES
         ${PROTO_HDRS}
         ${LIB_SOURCE}/clipper/clipper.hpp
+        ${LIB_SOURCE}/hashing/MD5.h
         ${LIB_SOURCE}/hashing/MurmurHash3.h
         ${LIB_SOURCE}/triangle/triangle.h
         ${LIB_SOURCE}/shapefile/shapefil.h
@@ -116,6 +117,7 @@ add_library(${LIBRARY_NAME}
         ${HEADER_FILES}
         ${PROTO_SRCS}
         ${LIB_SOURCE}/clipper/clipper.cpp
+        ${LIB_SOURCE}/hashing/MD5.cpp
         ${LIB_SOURCE}/hashing/MurmurHash3.cpp
         ${LIB_SOURCE}/triangle/triangle.c
         ${LIB_SOURCE}/shapefile/dbfopen.c

@@ -13,7 +13,7 @@
 
 namespace utymap { namespace mapcss {
 
-/// This class responsible for filtering elements.
+/// This class responsible for providing element styles.
 class StyleProvider final
 {
 public:
@@ -27,6 +27,9 @@ public:
     StyleProvider(const StyleProvider&) = delete;
     StyleProvider&operator=(const StyleProvider&) = delete;
     StyleProvider&operator=(StyleProvider&&) = delete;
+
+    /// Returns an unique tag associated with the used styles.
+    const std::string& getTag() const;
 
     /// Checks whether style is defined for the element.
     bool hasStyle(const utymap::entities::Element&, int levelOfDetails) const;

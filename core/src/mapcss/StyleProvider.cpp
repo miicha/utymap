@@ -1,3 +1,4 @@
+#include "hashing/MD5.h"
 #include "entities/ElementVisitor.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
@@ -36,9 +37,10 @@ struct ConditionFilter final
     std::vector<std::shared_ptr<const StyleDeclaration>> declarations;
 };
 
+typedef std::vector<std::shared_ptr<const StyleDeclaration>> StyleDeclarations;
 /// Key: level of details, value: filters for specific element type.
 typedef std::unordered_map<int, std::vector<ConditionFilter>> ConditionFilterMap;
-typedef std::unordered_map<std::uint64_t, std::vector<std::shared_ptr<const StyleDeclaration>>> IdentifierFilter;
+typedef std::unordered_map<std::uint64_t, StyleDeclarations> IdentifierFilter;
 typedef std::unordered_map<int, IdentifierFilter> IdentifierFilterMap;
 
 struct FilterCollection final
@@ -50,6 +52,65 @@ struct FilterCollection final
     ConditionFilterMap canvases;
     IdentifierFilterMap elements;
 };
+
+/// Alters tag with value specific for passed style declarations.
+void addTo(std::string& tag, const StyleDeclarations& styles) {
+    for (const auto& style :styles) {
+        tag.append(utymap::utils::toString(style->key()));
+        tag.append(utymap::utils::toString(style->value()));
+    }
+}
+
+void addTo(std::string& tag, const OpType& type) {
+    switch (type) {
+        case OpType::Exists: tag.append("~"); break;
+        case OpType::Equals: tag.append("=="); break;
+        case OpType::NotEquals: tag.append("!="); break;
+        case OpType::Less: tag.append("<"); break;
+        case OpType::Greater: tag.append(">"); break;
+    }
+}
+
+/// Alters tag with value specific for passed filter map.
+void addTo(std::string& tag, const ConditionFilterMap& filterMap) {
+    for (const auto& pair : filterMap) {
+        tag.append(utymap::utils::toString(pair.first));
+        for (const auto& filter : pair.second) {
+            for (const auto& cond : filter.conditions) {
+                tag.append(utymap::utils::toString(cond.key));
+                addTo(tag, cond.type);
+                tag.append(utymap::utils::toString(cond.value));
+            }
+            addTo(tag, filter.declarations);
+        }
+    }
+}
+
+/// Alters tag with value specific for passed filter map.
+void addTo(std::string& tag, const IdentifierFilterMap& filterMap) {
+    for (const auto& pair : filterMap) {
+        tag.append(utymap::utils::toString(pair.first));
+        for (const auto& id : pair.second) {
+            tag.append(utymap::utils::toString(id.first));
+            addTo(tag, id.second);
+        }
+    }
+}
+
+/// Gets hash for given filter collection.
+std::string getHashTag(const FilterCollection& filterCollection) {
+    std::string tag;
+    tag.reserve(64000);
+
+    addTo(tag, filterCollection.nodes);
+    addTo(tag, filterCollection.ways);
+    addTo(tag, filterCollection.areas);
+    addTo(tag, filterCollection.relations);
+    addTo(tag, filterCollection.canvases);
+    addTo(tag, filterCollection.elements);
+
+    return MD5(tag).hexdigest();
+}
 
 class StyleBuilder final : public ElementVisitor
 {
@@ -231,6 +292,12 @@ public:
         for (const auto& lsystem : stylesheet.lsystems) {
             lsystems.emplace(lsystem.first, utymap::utils::make_unique<const utymap::lsys::LSystem>(lsystem.second));
         }
+
+        hashTag_ = getHashTag(filters);
+    }
+
+    const std::string& getTag() const {
+        return hashTag_;
     }
 
     const ColorGradient& getGradient(const std::string& key)
@@ -341,6 +408,7 @@ private:
     }
 
     std::mutex lock_;
+    std::string hashTag_;
 
     std::unordered_map<std::string, std::unique_ptr<const ColorGradient>> gradients;
     std::unordered_map<std::uint16_t, std::unique_ptr<const TextureAtlas>> textures;
@@ -358,6 +426,10 @@ StyleProvider::~StyleProvider()
 
 StyleProvider::StyleProvider(StyleProvider&& other) : pimpl_(std::move(other.pimpl_))
 {
+}
+
+const std::string& StyleProvider::getTag() const {
+    return pimpl_->getTag();
 }
 
 bool StyleProvider::hasStyle(const utymap::entities::Element& element, int levelOfDetails) const

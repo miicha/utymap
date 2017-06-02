@@ -170,4 +170,30 @@ BOOST_AUTO_TEST_CASE(GivenCustomElementRuleOverridesDefault_WhenForElement_ThenS
     BOOST_CHECK(!style.has(dependencyProvider.getStringTable()->getId("key1")));
 }
 
+BOOST_AUTO_TEST_CASE(GivenTwoDifferentStyles_WhenConstructed_ThenTheyHaveDifferentTags)
+{
+    int zoomLevel = 1;
+    setSingleSelector(zoomLevel, zoomLevel, { "node" }, { {"a", "=", "b"} }, { {"k", "v"} });
+    auto tag1 = styleProvider->getTag();
+    stylesheet->rules.clear();
+
+    setSingleSelector(zoomLevel, zoomLevel, { "node" }, { {"a", "!=", "b"} }, { {"k", "v"} });
+    auto tag2 = styleProvider->getTag();
+
+    BOOST_CHECK_NE(tag1, tag2);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTwoEqualStyles_WhenConstructed_ThenTheyHaveTheSameTag)
+{
+    int zoomLevel = 1;
+    setSingleSelector(zoomLevel, zoomLevel, { "node" }, { {"a", "=", "b"} }, { {"k", "v"} });
+    auto tag1 = styleProvider->getTag();
+    stylesheet->rules.clear();
+
+    setSingleSelector(zoomLevel, zoomLevel, { "node" }, { {"a", "=", "b"} }, { {"k", "v"} });
+    auto tag2 = styleProvider->getTag();
+
+    BOOST_CHECK_EQUAL(tag1, tag2);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
