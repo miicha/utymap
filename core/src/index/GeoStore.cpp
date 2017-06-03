@@ -10,7 +10,6 @@
 #include "index/InMemoryElementStore.hpp"
 #include "utils/CoreUtils.hpp"
 
-#include <set>
 #include <map>
 #include <memory>
 
@@ -21,41 +20,6 @@ using namespace utymap::mapcss;
 
 class GeoStore::GeoStoreImpl final
 {
-    /// Prevents to visit element twice if it exists in multiply stores.
-    class FilterElementVisitor : public ElementVisitor
-    {
-    public:
-        FilterElementVisitor(const QuadKey& quadKey, const StyleProvider& styleProvider, ElementVisitor& visitor)
-                : quadKey_(quadKey), styleProvider_(styleProvider), visitor_(visitor), ids_()
-        {
-        }
-
-        void visitNode(const Node& node) override { visitIfNecessary(node); }
-
-        void visitWay(const Way& way) override  { visitIfNecessary(way); }
-
-        void visitArea(const Area& area) override { visitIfNecessary(area); }
-
-        void visitRelation(const Relation& relation) override { visitIfNecessary(relation); }
-
-    private:
-
-        void visitIfNecessary(const Element& element)
-        {
-            if ((element.id == 0 || ids_.find(element.id) == ids_.end()) &&
-                    styleProvider_.hasStyle(element, quadKey_.levelOfDetail)) {
-                element.accept(visitor_);
-                ids_.insert(element.id);
-            }
-        }
-
-        const QuadKey& quadKey_;
-        const StyleProvider& styleProvider_;
-        ElementVisitor& visitor_;
-
-        std::set<std::uint64_t> ids_;
-    };
-
 public:
 
     explicit GeoStoreImpl(const StringTable& stringTable) :
@@ -137,17 +101,16 @@ public:
         }
     }
 
-    void search(const QuadKey& quadKey, const utymap::mapcss::StyleProvider& styleProvider, ElementVisitor& visitor, const utymap::CancellationToken& cancelToken)
+    void search(const QuadKey& quadKey, const StyleProvider& styleProvider, ElementVisitor& visitor, const CancellationToken& cancelToken)
     {
-        FilterElementVisitor filter(quadKey, styleProvider, visitor);
         for (const auto& pair : storeMap_) {
             // Search only if store has data
             if (pair.second->hasData(quadKey))
-                pair.second->search(quadKey, filter, cancelToken);
+                pair.second->search(quadKey, visitor, cancelToken);
         }
     }
 
-    void search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor, const utymap::CancellationToken& cancelToken) const
+    void search(const GeoCoordinate& coordinate, double radius, const StyleProvider& styleProvider, ElementVisitor& visitor, const CancellationToken& cancelToken) const
     {
         throw std::domain_error("Not implemented.");
     }

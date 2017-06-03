@@ -21,6 +21,7 @@ set(HEADER_FILES
         builders/ElementBuilder.hpp
         builders/ExternalBuilder.hpp
         builders/MeshBuilder.hpp
+        builders/MeshCache.hpp
         builders/MeshContext.hpp
         builders/QuadKeyBuilder.hpp
         builders/buildings/BuildingBuilder.hpp
@@ -124,6 +125,7 @@ add_library(${LIBRARY_NAME}
         ${LIB_SOURCE}/shapefile/safileio.c
         ${LIB_SOURCE}/shapefile/shpopen.c
         builders/MeshBuilder.cpp
+        builders/MeshCache.cpp
         builders/generators/IcoSphereGenerator.cpp
         builders/generators/LSystemGenerator.cpp
         builders/misc/BarrierBuilder.cpp

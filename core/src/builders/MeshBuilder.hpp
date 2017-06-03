@@ -1,6 +1,7 @@
 #ifndef MESHING_MESHBUILDER_HPP_DEFINED
 #define MESHING_MESHBUILDER_HPP_DEFINED
 
+#include "BoundingBox.hpp"
 #include "QuadKey.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/ColorGradient.hpp"
@@ -11,7 +12,6 @@
 #include "math/Mesh.hpp"
 
 #include <functional>
-#include <memory>
 
 namespace utymap { namespace builders {
 
@@ -137,8 +137,20 @@ public:
                                  const AppearanceOptions& appearanceOptions) const;
 
 private:
-    class MeshBuilderImpl;
-    std::unique_ptr<MeshBuilderImpl> pimpl_;
+
+    static void addVertex(utymap::math::Mesh& mesh,
+                          const utymap::math::Vector2& p,
+                          double ele, int color, int triIndex,
+                          const utymap::math::Vector2& uv);
+
+    static void addVertex(utymap::math::Mesh& mesh,
+                          const utymap::math::Vector3& vertex,
+                          int color, int triIndex,
+                          const utymap::math::Vector2& uv);
+
+const utymap::QuadKey quadKey_;
+const utymap::BoundingBox bbox_;
+const utymap::heightmap::ElevationProvider& eleProvider_;
 };
 
 }}

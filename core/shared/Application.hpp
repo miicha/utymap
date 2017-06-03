@@ -6,6 +6,7 @@
 #include "QuadKey.hpp"
 #include "LodRange.hpp"
 #include "builders/BuilderContext.hpp"
+#include "builders/MeshCache.hpp"
 #include "builders/QuadKeyBuilder.hpp"
 #include "builders/buildings/BuildingBuilder.hpp"
 #include "builders/misc/BarrierBuilder.hpp"
@@ -34,19 +35,15 @@
 class Application
 {
 public:
-    enum class ElevationDataType
-    {
-        Flat = 0,
-        Srtm,
-        Grid
-    };
+    enum class ElevationDataType { Flat = 0, Srtm, Grid };
 
     /// Composes object graph.
-    Application(const char* dataPath, 
-                OnError* errorCallback) :
-        stringTable_(dataPath), geoStore_(stringTable_),
+    Application(const char* dataPath, OnError* errorCallback) :
+        stringTable_(dataPath),
+        geoStore_(stringTable_),
         flatEleProvider_(), srtmEleProvider_(dataPath), gridEleProvider_(dataPath),
-        quadKeyBuilder_(geoStore_, stringTable_)
+        meshCache_(dataPath),
+        quadKeyBuilder_(geoStore_, stringTable_, meshCache_)
     {
         registerDefaultBuilders();
     }
@@ -118,7 +115,7 @@ public:
         }, errorCallback);
     }
 
-    bool hasData(const utymap::QuadKey& quadKey)
+    bool hasData(const utymap::QuadKey& quadKey) const
     {
         return geoStore_.hasData(quadKey);
     }
@@ -245,6 +242,7 @@ private:
     utymap::heightmap::SrtmElevationProvider srtmEleProvider_;
     utymap::heightmap::GridElevationProvider gridEleProvider_;
 
+    const utymap::builders::MeshCache meshCache_;
     utymap::builders::QuadKeyBuilder quadKeyBuilder_;
     std::unordered_map<std::string, std::unique_ptr<const utymap::mapcss::StyleProvider>> styleProviders_;
 };

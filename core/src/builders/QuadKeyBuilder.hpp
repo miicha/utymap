@@ -26,7 +26,8 @@ public:
     typedef std::function<std::unique_ptr<utymap::builders::ElementBuilder>(const utymap::builders::BuilderContext&)> ElementBuilderFactory;
 
     QuadKeyBuilder(utymap::index::GeoStore& geoStore,
-                   utymap::index::StringTable& stringTable);
+                   utymap::index::StringTable& stringTable,
+                   const utymap::builders::MeshCache& meshCache);
 
     ~QuadKeyBuilder();
 
