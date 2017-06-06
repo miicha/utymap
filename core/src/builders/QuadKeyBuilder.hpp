@@ -20,8 +20,6 @@ namespace utymap { namespace builders {
 class QuadKeyBuilder final
 {
 public:
-    typedef std::function<void(const utymap::math::Mesh&)> MeshCallback;
-    typedef std::function<void(const utymap::entities::Element&)> ElementCallback;
     /// Factory of element builders
     typedef std::function<std::unique_ptr<utymap::builders::ElementBuilder>(const utymap::builders::BuilderContext&)> ElementBuilderFactory;
 
@@ -38,8 +36,8 @@ public:
     void build(const utymap::QuadKey& quadKey,
                const utymap::mapcss::StyleProvider& styleProvider,
                const utymap::heightmap::ElevationProvider& eleProvider,
-               MeshCallback meshFunc,
-               ElementCallback elementFunc,
+               utymap::builders::BuilderContext::MeshCallback meshCallback,
+               utymap::builders::BuilderContext::ElementCallback elementCallback,
                const utymap::CancellationToken& cancelToken);
 
 private:

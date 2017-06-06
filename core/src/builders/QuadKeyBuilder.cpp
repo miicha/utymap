@@ -111,11 +111,12 @@ public:
     void build(const QuadKey& quadKey,
                const StyleProvider& styleProvider,
                const ElevationProvider& eleProvider,
-               const MeshCallback& meshFunc,
-               const ElementCallback& elementFunc,
+               const BuilderContext::MeshCallback& meshCallback,
+               const BuilderContext::ElementCallback& elementCallback,
                const utymap::CancellationToken& cancelToken)
     {
-        BuilderContext context = meshCache_.wrap(BuilderContext(quadKey, styleProvider, stringTable_, eleProvider, meshFunc, elementFunc));
+        BuilderContext context = meshCache_.wrap(BuilderContext(quadKey, styleProvider,
+            stringTable_, eleProvider, meshCallback, elementCallback));
 
         if (!meshCache_.fetch(context, cancelToken)) {
             AggregateElementVisitor elementVisitor(context, builderFactory_, builderKeyId_);
@@ -140,10 +141,14 @@ void QuadKeyBuilder::registerElementBuilder(const std::string& name, ElementBuil
     pimpl_->registerElementVisitor(name, factory);
 }
 
-void QuadKeyBuilder::build(const QuadKey& quadKey, const StyleProvider& styleProvider, const ElevationProvider& eleProvider, 
-    MeshCallback meshFunc, ElementCallback elementFunc, const utymap::CancellationToken& cancelToken)
+void QuadKeyBuilder::build(const QuadKey& quadKey,
+                           const StyleProvider& styleProvider,
+                           const ElevationProvider& eleProvider,
+                           BuilderContext::MeshCallback meshCallback,
+                           BuilderContext::ElementCallback elementCallback,
+                           const utymap::CancellationToken& cancelToken)
 {
-    pimpl_->build(quadKey, styleProvider, eleProvider, meshFunc, elementFunc, cancelToken);
+    pimpl_->build(quadKey, styleProvider, eleProvider, meshCallback, elementCallback, cancelToken);
 }
 
 QuadKeyBuilder::QuadKeyBuilder(GeoStore& geoStore, StringTable& stringTable, const MeshCache& meshCache) :
