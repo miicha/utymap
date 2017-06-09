@@ -76,6 +76,7 @@ set(HEADER_FILES
         heightmap/SrtmElevationProvider.hpp
         index/ElementGeometryClipper.hpp
         index/ElementStore.hpp
+        index/ElementStream.hpp
         index/GeoStore.hpp
         index/InMemoryElementStore.hpp
         index/PersistentElementStore.hpp
@@ -143,6 +144,7 @@ add_library(${LIBRARY_NAME}
         formats/osm/xml/OsmXmlParser.cpp
         index/ElementGeometryClipper.cpp
         index/ElementStore.cpp
+        index/ElementStream.cpp
         index/GeoStore.cpp
         index/InMemoryElementStore.cpp
         index/PersistentElementStore.cpp
