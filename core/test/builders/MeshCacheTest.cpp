@@ -15,11 +15,23 @@ using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::math;
+using namespace utymap::mapcss;
 using namespace utymap::tests;
 
 namespace {
     const QuadKey quadKey = QuadKey(1, 0, 0);
     const std::string stylesheet = "node|z1[any], way|z1[any], area|z1[any], relation|z1[any] { clip: false; }";
+
+    std::string getCacheDir(const StyleProvider& styleProvider) {
+        return std::string("cache/") + styleProvider.getTag() + "/1";
+    }
+
+    BuilderContext wrap(const StyleProvider& styleProvider,
+                        const BuilderContext& context,
+                        MeshCache& cache) {
+        boost::filesystem::create_directories(getCacheDir(styleProvider));
+        return cache.wrap(context);
+    }
 
     struct Builders_MeshCacheFixture
     {
@@ -42,10 +54,6 @@ namespace {
             lastMesh_.clear();
         }
 
-        std::string getCacheDir() const {
-            return std::string("cache/") + dependencyProvider.getStyleProvider()->getTag() + "/1";
-        }
-
         Builders_MeshCacheFixture() :
             cache_(""),
             origContext(quadKey,
@@ -54,16 +62,16 @@ namespace {
                 *dependencyProvider.getElevationProvider(),
                 std::bind(&Builders_MeshCacheFixture::meshCallback, this, std::placeholders::_1),
                 std::bind(&Builders_MeshCacheFixture::elementCallback, this, std::placeholders::_1)),
-            wrapContext(cache_.wrap(origContext)),
+            wrapContext(wrap(*dependencyProvider.getStyleProvider(), origContext, cache_)),
             lastMesh_("")
         {
             resetData();
-            boost::filesystem::create_directories(getCacheDir());
         }
 
         ~Builders_MeshCacheFixture()
         {
-            boost::filesystem::remove(getCacheDir() + "/0.mesh");
+            auto filePath = getCacheDir(*dependencyProvider.getStyleProvider()) + "/0.mesh";
+            boost::filesystem::remove(filePath);
         }
 
         void assertStoreAndFetch(const Element& element) {
@@ -103,8 +111,8 @@ namespace {
             BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.uvMap.begin(), lastMesh_.uvMap.end(), mesh.uvMap.begin(), mesh.uvMap.end());
         }
 
-        MeshCache cache_;
         DependencyProvider dependencyProvider;
+        MeshCache cache_;
         BuilderContext origContext;
         BuilderContext wrapContext;
         CancellationToken token;
