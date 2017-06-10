@@ -98,18 +98,18 @@ private:
 
     BuilderContext wrap(const BuilderContext& context, const std::string& filePath)
     {
-        cachingQuads_.insert({ context.quadKey, utymap::utils::make_unique<std::fstream>() });
-
-        auto& file = *cachingQuads_.find(context.quadKey)->second;
-        file.open(filePath, std::ios::out | std::ios::binary | std::ios::app | std::ios::ate);
+        auto file = std::make_shared<std::fstream>();
+        file->open(filePath, std::ios::out | std::ios::binary | std::ios::app | std::ios::ate);
+        
+        cachingQuads_.insert({ context.quadKey, file });
 
         return BuilderContext(
             context.quadKey,
             context.styleProvider,
             context.stringTable,
             context.eleProvider,
-            wrap(file, context.meshCallback),
-            wrap(file, context.elementCallback));
+            wrap(*file, context.meshCallback),
+            wrap(*file, context.elementCallback));
     }
 
     static MeshCallback wrap(std::ostream& stream, const MeshCallback& callback)
@@ -155,7 +155,7 @@ private:
 
     const std::string dataPath_;
     std::mutex lock_;
-    std::map<QuadKey, std::unique_ptr<std::fstream>, QuadKey::Comparator> cachingQuads_;
+    std::map<QuadKey, std::shared_ptr<std::fstream>, QuadKey::Comparator> cachingQuads_;
 };
 
 MeshCache::MeshCache(const std::string& directory) :
