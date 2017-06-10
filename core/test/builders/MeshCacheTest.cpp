@@ -24,7 +24,12 @@ namespace {
     struct Builders_MeshCacheFixture
     {
         void meshCallback(const Mesh& mesh) {
-            lastName = mesh.name;
+            lastMesh_.name = mesh.name;
+            lastMesh_.vertices = mesh.vertices;
+            lastMesh_.triangles = mesh.triangles;
+            lastMesh_.colors = mesh.colors;
+            lastMesh_.uvs = mesh.uvs;
+            lastMesh_.uvMap = mesh.uvMap;
         }
 
         void elementCallback(const Element& element) {
@@ -33,7 +38,8 @@ namespace {
 
         void resetData() {
             lastId_ = 0;
-            lastName = "";
+            lastMesh_.name.clear();
+            lastMesh_.clear();
         }
 
         std::string getCacheDir() const {
@@ -48,7 +54,8 @@ namespace {
                 *dependencyProvider.getElevationProvider(),
                 std::bind(&Builders_MeshCacheFixture::meshCallback, this, std::placeholders::_1),
                 std::bind(&Builders_MeshCacheFixture::elementCallback, this, std::placeholders::_1)),
-            wrapContext(cache_.wrap(origContext))
+            wrapContext(cache_.wrap(origContext)),
+            lastMesh_("")
         {
             resetData();
             boost::filesystem::create_directories(getCacheDir());
@@ -73,6 +80,29 @@ namespace {
             BOOST_CHECK_EQUAL(lastId_, element.id);
         }
 
+        void assertStoreAndFetch(const Mesh& mesh) {
+            // Assert that original callback is called
+            wrapContext.meshCallback(mesh);
+            assertMesh(mesh);
+
+            // Release context and reset actual values
+            cache_.unwrap(wrapContext, token);
+            resetData();
+
+            // Assert that element is read back
+            cache_.fetch(origContext, token);
+            assertMesh(mesh);
+        }
+
+        void assertMesh(const Mesh& mesh) const {
+            BOOST_CHECK_EQUAL(lastMesh_.name, mesh.name);
+            BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.vertices.begin(), lastMesh_.vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
+            BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.triangles.begin(), lastMesh_.triangles.end(), mesh.triangles.begin(), mesh.triangles.end());
+            BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.colors.begin(), lastMesh_.colors.end(), mesh.colors.begin(), mesh.colors.end());
+            BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.uvs.begin(), lastMesh_.uvs.end(), mesh.uvs.begin(), mesh.uvs.end());
+            BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.uvMap.begin(), lastMesh_.uvMap.end(), mesh.uvMap.begin(), mesh.uvMap.end());
+        }
+
         MeshCache cache_;
         DependencyProvider dependencyProvider;
         BuilderContext origContext;
@@ -80,7 +110,7 @@ namespace {
         CancellationToken token;
 
         std::uint64_t lastId_;
-        std::string lastName;
+        Mesh lastMesh_;
     };
 }
 
@@ -119,6 +149,18 @@ BOOST_AUTO_TEST_CASE(GivenRelation_WhenStoreAndFetch_ThenItIsStoredAndReadBack)
     relation.elements.push_back(std::make_shared<Area>(area));
 
     assertStoreAndFetch(relation);
+}
+
+BOOST_AUTO_TEST_CASE(GivenMesh_WhenStoreAndFetch_ThenItIsStoredAndReadBack)
+{
+    Mesh mesh("My mesh");
+    mesh.vertices.assign({ 1, 2, 3, 4.5, 5.555555, 6.6666666 });
+    mesh.triangles.assign({1, 2, 3, 4 });
+    mesh.colors.assign({ 4, 3, 2, 1 });
+    mesh.uvs.assign({ 0.1, 0.2, 0.3, 0.4 });
+    mesh.uvMap.assign({1, 2, 3});
+
+    assertStoreAndFetch(mesh);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

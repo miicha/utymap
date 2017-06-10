@@ -11,8 +11,8 @@ namespace {
     {
         std::uint16_t size = static_cast<std::uint16_t>(data.size());
         stream.write(reinterpret_cast<const char*>(&size), sizeof(size));
-        for (const auto item : data)
-            stream << item;
+        for (const auto& item : data)
+            stream.write(reinterpret_cast<const char*>(&item), sizeof(item));
         return stream;
     }
 
@@ -23,19 +23,20 @@ namespace {
         stream.read(reinterpret_cast<char*>(&size), sizeof(size));
         data.resize(size);
         for (size_t i = 0; i < size; ++i)
-            stream >> data[i];
+            stream.read(reinterpret_cast<char*>(&data[i]), sizeof(data[i]));
         return stream;
     }
 
     std::ostream& operator <<(std::ostream& stream, const Mesh& mesh)
     {
-        return stream << mesh.name << mesh.vertices << mesh.triangles
+        return stream << mesh.name.c_str() << '\0' << mesh.vertices << mesh.triangles
             << mesh.colors << mesh.uvs << mesh.uvMap;
     }
 
     std::istream& operator >>(std::istream& stream, Mesh& mesh)
     {
-        return stream >> mesh.name >> mesh.vertices >> mesh.triangles
+        std::getline(stream, mesh.name, '\0');
+        return stream >> mesh.vertices >> mesh.triangles
             >> mesh.colors >> mesh.uvs >> mesh.uvMap;
     }
 }
@@ -43,10 +44,11 @@ namespace {
 Mesh MeshStream::read(std::istream& stream)
 {
     Mesh mesh("");
+    stream >> mesh;
     return std::move(mesh);
 }
 
 void MeshStream::write(std::ostream& stream, const Mesh& mesh)
 {
-
+    stream << mesh;
 }

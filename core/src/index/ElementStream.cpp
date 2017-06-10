@@ -50,7 +50,7 @@ std::ostream& operator <<(std::ostream& stream, const std::vector<T>& data)
 {
     std::uint16_t size = static_cast<std::uint16_t>(data.size());
     stream.write(reinterpret_cast<const char*>(&size), sizeof(size));
-    for (const auto item : data)
+    for (const auto& item : data)
         stream << item;
     return stream;
 }
