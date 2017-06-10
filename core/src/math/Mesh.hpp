@@ -26,9 +26,20 @@ struct Mesh final
         uvMap.reserve(8);
     }
 
+    Mesh(Mesh&& other) :
+        name(std::move(other.name)),
+        vertices(std::move(other.vertices)),
+        triangles(std::move(other.triangles)),
+        colors(std::move(other.colors)),
+        uvs(std::move(other.uvs)),
+        uvMap(std::move(other.uvMap))
+    {
+    }
+
     /// Disable copying to prevent accidental copy
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
+
 
     /// Clear geometry. Name stays.
     void clear()

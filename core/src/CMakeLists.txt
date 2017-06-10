@@ -79,6 +79,7 @@ set(HEADER_FILES
         index/ElementStream.hpp
         index/GeoStore.hpp
         index/InMemoryElementStore.hpp
+        index/MeshStream.hpp
         index/PersistentElementStore.hpp
         index/StringTable.hpp
         lsys/Turtle3d.hpp
@@ -147,6 +148,7 @@ add_library(${LIBRARY_NAME}
         index/ElementStream.cpp
         index/GeoStore.cpp
         index/InMemoryElementStore.cpp
+        index/MeshStream.cpp
         index/PersistentElementStore.cpp
         index/StringTable.cpp
         lsys/Turtle3d.cpp

@@ -14,7 +14,7 @@ class ElementUtils
 {
 public:
     template <typename T>
-    static T createElement(utymap::index::StringTable& stringTable,
+    static T createElement(const utymap::index::StringTable& stringTable,
                            std::uint64_t id,
                            std::initializer_list<std::pair<const char*, const char*>> tags)
     {
@@ -27,7 +27,7 @@ public:
     }
 
     template <typename T>
-    static T createElement(utymap::index::StringTable& stringTable,
+    static T createElement(const utymap::index::StringTable& stringTable,
                            std::uint64_t id,
                            std::initializer_list<std::pair<const char*, const char*>> tags,
                            std::initializer_list<std::pair<double, double>> geometry)
@@ -40,7 +40,7 @@ public:
         return std::move(t);
     }
 
-    static utymap::entities::Tag createTag(utymap::index::StringTable& stringTable, 
+    static utymap::entities::Tag createTag(const utymap::index::StringTable& stringTable, 
                                            const std::string& key, 
                                            const std::string& value)
     {

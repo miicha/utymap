@@ -115,17 +115,19 @@ public:
                const BuilderContext::ElementCallback& elementCallback,
                const utymap::CancellationToken& cancelToken)
     {
-        BuilderContext context = meshCache_.wrap(BuilderContext(quadKey, styleProvider,
-            stringTable_, eleProvider, meshCallback, elementCallback));
+        auto origContext = BuilderContext(quadKey, styleProvider, stringTable_,
+            eleProvider, meshCallback, elementCallback);
 
-        if (!meshCache_.fetch(context, cancelToken)) {
-            AggregateElementVisitor elementVisitor(context, builderFactory_, builderKeyId_);
+        if (!meshCache_.fetch(origContext, cancelToken)) {
+            auto cacheContext = meshCache_.wrap(origContext);
+            auto elementVisitor = AggregateElementVisitor(cacheContext, builderFactory_, builderKeyId_);
+
             geoStore_.search(quadKey, styleProvider, elementVisitor, cancelToken);
             if (!cancelToken.isCancelled())
                 elementVisitor.complete();
-        }
 
-        meshCache_.release(context, cancelToken);
+            meshCache_.unwrap(cacheContext, cancelToken);
+        }
     }
 
 private:

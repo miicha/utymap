@@ -14,6 +14,12 @@ class MeshCache final
 public:
     explicit MeshCache(const std::string& directory);
 
+    /// Enables cache.
+    void enable() { isEnabled_ = true; };
+
+    /// Disables cache.
+    void disable() { isEnabled_ = false; };
+
     /// Wraps the context to provide caching behaviour
     BuilderContext wrap(const BuilderContext& context) const;
 
@@ -21,13 +27,14 @@ public:
     bool fetch(const BuilderContext& context, const CancellationToken& cancelToken) const;
 
     /// Releases context.
-    void release(const BuilderContext& context, const CancellationToken& cancelToken) const;
+    void unwrap(const BuilderContext& context, const CancellationToken& cancelToken) const;
 
     ~MeshCache();
 
 private:
     class MeshCacheImpl;
     std::unique_ptr<MeshCacheImpl> pimpl_;
+    bool isEnabled_;
 };
 
 }}

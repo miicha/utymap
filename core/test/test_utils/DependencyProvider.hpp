@@ -59,6 +59,13 @@ public:
         return styleProvider_;
     }
 
+    std::shared_ptr<utymap::mapcss::StyleProvider> getStyleProvider() const
+    {
+        if (styleProvider_ == nullptr) 
+            throw std::invalid_argument("styleProvider");
+        return styleProvider_;
+    }
+
     std::shared_ptr<utymap::builders::BuilderContext> createBuilderContext(
         const utymap::QuadKey& quadKey,
         const std::string& stylesheet,

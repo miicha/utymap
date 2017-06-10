@@ -45,6 +45,7 @@ public:
         meshCache_(dataPath),
         quadKeyBuilder_(geoStore_, stringTable_, meshCache_)
     {
+        meshCache_.disable();
         registerDefaultBuilders();
     }
 
@@ -242,7 +243,7 @@ private:
     utymap::heightmap::SrtmElevationProvider srtmEleProvider_;
     utymap::heightmap::GridElevationProvider gridEleProvider_;
 
-    const utymap::builders::MeshCache meshCache_;
+    utymap::builders::MeshCache meshCache_;
     utymap::builders::QuadKeyBuilder quadKeyBuilder_;
     std::unordered_map<std::string, std::unique_ptr<const utymap::mapcss::StyleProvider>> styleProviders_;
 };
