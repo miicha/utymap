@@ -1,5 +1,8 @@
 #include "builders/MeshCache.hpp"
 #include "entities/Node.hpp"
+#include "entities/Way.hpp"
+#include "entities/Area.hpp"
+#include "entities/Relation.hpp"
 
 #include <functional>
 #include <boost/filesystem/operations.hpp>
@@ -56,6 +59,20 @@ namespace {
             boost::filesystem::remove(getCacheDir() + "/0.mesh");
         }
 
+        void assertStoreAndFetch(const Element& element) {
+            // Assert that original callback is called
+            wrapContext.elementCallback(element);
+            BOOST_CHECK_EQUAL(lastId_, element.id);
+            
+            // Release context and reset actual values
+            cache_.unwrap(wrapContext, token);
+            resetData();
+
+            // Assert that element is read back
+            cache_.fetch(origContext, token);
+            BOOST_CHECK_EQUAL(lastId_, element.id);
+        }
+
         MeshCache cache_;
         DependencyProvider dependencyProvider;
         BuilderContext origContext;
@@ -73,13 +90,35 @@ BOOST_AUTO_TEST_CASE(GivenNode_WhenStoreAndFetch_ThenItIsStoredAndReadBack)
 {
     Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 1, { { "any", "true" } });
 
-    wrapContext.elementCallback(node);
-    BOOST_CHECK_EQUAL(lastId_, 1);
-    cache_.unwrap(wrapContext, token);
-    resetData();
+    assertStoreAndFetch(node);
+}
 
-    cache_.fetch(origContext, token);
-    BOOST_CHECK_EQUAL(lastId_, 1);
+BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreAndFetch_ThenItIsStoredAndReadBack)
+{
+    Way way = ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 7, { { "any", "true" } }, { { 1, -1 }, { 5, -5 } });
+
+    assertStoreAndFetch(way);
+}
+
+BOOST_AUTO_TEST_CASE(GivenArea_WhenStoreAndFetch_ThenItIsStoredAndReadBack)
+{
+    Area area = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 7, { { "any", "true" } }, { { 1, -1 }, { 5, -5 }, { 10, -10 } });
+
+    assertStoreAndFetch(area);
+}
+
+BOOST_AUTO_TEST_CASE(GivenRelation_WhenStoreAndFetch_ThenItIsStoredAndReadBack)
+{
+    Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 1, { { "n", "1" } });
+    node.coordinate = { 0.5, -0.5 };
+    Way way = ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 2, { { "w", "2" } }, { { 1, -1 }, { 2, -2 } });
+    Area area = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 3, { { "a", "3" } }, { { 3, -3 }, { 4, -4 }, { 5, -5 } });
+    Relation relation = ElementUtils::createElement<Relation>(*dependencyProvider.getStringTable(), 4, { { "any", "true" } });
+    relation.elements.push_back(std::make_shared<Node>(node));
+    relation.elements.push_back(std::make_shared<Way>(way));
+    relation.elements.push_back(std::make_shared<Area>(area));
+
+    assertStoreAndFetch(relation);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
