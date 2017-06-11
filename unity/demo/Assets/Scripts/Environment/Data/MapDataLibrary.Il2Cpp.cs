@@ -41,6 +41,9 @@ namespace Assets.Scripts.Environment.Data
 
         private delegate void OnError(string message);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void OnNewDirectory([In] string directory);
+
         [AOT.MonoPInvokeCallback(typeof(OnError))]
         private static void OnMeshBuiltHandler(int tag, string name, IntPtr vertexPtr, int vertexCount,
             IntPtr trianglePtr, int triangleCount, IntPtr colorPtr, int colorCount,

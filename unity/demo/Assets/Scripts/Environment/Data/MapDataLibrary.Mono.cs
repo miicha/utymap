@@ -24,6 +24,9 @@ namespace Assets.Scripts.Environment.Data
         #region Delegates
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void OnNewDirectory([In] string directory);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void OnMeshBuilt(int tag, [In] string name,
             [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] [In] double[] vertices, [In] int vertexCount,
             [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] [In] int[] triangles, [In] int triangleCount,

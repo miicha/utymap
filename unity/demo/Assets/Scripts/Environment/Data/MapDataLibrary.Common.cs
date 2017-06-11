@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -21,6 +22,8 @@ namespace Assets.Scripts.Environment.Data
         private static readonly object __lockObj = new object();
         private volatile bool _isConfigured;
         private readonly IPathResolver _pathResolver;
+
+        private HashSet<string> _stylePaths = new HashSet<string>();
 
         [Dependency]
         public MapDataLibrary(IPathResolver pathResolver, ITrace trace)
@@ -48,7 +51,7 @@ namespace Assets.Scripts.Environment.Data
                 // NOTE actually, it is possible to have multiple in-memory and persistent 
                 // storages at the same time.
                 registerInMemoryStore(InMemoryStoreKey);
-                registerPersistentStore(PersistentStoreKey, indexPath);
+                registerPersistentStore(PersistentStoreKey, indexPath, CreateDirectory);
                 
                 _isConfigured = true;
             }
@@ -64,7 +67,7 @@ namespace Assets.Scripts.Environment.Data
         public IObservable<int> Add(MapDataStorageType type, string path, Stylesheet stylesheet, Range<int> levelOfDetails)
         {
             var dataPath = _pathResolver.Resolve(path);
-            var stylePath = _pathResolver.Resolve(stylesheet.Path);
+            var stylePath = RegisterStylesheet(stylesheet);
             _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, type.ToString());
             lock (__lockObj)
             {
@@ -78,7 +81,7 @@ namespace Assets.Scripts.Environment.Data
         public IObservable<int> Add(MapDataStorageType type, string path, Stylesheet stylesheet, QuadKey quadKey)
         {
             var dataPath = _pathResolver.Resolve(path);
-            var stylePath = _pathResolver.Resolve(stylesheet.Path);
+            var stylePath = RegisterStylesheet(stylesheet);
             _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, type.ToString());
             lock (__lockObj)
             {
@@ -107,7 +110,7 @@ namespace Assets.Scripts.Environment.Data
                 tags[i * 2 + 1] = element.Tags[tagKeys[i]];
             }
 
-            var stylePath = _pathResolver.Resolve(stylesheet.Path);
+            var stylePath = RegisterStylesheet(stylesheet);
             lock (__lockObj)
             {
                 addToStoreElement(GetStoreKey(type), stylePath, element.Id,
@@ -135,7 +138,7 @@ namespace Assets.Scripts.Environment.Data
         private IObservable<int> Get(Tile tile, int tag, OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler)
         {
             _trace.Debug(TraceCategory, "Get tile {0}", tile.ToString());
-            var stylePath = _pathResolver.Resolve(tile.Stylesheet.Path);
+            var stylePath = RegisterStylesheet(tile.Stylesheet);
             var quadKey = tile.QuadKey;
             var cancelTokenHandle = GCHandle.Alloc(tile.CancelationToken, GCHandleType.Pinned);
             loadQuadKey(tag, stylePath,
@@ -151,6 +154,24 @@ namespace Assets.Scripts.Environment.Data
             return dataStorageType == MapDataStorageType.InMemory ? InMemoryStoreKey : PersistentStoreKey;
         }
 
+        private static void CreateDirectory(string directory)
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        private string RegisterStylesheet(Stylesheet stylesheet)
+        {
+            var stylePath = _pathResolver.Resolve(stylesheet.Path);
+
+            if (_stylePaths.Contains(stylePath))
+                return stylePath;
+
+            _stylePaths.Add(stylePath);
+            registerStylesheet(stylePath, CreateDirectory);
+
+            return stylePath;
+        }
+
         #endregion
 
         #region PInvoke import
@@ -159,10 +180,13 @@ namespace Assets.Scripts.Environment.Data
         private static extern void configure(string stringPath, OnError errorHandler);
 
         [DllImport("UtyMap.Shared")]
+        private static extern void registerStylesheet(string path, OnNewDirectory directoryHandler);
+
+        [DllImport("UtyMap.Shared")]
         private static extern void registerInMemoryStore(string key);
 
         [DllImport("UtyMap.Shared")]
-        private static extern void registerPersistentStore(string key, string path);
+        private static extern void registerPersistentStore(string key, string path, OnNewDirectory directoryHandler);
 
         [DllImport("UtyMap.Shared")]
         private static extern void addToStoreInRange(string key, string stylePath, string path, int startLod, int endLod, OnError errorHandler);
