@@ -24,7 +24,7 @@ extern "C"
             if (applicationPtr)
                 cleanup();
             applicationPtr = new Application(dataPath);
-        } catch (std::exception ex) {
+        } catch (std::exception& ex) {
             errorCallback(ex.what());
         }
     }

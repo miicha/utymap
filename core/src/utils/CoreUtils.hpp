@@ -18,7 +18,7 @@ std::string toString(T t)
 }
 
 inline std::string removeExtension(const std::string& filename) {
-    auto lastdot = filename.find_last_of(".");
+    auto lastdot = filename.find_last_of('.');
     return lastdot == std::string::npos
         ? filename
         : filename.substr(0, lastdot);
