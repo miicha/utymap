@@ -33,6 +33,7 @@ namespace Assets.Scripts.UI
                 vertices[i] = v;
             }
             
+            vh.Clear();
             vh.AddUIVertexTriangleStream(vertices);
         }
 
