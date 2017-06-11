@@ -13,7 +13,7 @@ using namespace utymap::mapcss;
 using namespace utymap::utils;
 
 namespace {
-    const std::string IndexFileExtension = ".idx";
+    const std::string IndexFileExtension = ".idf";
     const std::string DataFileExtension = ".dat";
 }
 
