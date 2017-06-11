@@ -170,7 +170,7 @@ BuilderContext MeshCache::wrap(const BuilderContext& context) const
 
 bool MeshCache::fetch(const BuilderContext& context, const CancellationToken& cancelToken) const
 {
-    return pimpl_->fetch(context, cancelToken);
+    return isEnabled_ && pimpl_->fetch(context, cancelToken);
 }
 
 void MeshCache::unwrap(const BuilderContext& context, const CancellationToken& cancelToken) const
