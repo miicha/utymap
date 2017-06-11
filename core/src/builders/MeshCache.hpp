@@ -15,10 +15,10 @@ public:
     explicit MeshCache(const std::string& directory);
 
     /// Enables cache.
-    void enable() { isEnabled_ = true; };
+    void enable() { isEnabled_ = true; }
 
     /// Disables cache.
-    void disable() { isEnabled_ = false; };
+    void disable() { isEnabled_ = false; }
 
     /// Wraps the context to provide caching behaviour
     BuilderContext wrap(const BuilderContext& context) const;

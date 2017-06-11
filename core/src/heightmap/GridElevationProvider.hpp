@@ -37,7 +37,7 @@ class GridElevationProvider final : public ElevationProvider
 
 public:
     GridElevationProvider(std::string dataDirectory) :
-        data_(), dataDirectory_(dataDirectory)
+        dataDirectory_(dataDirectory)
     {
     }
 
