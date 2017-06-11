@@ -83,10 +83,10 @@ namespace UtyMap.Unity.Infrastructure.Config
             return this;
         }
 
-        /// <summary> Sets cache data path. </summary>
-        public ConfigBuilder SetCache(string cache)
+        /// <summary> Sets import data path where raw map data is stored. </summary>
+        public ConfigBuilder SetImport(string import)
         {
-            Add<string>("data/cache", cache);
+            Add<string>("data/import", import);
             return this;
         }
 
@@ -105,7 +105,7 @@ namespace UtyMap.Unity.Infrastructure.Config
                 //.SetOsmMapData("http://api.openstreetmap.org/api/0.6/map?bbox=", "{1},{0},{3},{2}", "xml")
                 .SetMapzenMapData("http://tile.mapzen.com/mapzen/vector/v1/{0}/{1}/{2}/{3}.json?api_key={4}", "all", "json", "mapzen-D92KwAq")
                 .SetMapzenEleData("http://elevation.mapzen.com/height?json={0}&api_key={1}", 4, "ele", "mapzen-D92KwAq")
-                .SetCache("Cache")
+                .SetImport("Index/import")
                 .SetGeocodingServer("http://nominatim.openstreetmap.org/search?");
         }
 

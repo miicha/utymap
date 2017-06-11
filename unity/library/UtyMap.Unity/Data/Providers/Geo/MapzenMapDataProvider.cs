@@ -18,7 +18,7 @@ namespace UtyMap.Unity.Data.Providers.Geo
             {9, 8}, {10, 9}, {11, 10}, {12, 11}, {13, 12}, {14, 13}
         };
 
-        private string _cachePath;
+        private string _importPath;
         private string _mapDataServerUri;
         private string _mapDataFormatExtension;
         private string _mapDataLayers;
@@ -38,7 +38,7 @@ namespace UtyMap.Unity.Data.Providers.Geo
             _mapDataApiKey = configSection.GetString(@"data/mapzen/apikey", null);
             _mapDataLayers = configSection.GetString(@"data/mapzen/layers", null);
 
-            _cachePath = configSection.GetString(@"data/cache", null);
+            _importPath = configSection.GetString(@"data/import", null);
         }
 
         /// <inheritdoc />
@@ -53,7 +53,7 @@ namespace UtyMap.Unity.Data.Providers.Geo
         /// <inheritdoc />
         protected override string GetFilePath(QuadKey quadKey)
         {
-            return Path.Combine(_cachePath, GetDownloadQuadKey(quadKey) + _mapDataFormatExtension);
+            return Path.Combine(_importPath, GetDownloadQuadKey(quadKey) + _mapDataFormatExtension);
         }
 
         /// <summary> Gets quadkey which should be downloaded from remote server. </summary>

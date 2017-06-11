@@ -25,8 +25,6 @@ namespace Assets.Scripts.Environment
             CopyFiles(GetOsmFileNames(), trace);
             CopyFiles(GetLsysFileNames(), trace);
 #endif
-            CreateDirectories(GetDirectories());
-
             MarkAsInstalled();
         }
 
@@ -88,15 +86,6 @@ namespace Assets.Scripts.Environment
             return new List<string>()
             {
             }.Select(f => "Osm/" + f);
-        }
-
-        private static IEnumerable<string> GetDirectories()
-        {
-            yield return "Cache";
-            yield return "Index";
-
-            for (int i = 1; i <= 16; ++i)
-                yield return Path.Combine("Index", i.ToString());
         }
 
         #endregion

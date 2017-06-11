@@ -11,7 +11,7 @@ namespace UtyMap.Unity.Data.Providers.Geo
     /// <summary> Downloads map data from openstreemap servers. </summary>
     internal class OpenStreetMapDataProvider : RemoteMapDataProvider
     {
-        private string _cachePath;
+        private string _importPath;
         private string _mapDataFormatExtension;
         private string _mapDataServerQuery;
         private string _mapDataServerUri;
@@ -30,7 +30,7 @@ namespace UtyMap.Unity.Data.Providers.Geo
             _mapDataServerUri = configSection.GetString(@"data/osm/server", null);
             _mapDataServerQuery = configSection.GetString(@"data/osm/query", null);
             _mapDataFormatExtension = "." + configSection.GetString(@"data/osm/format", "xml");
-            _cachePath = configSection.GetString(@"data/cache", null);
+            _importPath = configSection.GetString(@"data/import", null);
         }
 
         /// <inheritdoc />
@@ -47,7 +47,7 @@ namespace UtyMap.Unity.Data.Providers.Geo
         /// <inheritdoc />
         protected override string GetFilePath(QuadKey quadKey)
         {
-            return Path.Combine(_cachePath, quadKey + _mapDataFormatExtension);
+            return Path.Combine(_importPath, quadKey + _mapDataFormatExtension);
         }
     }
 }

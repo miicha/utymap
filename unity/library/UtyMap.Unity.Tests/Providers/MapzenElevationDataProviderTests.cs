@@ -85,7 +85,7 @@ namespace UtyMap.Unity.Tests.Providers
         {
             var result = _eleProvider.GetResultSync(_tile);
 
-            Assert.AreEqual(Path.Combine("Cache", Path.Combine("16", "1202102332220103.ele")), result.Item2);
+            Assert.AreEqual(Path.Combine("Index/import", Path.Combine("16", "1202102332220103.ele")), result.Item2);
         }
 
         [Test]

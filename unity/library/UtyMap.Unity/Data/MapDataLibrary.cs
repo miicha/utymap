@@ -116,6 +116,9 @@ namespace UtyMap.Unity.Data
                 if (_isConfigured)
                     return;
 
+                // create directory for downloaded raw map data.
+                CreateDirectory(Path.Combine(indexPath, "import"));
+
                 configure(indexPath, OnErrorHandler);
                 // NOTE actually, it is possible to have multiple in-memory and persistent 
                 // storages at the same time.
@@ -343,6 +346,9 @@ namespace UtyMap.Unity.Data
 
         [DllImport("UtyMap.Shared")]
         private static extern void configure(string stringPath, OnError errorHandler);
+
+        [DllImport("UtyMap.Shared")]
+        private static extern void enableMeshCache(int enabled);
 
         [DllImport("UtyMap.Shared")]
         private static extern void registerStylesheet(string path, OnNewDirectory directoryHandler);

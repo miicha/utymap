@@ -1,1 +1,0 @@
-Downloaded raw OSM data is stored here. 

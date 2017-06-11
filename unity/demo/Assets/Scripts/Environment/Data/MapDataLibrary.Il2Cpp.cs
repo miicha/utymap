@@ -27,6 +27,8 @@ namespace Assets.Scripts.Environment.Data
             return observable;
         }
 
+        private delegate void OnNewDirectory(string directory);
+
         private delegate void OnMeshBuilt(int tag, string name,
             IntPtr vertexPtr, int vertexCount,
             IntPtr trianglePtr, int triangleCount,
@@ -41,8 +43,6 @@ namespace Assets.Scripts.Environment.Data
 
         private delegate void OnError(string message);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void OnNewDirectory([In] string directory);
 
         [AOT.MonoPInvokeCallback(typeof(OnError))]
         private static void OnMeshBuiltHandler(int tag, string name, IntPtr vertexPtr, int vertexCount,
