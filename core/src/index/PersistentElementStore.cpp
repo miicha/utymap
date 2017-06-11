@@ -108,7 +108,7 @@ private:
     std::string getFilePath(const QuadKey& quadKey, const std::string& extension) const
     {
         std::stringstream ss;
-        ss << dataPath_ << quadKey.levelOfDetail << "/" << GeoUtils::quadKeyToString(quadKey) << extension;
+        ss << dataPath_ << "data/" << quadKey.levelOfDetail << "/" << GeoUtils::quadKeyToString(quadKey) << extension;
         return ss.str();
     }
 

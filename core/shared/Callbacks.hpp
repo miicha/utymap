@@ -3,6 +3,10 @@
 
 #include <cstdint>
 
+/// Callback which is called when directory should be created.
+/// NOTE with C++11, directory cannot be created with header only libs.
+typedef void OnNewDirectory(const char* path);
+
 /// Callback which is called when mesh is built.
 typedef void OnMeshBuilt(int tag,                                // a request tag
                          const char* name,                       // name 

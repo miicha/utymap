@@ -18,10 +18,10 @@ using namespace utymap::mapcss;
 using namespace utymap::tests;
 
 namespace {
-    const std::string TestZoomDirectory = "1";
+    const std::string TestZoomDirectory = "1/data";
     const std::string stylesheet = "node|z1[any], way|z1[any], area|z1[any], relation|z1[any] { clip: false; }";
 
-    struct Index_PersistentElementStoreFixture 
+    struct Index_PersistentElementStoreFixture
     {
         Index_PersistentElementStoreFixture() :
             dependencyProvider(),
@@ -34,7 +34,7 @@ namespace {
         {
             boost::filesystem::path dir(TestZoomDirectory);
             for (boost::filesystem::directory_iterator dirEnd, it(dir); it != dirEnd; ++it) {
-                 boost::filesystem::remove_all(it->path());
+                boost::filesystem::remove_all(it->path());
             }
             boost::filesystem::remove(TestZoomDirectory);
         }
@@ -49,8 +49,8 @@ namespace {
         std::shared_ptr<Element> element;
 
         void visitNode(const Node& node) override
-        { 
-            ++times; 
+        {
+            ++times;
             element = std::make_shared<Node>(node);
         }
 
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreAndSearch_ThenItIsStoredAndReadBack)
     LodRange range(1, 2);
     QuadKey quadKey(1, 0, 0);
     auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
-    Way way = ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 7, { { "any", "true" } }, { { 1, -1 }, {5, -5} });
+    Way way = ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 7, { { "any", "true" } }, { { 1, -1 }, { 5, -5 } });
     ElementCounter counter;
 
     elementStore.store(way, range, *styleProvider);
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE(GivenTwoAreas_WhenStoreAndSearchOnce_ThenTheyStoredTwiceAnd
     QuadKey quadKey(1, 0, 0);
     auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
     Area area1 = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 1, { { "any", "true" } }, { { 4, -4 }, { 5, -5 }, { 6, -6 } });
-    Area area2 = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 2, { { "any", "true"} }, { { 1, -1 }, { 2, -2 }, { 3, -3 } });
+    Area area2 = ElementUtils::createElement<Area>(*dependencyProvider.getStringTable(), 2, { { "any", "true" } }, { { 1, -1 }, { 2, -2 }, { 3, -3 } });
     ElementCounter counter;
 
     elementStore.store(area1, range, *styleProvider);

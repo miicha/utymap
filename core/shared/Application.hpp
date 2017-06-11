@@ -38,67 +38,70 @@ public:
     enum class ElevationDataType { Flat = 0, Srtm, Grid };
 
     /// Composes object graph.
-    Application(const char* dataPath, OnError* errorCallback) :
+    explicit Application(const char* dataPath) :
+        dataPath_(dataPath),
         stringTable_(dataPath),
         geoStore_(stringTable_),
         flatEleProvider_(), srtmEleProvider_(dataPath), gridEleProvider_(dataPath),
         meshCache_(dataPath),
-        quadKeyBuilder_(geoStore_, stringTable_, meshCache_)
-    {
+        quadKeyBuilder_(geoStore_, stringTable_, meshCache_) {
         meshCache_.disable();
         registerDefaultBuilders();
     }
 
     /// Registers stylesheet.
-    void registerStylesheet(const char* path)
-    {
-        getStyleProvider(path);
+    void registerStylesheet(const char* path, OnNewDirectory* directoryCallback) {
+        auto& styleProvider = getStyleProvider(path);
+        std::string root = dataPath_ + "cache/" + styleProvider.getTag() + '/';
+        createDataDirs(root, directoryCallback);
     }
 
     /// Registers new in-memory store.
-    void registerInMemoryStore(const char* key)
-    {
+    void registerInMemoryStore(const char* key) {
         geoStore_.registerStore(key, utymap::utils::make_unique<utymap::index::InMemoryElementStore>(stringTable_));
     }
 
     /// Registers new persistent store.
-    void registerPersistentStore(const char* key, const char* dataPath)
-    {
+    void registerPersistentStore(const char* key, const char* dataPath, OnNewDirectory* directoryCallback) {
         geoStore_.registerStore(key, utymap::utils::make_unique<utymap::index::PersistentElementStore>(dataPath, stringTable_));
+        createDataDirs(dataPath_ + "data/", directoryCallback);
+    }
+
+    /// Enables or disables mesh caching.
+    void enableMeshCache(bool enabled) {
+        if (enabled) meshCache_.enable();
+        else meshCache_.disable();
     }
 
     /// Adds data to store.
-    void addToStore(const char* key, 
-                    const char* styleFile, 
-                    const char* path, 
-                    const utymap::QuadKey& quadKey, 
-                    OnError* errorCallback)
-    {
+    void addToStore(const char* key,
+                    const char* styleFile,
+                    const char* path,
+                    const utymap::QuadKey& quadKey,
+                    OnError* errorCallback) {
         safeExecute([&]() {
             geoStore_.add(key, path, quadKey, getStyleProvider(styleFile));
         }, errorCallback);
     }
 
     /// Adds data to store.
-    void addToStore(const char* key, 
-                    const char* styleFile, 
-                    const char* path, 
-                    const utymap::BoundingBox& bbox, 
-                    const utymap::LodRange& range, 
-                    OnError* errorCallback)
-    {
+    void addToStore(const char* key,
+                    const char* styleFile,
+                    const char* path,
+                    const utymap::BoundingBox& bbox,
+                    const utymap::LodRange& range,
+                    OnError* errorCallback) {
         safeExecute([&]() {
             geoStore_.add(key, path, bbox, range, getStyleProvider(styleFile));
         }, errorCallback);
     }
 
     /// Adds data to store.
-    void addToStore(const char* key, 
-                    const char* styleFile, 
-                    const char* path, 
-                    const utymap::LodRange& range, 
-                    OnError* errorCallback)
-    {
+    void addToStore(const char* key,
+                    const char* styleFile,
+                    const char* path,
+                    const utymap::LodRange& range,
+                    OnError* errorCallback) {
         safeExecute([&]() {
             geoStore_.add(key, path, range, getStyleProvider(styleFile));
         }, errorCallback);
@@ -106,18 +109,16 @@ public:
 
     /// Adds element to store.
     void addToStore(const char* key,
-                    const char* styleFile, 
-                    const utymap::entities::Element& element, 
-                    const utymap::LodRange& range, 
-                    OnError* errorCallback)
-    {
+                    const char* styleFile,
+                    const utymap::entities::Element& element,
+                    const utymap::LodRange& range,
+                    OnError* errorCallback) {
         safeExecute([&]() {
             geoStore_.add(key, element, range, getStyleProvider(styleFile));
         }, errorCallback);
     }
 
-    bool hasData(const utymap::QuadKey& quadKey) const
-    {
+    bool hasData(const utymap::QuadKey& quadKey) const {
         return geoStore_.hasData(quadKey);
     }
 
@@ -129,8 +130,7 @@ public:
                      OnMeshBuilt* meshCallback,
                      OnElementLoaded* elementCallback,
                      OnError* errorCallback,
-                     utymap::CancellationToken* cancellationToken)
-    {
+                     utymap::CancellationToken* cancellationToken) {
         safeExecute([&]() {
             auto& styleProvider = getStyleProvider(styleFile);
             auto& eleProvider = getElevationProvider(quadKey, eleDataType);
@@ -153,23 +153,20 @@ public:
     }
 
     /// Gets id for the string.
-    std::uint32_t getStringId(const char* str) const
-    {
+    std::uint32_t getStringId(const char* str) const {
         return stringTable_.getId(str);
     }
 
     /// Gets elevation for given geocoordinate using specific elevation provider.
-    double getElevation(const utymap::QuadKey& quadKey, 
+    double getElevation(const utymap::QuadKey& quadKey,
                         const ElevationDataType& elevationDataType,
-                        const utymap::GeoCoordinate& coordinate) const
-    {
+                        const utymap::GeoCoordinate& coordinate) const {
         return getElevationProvider(quadKey, elevationDataType).getElevation(quadKey, coordinate);
     }
 
 private:
 
-    static void safeExecute(const std::function<void()>& action,  OnError* errorCallback)
-    {
+    static void safeExecute(const std::function<void()>& action,  OnError* errorCallback) {
         try {
             action();
         }
@@ -179,8 +176,7 @@ private:
     }
 
     const utymap::heightmap::ElevationProvider& getElevationProvider(const utymap::QuadKey& quadKey,
-                                                                     const ElevationDataType& eleDataType) const
-    {
+                                                                     const ElevationDataType& eleDataType) const {
         switch (eleDataType) {
             case ElevationDataType::Grid:
                 return gridEleProvider_;
@@ -191,8 +187,7 @@ private:
         }
     }
 
-    const utymap::mapcss::StyleProvider& getStyleProvider(const std::string& stylePath)
-    {
+    const utymap::mapcss::StyleProvider& getStyleProvider(const std::string& stylePath) {
         auto pair = styleProviders_.find(stylePath);
         if (pair != styleProviders_.end())
             return *pair->second;
@@ -213,8 +208,7 @@ private:
         return *styleProviders_[stylePath];
     }
 
-    void registerDefaultBuilders()
-    {
+    void registerDefaultBuilders() {
         quadKeyBuilder_.registerElementBuilder("terrain", [&](const utymap::builders::BuilderContext& context) {
             return utymap::utils::make_unique<utymap::builders::TerraBuilder>(context);
         });
@@ -236,6 +230,16 @@ private:
         });
     }
 
+    void createDataDirs(const std::string& root, OnNewDirectory* directoryCallback) {
+        const int MinLevelOfDetail = 1;
+        const int MaxLevelOfDetail = 16;
+        for (int i = MinLevelOfDetail; i <= MaxLevelOfDetail; ++i) {
+            auto lodDir = root + utymap::utils::toString(i);
+            directoryCallback(lodDir.c_str());
+        }
+    }
+
+    std::string dataPath_;
     utymap::index::StringTable stringTable_;
     utymap::index::GeoStore geoStore_;
 

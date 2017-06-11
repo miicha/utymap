@@ -12,35 +12,44 @@ static Application* applicationPtr = nullptr;
 
 extern "C"
 {
-    /// Composes object graph.
-    void EXPORT_API configure(const char* dataPath,    // path to data directory which stores index/ele data
-                              OnError* errorCallback)  // completion callback.
-    {
-        applicationPtr = new Application(dataPath, errorCallback);
-    }
-
     /// Performs cleanup.
-    void EXPORT_API cleanup()
-    {
+    void EXPORT_API cleanup() {
         delete applicationPtr;
     }
 
-    /// Register stylesheet.
-    void EXPORT_API registerStylesheet(const char* path)
-    {
-        applicationPtr->registerStylesheet(path);
+    /// Composes object graph.
+    void EXPORT_API configure(const char* dataPath,   // path to data directory which stores index/ele data
+                              OnError* errorCallback) {
+        try {
+            if (applicationPtr)
+                cleanup();
+            applicationPtr = new Application(dataPath);
+        } catch (std::exception ex) {
+            errorCallback(ex.what());
+        }
+    }
+
+   /// Register stylesheet.
+    void EXPORT_API registerStylesheet(const char* path, // full path to main stylesheet file.
+                                       OnNewDirectory* directoryCallback) {
+        applicationPtr->registerStylesheet(path, directoryCallback);
     }
 
     /// Registers new in-memory store.
-    void EXPORT_API registerInMemoryStore(const char* key)
-    {
+    void EXPORT_API registerInMemoryStore(const char* key) {
         applicationPtr->registerInMemoryStore(key);
     }
 
     /// Registers new persistent store.
-    void EXPORT_API registerPersistentStore(const char* key, const char* dataPath)
-    {
-        applicationPtr->registerPersistentStore(key, dataPath);
+    void EXPORT_API registerPersistentStore(const char* key,
+                                            const char* dataPath,
+                                            OnNewDirectory* directoryCallback) {
+        applicationPtr->registerPersistentStore(key, dataPath, directoryCallback);
+    }
+
+    /// Enables or disables mesh caching. By default, it is disabled.
+    void EXPORT_API enableMeshCache(int enabled) {
+        applicationPtr->enableMeshCache(enabled > 0);
     }
 
     /// Adds data to store to specific level of details range.
@@ -49,8 +58,7 @@ extern "C"
                                       const char* path,          // path to data
                                       int startLod,              // start zoom level
                                       int endLod,                // end zoom level
-                                      OnError* errorCallback)    // completion callback
-   {
+                                      OnError* errorCallback) {
         applicationPtr->addToStore(key, styleFile, path, utymap::LodRange(startLod, endLod), errorCallback);
    }
 
@@ -64,8 +72,7 @@ extern "C"
                                             double maxLon,             // maximal longitude
                                             int startLod,              // start zoom level
                                             int endLod,                // end zoom level
-                                            OnError* errorCallback)    // completion callback
-    {
+                                            OnError* errorCallback) {
         utymap::BoundingBox bbox(utymap::GeoCoordinate(minLat, minLon), utymap::GeoCoordinate(maxLat,maxLon));
         utymap::LodRange lod(startLod, endLod);
         applicationPtr->addToStore(key, styleFile, path, bbox, lod, errorCallback);
@@ -78,8 +85,7 @@ extern "C"
                                         int tileX,                 // tile x
                                         int tileY,                 // tile y
                                         int levelOfDetail,         // level of detail
-                                        OnError* errorCallback)    // completion callback
-    {
+                                        OnError* errorCallback) {
         applicationPtr->addToStore(key, styleFile, path, utymap::QuadKey(levelOfDetail, tileX, tileY), errorCallback);
     }
 
@@ -93,8 +99,7 @@ extern "C"
                                       int tagLength,             // tag array length
                                       int startLod,              // start zoom level
                                       int endLod,                // end zoom level
-                                      OnError* errorCallback)    // completion callback
-    {
+                                      OnError* errorCallback) {
         utymap::LodRange lod(startLod, endLod);
         std::vector<utymap::entities::Tag> elementTags;
         elementTags.reserve(static_cast<std::size_t>(tagLength / 2));
@@ -144,25 +149,22 @@ extern "C"
                                 OnMeshBuilt* meshCallback,               // mesh callback
                                 OnElementLoaded* elementCallback,        // element callback
                                 OnError* errorCallback,                  // completion callback
-                                utymap::CancellationToken* cancellationToken)    // cancellation token
-    {
+                                utymap::CancellationToken* cancellationToken) {
         utymap::QuadKey quadKey(levelOfDetail, tileX, tileY);
         applicationPtr->loadQuadKey(tag, styleFile, quadKey, static_cast<Application::ElevationDataType>(eleDataType),
             meshCallback, elementCallback, errorCallback, cancellationToken);
     }
 
     /// Checks whether there is data for given quadkey.
-    bool EXPORT_API hasData(int tileX, int tileY, int levelOfDetail)
-    {
+    bool EXPORT_API hasData(int tileX, int tileY, int levelOfDetail) {
         return applicationPtr->hasData(utymap::QuadKey(levelOfDetail, tileX, tileY));
     }
 
     /// Gets elevation for given point using specific elevation provider.
     double EXPORT_API getElevation(int tileX, int tileY, int levelOfDetail, // quadkey info
                                    int eleDataType,                         // elevation data type
-                                   double latitude,                         // point's latitude
-                                   double longitude)                        // point's longitude
-    {
+                                   double latitude,
+                                   double longitude) {
         return applicationPtr->getElevation(utymap::QuadKey(levelOfDetail, tileX, tileY), 
                                             static_cast<Application::ElevationDataType>(eleDataType), 
                                             utymap::GeoCoordinate(latitude, longitude));
