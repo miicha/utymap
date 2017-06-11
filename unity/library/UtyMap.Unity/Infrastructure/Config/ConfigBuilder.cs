@@ -99,7 +99,7 @@ namespace UtyMap.Unity.Infrastructure.Config
         public static ConfigBuilder GetDefault()
         {
             return new ConfigBuilder()
-                .SetLocalElevationData("Index/")
+                .SetLocalElevationData("Index/data")
                 .SetSrtmEleData("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3", "Config/srtm.schema.txt")
                 .SetOsmMapData("http://overpass-api.de/api/interpreter?data=", "(node({0},{1},{2},{3}); <; >;);out body;", "xml")
                 //.SetOsmMapData("http://api.openstreetmap.org/api/0.6/map?bbox=", "{1},{0},{3},{2}", "xml")
