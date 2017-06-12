@@ -21,8 +21,6 @@ extern "C"
     void EXPORT_API configure(const char* dataPath,   // path to data directory which stores index/ele data
                               OnError* errorCallback) {
         try {
-            if (applicationPtr)
-                cleanup();
             applicationPtr = new Application(dataPath);
         } catch (std::exception& ex) {
             errorCallback(ex.what());
