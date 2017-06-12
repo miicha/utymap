@@ -18,7 +18,7 @@ using namespace utymap::mapcss;
 using namespace utymap::tests;
 
 namespace {
-    const std::string TestZoomDirectory = "1/data";
+    const std::string TestZoomDirectory = "data/1";
     const std::string stylesheet = "node|z1[any], way|z1[any], area|z1[any], relation|z1[any] { clip: false; }";
 
     struct Index_PersistentElementStoreFixture
@@ -27,7 +27,7 @@ namespace {
             dependencyProvider(),
             elementStore("", *dependencyProvider.getStringTable())
         {
-            boost::filesystem::create_directory(TestZoomDirectory);
+            boost::filesystem::create_directories(TestZoomDirectory);
         }
 
         ~Index_PersistentElementStoreFixture()

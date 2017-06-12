@@ -66,7 +66,7 @@ public:
         quadKeyData.indexFile->write(reinterpret_cast<const char*>(&element.id), sizeof(element.id));
         quadKeyData.indexFile->write(reinterpret_cast<const char*>(&offset), sizeof(offset));
         
-        // write elment data
+        // write element data
         quadKeyData.dataFile->seekg(0, std::ios::end);
         ElementStream::write(*quadKeyData.dataFile, element);
     }
