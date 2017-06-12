@@ -9,7 +9,7 @@ namespace {
     template<typename T>
     std::ostream& operator <<(std::ostream& stream, const std::vector<T>& data)
     {
-        std::uint16_t size = static_cast<std::uint16_t>(data.size());
+        auto size = static_cast<std::uint32_t>(data.size());
         stream.write(reinterpret_cast<const char*>(&size), sizeof(size));
         for (const auto& item : data)
             stream.write(reinterpret_cast<const char*>(&item), sizeof(item));
@@ -19,7 +19,7 @@ namespace {
     template <typename T>
     std::istream& operator >>(std::istream& stream, std::vector<T>& data)
     {
-        std::uint16_t size = 0;
+        std::uint32_t size = 0;
         stream.read(reinterpret_cast<char*>(&size), sizeof(size));
         data.resize(size);
         for (size_t i = 0; i < size; ++i)
