@@ -22,8 +22,6 @@ public:
     void visitArea(const utymap::entities::Area& area) override { }
 
     void visitRelation(const utymap::entities::Relation& relation) override;
-
-    void complete() override { }
 };
 
 }}

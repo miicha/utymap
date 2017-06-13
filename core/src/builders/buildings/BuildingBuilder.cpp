@@ -154,17 +154,17 @@ namespace {
         {
         }
 
-        void visitNode(const utymap::entities::Node& node) override { fail(node); }
+        void visitNode(const Node& node) override { fail(node); }
 
-        void visitWay(const utymap::entities::Way& way) override { fail(way); }
+        void visitWay(const Way& way) override { fail(way); }
 
-        void visitRelation(const utymap::entities::Relation& relation) override 
+        virtual void visitRelation(const Relation& relation) override 
         { 
             for (const auto& element : relation.elements)
                 element->accept(*this);
         }
 
-        void visitArea(const utymap::entities::Area& area) override
+        void visitArea(const Area& area) override
         {
             if (!utymap::utils::isClockwise(area.coordinates))
                 polygon_.addContour(toPoints(area.coordinates));
@@ -192,11 +192,11 @@ public:
     {
     }
 
-    void visitNode(const utymap::entities::Node&) override { }
+    void visitNode(const Node&) override { }
 
-    void visitWay(const utymap::entities::Way&) override { }
+    void visitWay(const Way&) override { }
 
-    void visitArea(const utymap::entities::Area& area) override
+    void visitArea(const Area& area) override
     {
         Style style = context_.styleProvider.forElement(area, context_.quadKey.levelOfDetail);
 
@@ -211,7 +211,7 @@ public:
         completeIfNecessary(justCreated);
     }
 
-    void visitRelation(const utymap::entities::Relation& relation) override
+    void visitRelation(const Relation& relation) override
     {
         if (relation.elements.empty())
             return;
@@ -234,10 +234,6 @@ public:
         }
 
         completeIfNecessary(justCreated);
-    }
-
-    void complete() override
-    {
     }
 
 private:
@@ -367,12 +363,7 @@ void BuildingBuilder::visitArea(const Area& area)
         area.accept(*pimpl_);
 }
 
-void BuildingBuilder::complete()
-{
-    pimpl_->complete();
-}
-
-void BuildingBuilder::visitRelation(const utymap::entities::Relation& relation)
+void BuildingBuilder::visitRelation(const Relation& relation)
 {
     if (!shouldBeIgnored(relation))
         relation.accept(*pimpl_);

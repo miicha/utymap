@@ -1,7 +1,6 @@
 #ifndef BUILDERS_MESHCACHE_HPP_DEFINED
 #define BUILDERS_MESHCACHE_HPP_DEFINED
 
-#include "CancellationToken.hpp"
 #include "builders/BuilderContext.hpp"
 
 #include <memory>
@@ -12,7 +11,7 @@ namespace utymap { namespace builders {
 class MeshCache final
 {
 public:
-    explicit MeshCache(const std::string& directory);
+    MeshCache(const std::string& directory, const std::string& extension);
 
     /// Enables cache.
     void enable() { isEnabled_ = true; }
@@ -24,10 +23,10 @@ public:
     BuilderContext wrap(const BuilderContext& context) const;
 
     /// Fetches data from cache. Returns true if operation is successful
-    bool fetch(const BuilderContext& context, const CancellationToken& cancelToken) const;
+    bool fetch(const BuilderContext& context) const;
 
     /// Releases context.
-    void unwrap(const BuilderContext& context, const CancellationToken& cancelToken) const;
+    void unwrap(const BuilderContext& context) const;
 
     ~MeshCache();
 

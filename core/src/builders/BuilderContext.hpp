@@ -2,6 +2,7 @@
 #define BUILDERS_BUILDERCONTEXT_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "CancellationToken.hpp"
 #include "QuadKey.hpp"
 #include "builders/MeshBuilder.hpp"
 #include "heightmap/ElevationProvider.hpp"
@@ -33,6 +34,8 @@ struct BuilderContext final
     std::function<void(const utymap::math::Mesh&)> meshCallback;
     /// Element callback is called to process original element by external logic.
     std::function<void(const utymap::entities::Element&)> elementCallback;
+    /// Cancellation token.
+    const utymap::CancellationToken& cancelToken;
     /// Mesh builder.
     const utymap::builders::MeshBuilder meshBuilder;
 
@@ -40,8 +43,9 @@ struct BuilderContext final
                    const utymap::mapcss::StyleProvider& styleProvider,
                    utymap::index::StringTable& stringTable,
                    const utymap::heightmap::ElevationProvider& eleProvider,
-                   MeshCallback meshCallback,
-                   ElementCallback elementCallback) :
+                   const MeshCallback meshCallback,
+                   const ElementCallback elementCallback,
+                   const utymap::CancellationToken& cancelToken) :
         quadKey(quadKey),
         boundingBox(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey)),
         styleProvider(styleProvider),
@@ -49,6 +53,7 @@ struct BuilderContext final
         eleProvider(eleProvider),
         meshCallback(meshCallback),
         elementCallback(elementCallback),
+        cancelToken(cancelToken),
         meshBuilder(quadKey, eleProvider)
     {
     }

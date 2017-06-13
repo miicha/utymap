@@ -1,6 +1,5 @@
 #include "builders/BuilderContext.hpp"
 #include "builders/ExternalBuilder.hpp"
-#include "builders/MeshCache.hpp"
 #include "builders/QuadKeyBuilder.hpp"
 #include "utils/CoreUtils.hpp"
 
@@ -20,34 +19,40 @@ namespace {
     typedef std::unordered_map<std::string, QuadKeyBuilder::ElementBuilderFactory> BuilderFactoryMap;
 
     /// Responsible for processing elements of quadkey in consistent way.
-    class AggregateElementVisitor : public ElementVisitor
+    class BuilderElementVisitor : public ElementVisitor
     {
     public:
-        AggregateElementVisitor(const BuilderContext& context, BuilderFactoryMap& builderFactoryMap, std::uint32_t builderKeyId) :
+        BuilderElementVisitor(const BuilderContext& context, BuilderFactoryMap& builderFactoryMap, std::uint32_t builderKeyId) :
             context_(context),
             builderFactoryMap_(builderFactoryMap),
-            builderKeyId_(builderKeyId)
-        {
+            builderKeyId_(builderKeyId) { }
+
+        void visitNode(const Node& node) override { 
+            visitElement(node); 
         }
 
-        void visitNode(const Node& node) override { visitElement(node); }
+        void visitWay(const Way& way) override { 
+            visitElement(way); 
+        }
 
-        void visitWay(const Way& way) override { visitElement(way); }
+        void visitArea(const Area& area) override { 
+            visitElement(area); 
+        }
 
-        void visitArea(const Area& area) override { visitElement(area); }
+        void visitRelation(const Relation& relation) override { 
+            visitElement(relation); 
+        }
 
-        void visitRelation(const Relation& relation) override { visitElement(relation); }
-
-        void complete()
-        {
-            for (const auto& builder : builders_)
+        void complete() {
+            for (const auto& builder : builders_) {
+                if (context_.cancelToken.isCancelled()) break;
                 builder.second->complete();
+            }
         }
 
     private:
         /// Calls appropriate visitor for given element
-        void visitElement(const Element& element)
-        {
+        void visitElement(const Element& element) {
             Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
 
             if (!canBuild(element, style))
@@ -64,26 +69,26 @@ namespace {
             }
         }
 
-        inline bool canBuild(const Element& element, const Style& style)
-        {
+        bool canBuild(const Element& element, const Style& style) {
             // check do we know how to build it and prevent multiple building
             return !style.empty() && style.has(builderKeyId_) &&
                    (element.id == 0 || ids_.find(element.id) == ids_.end());
         }
 
-        ElementBuilder& getBuilder(const std::string& name)
-        {
+        ElementBuilder& getBuilder(const std::string& name) {
             auto builderPair = builders_.find(name);
-            if (builderPair != builders_.end()) {
+            if (builderPair != builders_.end())
                 return *builderPair->second;
-            }
 
             auto factory = builderFactoryMap_.find(name);
             builders_.emplace(name, factory == builderFactoryMap_.end()
                 ? utymap::utils::make_unique<ExternalBuilder>(context_) // use external builder by default
                 : factory->second(context_));
 
-            return *builders_[name];
+            auto& builder = *builders_[name];
+            builder.prepare();
+
+            return builder;
         }
 
         const BuilderContext& context_;
@@ -97,14 +102,11 @@ namespace {
 class QuadKeyBuilder::QuadKeyBuilderImpl
 {
 public:
-    QuadKeyBuilderImpl(GeoStore& geoStore, StringTable& stringTable, const MeshCache& meshCache) :
-        geoStore_(geoStore), meshCache_(meshCache), stringTable_(stringTable),
-        builderKeyId_(stringTable.getId(BuilderKeyName)), builderFactory_()
-    {
-    }
+    QuadKeyBuilderImpl(GeoStore& geoStore, StringTable& stringTable) :
+        geoStore_(geoStore), stringTable_(stringTable),
+        builderKeyId_(stringTable.getId(BuilderKeyName)), builderFactory_() { }
 
-    void registerElementVisitor(const std::string& name, ElementBuilderFactory factory)
-    {
+    void registerElementVisitor(const std::string& name, ElementBuilderFactory factory) {
         builderFactory_[name] = factory;
     }
 
@@ -113,33 +115,21 @@ public:
                const ElevationProvider& eleProvider,
                const BuilderContext::MeshCallback& meshCallback,
                const BuilderContext::ElementCallback& elementCallback,
-               const utymap::CancellationToken& cancelToken)
-    {
-        auto origContext = BuilderContext(quadKey, styleProvider, stringTable_,
-            eleProvider, meshCallback, elementCallback);
-
-        if (!meshCache_.fetch(origContext, cancelToken)) {
-            auto cacheContext = meshCache_.wrap(origContext);
-            auto elementVisitor = AggregateElementVisitor(cacheContext, builderFactory_, builderKeyId_);
-
-            geoStore_.search(quadKey, styleProvider, elementVisitor, cancelToken);
-            if (!cancelToken.isCancelled())
-                elementVisitor.complete();
-
-            meshCache_.unwrap(cacheContext, cancelToken);
-        }
+               const utymap::CancellationToken& cancelToken) {
+        auto context = BuilderContext(quadKey, styleProvider, stringTable_, eleProvider, meshCallback, elementCallback, cancelToken);
+        auto visitor = BuilderElementVisitor(context, builderFactory_, builderKeyId_);
+        geoStore_.search(quadKey, styleProvider, visitor, cancelToken);
+        visitor.complete();
     }
 
 private:
     GeoStore& geoStore_;
-    const MeshCache& meshCache_;
     StringTable& stringTable_;
     const std::uint32_t builderKeyId_;
     BuilderFactoryMap builderFactory_;
 };
 
-void QuadKeyBuilder::registerElementBuilder(const std::string& name, ElementBuilderFactory factory)
-{
+void QuadKeyBuilder::registerElementBuilder(const std::string& name, ElementBuilderFactory factory) {
     pimpl_->registerElementVisitor(name, factory);
 }
 
@@ -148,16 +138,11 @@ void QuadKeyBuilder::build(const QuadKey& quadKey,
                            const ElevationProvider& eleProvider,
                            BuilderContext::MeshCallback meshCallback,
                            BuilderContext::ElementCallback elementCallback,
-                           const utymap::CancellationToken& cancelToken)
-{
+                           const utymap::CancellationToken& cancelToken) {
     pimpl_->build(quadKey, styleProvider, eleProvider, meshCallback, elementCallback, cancelToken);
 }
 
-QuadKeyBuilder::QuadKeyBuilder(GeoStore& geoStore, StringTable& stringTable, const MeshCache& meshCache) :
-    pimpl_(utymap::utils::make_unique<QuadKeyBuilderImpl>(geoStore, stringTable, meshCache))
-{
-}
+QuadKeyBuilder::QuadKeyBuilder(GeoStore& geoStore, StringTable& stringTable) :
+    pimpl_(utymap::utils::make_unique<QuadKeyBuilderImpl>(geoStore, stringTable)) { }
 
-QuadKeyBuilder::~QuadKeyBuilder()
-{
-}
+QuadKeyBuilder::~QuadKeyBuilder() { }

@@ -11,12 +11,14 @@ class ElementBuilder : public utymap::entities::ElementVisitor
 {
 public:
     explicit ElementBuilder(const utymap::builders::BuilderContext& context) :
-        context_(context)
-    {
-    }
+        context_(context) { }
 
-    /// Called when all objects for the corresponding quadkey are processed.
-    virtual void complete() = 0;
+    // Called before processing is started.
+    virtual void prepare() { }
+
+    /// Called when processing is finished.
+    /// This happens when all objects for the corresponding quadkey are processed.
+    virtual void complete() { }
 
 protected:
     const utymap::builders::BuilderContext& context_;

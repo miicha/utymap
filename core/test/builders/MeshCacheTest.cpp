@@ -55,21 +55,21 @@ namespace {
         }
 
         Builders_MeshCacheFixture() :
-            cache_(""),
+            cache_("", "mesh"),
             origContext(quadKey,
                 *dependencyProvider.getStyleProvider(stylesheet),
                 *dependencyProvider.getStringTable(),
                 *dependencyProvider.getElevationProvider(),
                 std::bind(&Builders_MeshCacheFixture::meshCallback, this, std::placeholders::_1),
-                std::bind(&Builders_MeshCacheFixture::elementCallback, this, std::placeholders::_1)),
+                std::bind(&Builders_MeshCacheFixture::elementCallback, this, std::placeholders::_1),
+                CancellationToken()),
             wrapContext(wrap(*dependencyProvider.getStyleProvider(), origContext, cache_)),
             lastMesh_("")
         {
             resetData();
         }
 
-        ~Builders_MeshCacheFixture()
-        {
+        ~Builders_MeshCacheFixture() {
             auto filePath = getCacheDir(*dependencyProvider.getStyleProvider()) + "/0.mesh";
             boost::filesystem::remove(filePath);
         }
@@ -80,11 +80,11 @@ namespace {
             BOOST_CHECK_EQUAL(lastId_, element.id);
             
             // Release context and reset actual values
-            cache_.unwrap(wrapContext, token);
+            cache_.unwrap(wrapContext);
             resetData();
 
             // Assert that element is read back
-            cache_.fetch(origContext, token);
+            cache_.fetch(origContext);
             BOOST_CHECK_EQUAL(lastId_, element.id);
         }
 
@@ -94,11 +94,11 @@ namespace {
             assertMesh(mesh);
 
             // Release context and reset actual values
-            cache_.unwrap(wrapContext, token);
+            cache_.unwrap(wrapContext);
             resetData();
 
             // Assert that element is read back
-            cache_.fetch(origContext, token);
+            cache_.fetch(origContext);
             assertMesh(mesh);
         }
 
@@ -115,7 +115,6 @@ namespace {
         MeshCache cache_;
         BuilderContext origContext;
         BuilderContext wrapContext;
-        CancellationToken token;
 
         std::uint64_t lastId_;
         Mesh lastMesh_;

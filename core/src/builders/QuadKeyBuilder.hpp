@@ -5,11 +5,9 @@
 #include "QuadKey.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/ElementBuilder.hpp"
-#include "entities/Element.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "index/GeoStore.hpp"
 #include "mapcss/StyleProvider.hpp"
-#include "math/Mesh.hpp"
 
 #include <functional>
 #include <string>
@@ -24,8 +22,7 @@ public:
     typedef std::function<std::unique_ptr<utymap::builders::ElementBuilder>(const utymap::builders::BuilderContext&)> ElementBuilderFactory;
 
     QuadKeyBuilder(utymap::index::GeoStore& geoStore,
-                   utymap::index::StringTable& stringTable,
-                   const utymap::builders::MeshCache& meshCache);
+                   utymap::index::StringTable& stringTable);
 
     ~QuadKeyBuilder();
 

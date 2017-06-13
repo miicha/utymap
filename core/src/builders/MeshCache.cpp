@@ -28,49 +28,45 @@ class MeshCache::MeshCacheImpl
     using ElementCallback = BuilderContext::ElementCallback;
 
 public:
-    explicit MeshCacheImpl(const std::string& dataPath) :
-        dataPath_(dataPath)
-    {
-    }
+    explicit MeshCacheImpl(const std::string& dataPath, const std::string& extension) :
+        dataPath_(dataPath),
+        extension_(extension) { }
 
-    BuilderContext wrap(const BuilderContext& context)
-    {
+    BuilderContext wrap(const BuilderContext& context) {
         auto filePath = getFilePath(context);
         
         std::lock_guard<std::mutex> lock(lock_);
         return isCacheHit(context.quadKey, filePath) ? context : wrap(context, filePath);
     }
 
-    bool fetch(const BuilderContext& context, const CancellationToken& cancelToken)
-    {
+    bool fetch(const BuilderContext& context) {
         auto filePath = getFilePath(context);
+
         {
             std::lock_guard<std::mutex> lock(lock_);
             if (!isCacheHit(context.quadKey, filePath))
                 return false;
         }
 
-        readCache(filePath, context, cancelToken);
+        readCache(filePath, context);
 
         return true;
     }
 
-    void unwrap(const BuilderContext& context, const CancellationToken& cancelToken)
-    {
+    void unwrap(const BuilderContext& context) {
         std::lock_guard<std::mutex> lock(lock_);
 
         auto entry = cachingQuads_.find(context.quadKey);
         
         if (entry == cachingQuads_.end()) return;
 
-        if (entry->second->good()) 
+        if (entry->second->good())
             entry->second->close();
 
         // NOTE no guarantee that all data was processed and saved.
         // So it is better to delete the whole file
-        if (cancelToken.isCancelled()) {
+        if (context.cancelToken.isCancelled())
             std::remove(getFilePath(context).c_str());
-        }
 
         cachingQuads_.erase(entry);
     }
@@ -78,8 +74,7 @@ public:
 private:
 
     /// Checks whether the data associated with given context is already cached on disk.
-    bool isCacheHit(const QuadKey& quadKey, const std::string& filePath) const
-    {
+    bool isCacheHit(const QuadKey& quadKey, const std::string& filePath) const {
         // NOTE if quadkey is preset in collection, then caching is in progress.
         // in this case, we let app to behaviour as there is no cache at all
         return cachingQuads_.find(quadKey) == cachingQuads_.end() &&
@@ -87,17 +82,15 @@ private:
     }
 
     /// Gets path to cache file on disk.
-    std::string getFilePath(const BuilderContext& context) const
-    {
+    std::string getFilePath(const BuilderContext& context) const {
         std::stringstream ss;
         ss << dataPath_ << "cache/" << context.styleProvider.getTag()
             << "/" << context.quadKey.levelOfDetail << "/"
-            << GeoUtils::quadKeyToString(context.quadKey) << ".mesh";
+            << GeoUtils::quadKeyToString(context.quadKey) << extension_;
         return ss.str();
     }
 
-    BuilderContext wrap(const BuilderContext& context, const std::string& filePath)
-    {
+    BuilderContext wrap(const BuilderContext& context, const std::string& filePath) {
         auto file = std::make_shared<std::fstream>();
         file->open(filePath, std::ios::out | std::ios::binary | std::ios::app | std::ios::ate);
         
@@ -109,11 +102,11 @@ private:
             context.stringTable,
             context.eleProvider,
             wrap(*file, context.meshCallback),
-            wrap(*file, context.elementCallback));
+            wrap(*file, context.elementCallback),
+            context.cancelToken);
     }
 
-    static MeshCallback wrap(std::ostream& stream, const MeshCallback& callback)
-    {
+    static MeshCallback wrap(std::ostream& stream, const MeshCallback& callback) {
         return [&stream, &callback](const Mesh& mesh) {
             stream << MeshType;
             MeshStream::write(stream, mesh);
@@ -121,8 +114,7 @@ private:
         };
     }
 
-    static ElementCallback wrap(std::ostream& stream, const ElementCallback& callback)
-    {
+    static ElementCallback wrap(std::ostream& stream, const ElementCallback& callback) {
         return [&stream, &callback](const Element& element) {
             stream << ElementType;
             stream.write(reinterpret_cast<const char*>(&element.id), sizeof(element.id));
@@ -131,13 +123,12 @@ private:
         };
     }
 
-    static void readCache(std::string& filePath, const BuilderContext& context, const CancellationToken& cancelToken)
-    {
+    static void readCache(std::string& filePath, const BuilderContext& context) {
         std::fstream file;
         file.open(filePath, std::ios::in | std::ios::binary | std::ios::app);
         file.seekg(0, std::ios::beg);
 
-        while (!cancelToken.isCancelled()) {
+        while (!context.cancelToken.isCancelled()) {
             char type;
             if(!(file >> type)) break;
 
@@ -154,30 +145,26 @@ private:
     }
 
     const std::string dataPath_;
+    const std::string extension_;
     std::mutex lock_;
     std::map<QuadKey, std::shared_ptr<std::fstream>, QuadKey::Comparator> cachingQuads_;
 };
 
-MeshCache::MeshCache(const std::string& directory) :
-    pimpl_(utymap::utils::make_unique<MeshCacheImpl>(directory)), isEnabled_(true)
-{
-}
+MeshCache::MeshCache(const std::string& directory, const std::string& extension) :
+    pimpl_(utymap::utils::make_unique<MeshCacheImpl>(directory, extension)),
+    isEnabled_(true) { }
 
-BuilderContext MeshCache::wrap(const BuilderContext& context) const
-{
+BuilderContext MeshCache::wrap(const BuilderContext& context) const {
     return isEnabled_ ? pimpl_->wrap(context) : context;
 }
 
-bool MeshCache::fetch(const BuilderContext& context, const CancellationToken& cancelToken) const
+bool MeshCache::fetch(const BuilderContext& context) const
 {
-    return isEnabled_ && pimpl_->fetch(context, cancelToken);
+    return isEnabled_ && pimpl_->fetch(context);
 }
 
-void MeshCache::unwrap(const BuilderContext& context, const CancellationToken& cancelToken) const
-{
-    pimpl_->unwrap(context, cancelToken);
+void MeshCache::unwrap(const BuilderContext& context) const {
+    pimpl_->unwrap(context);
 }
 
-MeshCache::~MeshCache()
-{
-}
+MeshCache::~MeshCache() { }

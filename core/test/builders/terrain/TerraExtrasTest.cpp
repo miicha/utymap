@@ -45,7 +45,8 @@ namespace {
                 *dependencyProvider.getStringTable(),
                 *dependencyProvider.getElevationProvider(),
                 std::bind(&Builders_Terrain_TerraExtrasFixture::verifyMesh, this, std::placeholders::_1),
-                nullptr),
+                nullptr,
+                CancellationToken()),
                 isVerified(false)
         {
         }

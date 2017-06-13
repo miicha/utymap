@@ -1,11 +1,10 @@
 #ifndef CANCELLATIONTOKEN_HPP_DEFINED
 #define CANCELLATIONTOKEN_HPP_DEFINED
 
-namespace utymap 
-{
+namespace utymap {
 
 /// Cancellation token passed from outside.
-struct CancellationToken
+struct CancellationToken final
 {
 private:
     /// Non-zero value means cancellation.
@@ -13,7 +12,9 @@ private:
 
 public:
     /// Helper method to detect cancellation.
-    bool isCancelled() const { return cancelled != 0; }
+    bool isCancelled() const {
+        return cancelled != 0;
+    }
 };
 
 }

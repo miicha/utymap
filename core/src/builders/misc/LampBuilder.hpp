@@ -21,8 +21,6 @@ public:
     void visitWay(const utymap::entities::Way& way) override;
 
     void visitRelation(const utymap::entities::Relation&) override;
-
-    void complete() override { }
 };
 
 }}

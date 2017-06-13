@@ -40,14 +40,14 @@ namespace {
                 *dependencyProvider.getStringTable(),
                 *dependencyProvider.getElevationProvider(),
                 [&](const Mesh& mesh) {
-                isCalled = true;
-                BOOST_CHECK_GT(mesh.vertices.size(), 0);
-                BOOST_CHECK_GT(mesh.triangles.size(), 0);
-                BOOST_CHECK_GT(mesh.colors.size(), 0);
-            }, nullptr),
-            isCalled(false)
-        {
-        }
+                    isCalled = true;
+                    BOOST_CHECK_GT(mesh.vertices.size(), 0);
+                    BOOST_CHECK_GT(mesh.triangles.size(), 0);
+                    BOOST_CHECK_GT(mesh.colors.size(), 0);
+                },
+                nullptr,
+                CancellationToken()),
+            isCalled(false) { }
 
         StyleSheet createStyleSheet() const
         {

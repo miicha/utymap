@@ -18,7 +18,9 @@ set(HEADER_FILES
         LodRange.hpp
         QuadKey.hpp
         builders/BuilderContext.hpp
+        builders/CacheBuilder.hpp
         builders/ElementBuilder.hpp
+        builders/EmptyBuilder.hpp
         builders/ExternalBuilder.hpp
         builders/MeshBuilder.hpp
         builders/MeshCache.hpp

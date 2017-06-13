@@ -26,8 +26,6 @@ public:
     void visitArea(const utymap::entities::Area& area) override { context_.elementCallback(area); }
 
     void visitRelation(const utymap::entities::Relation& relation) override { context_.elementCallback(relation); }
-
-    void complete() override { }
 };
 
 }}

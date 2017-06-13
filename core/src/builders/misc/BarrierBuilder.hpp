@@ -24,8 +24,6 @@ public:
 
     void visitRelation(const utymap::entities::Relation&) override;
 
-    void complete() override { }
-
 private:
     typedef std::vector<GeoCoordinate>::const_iterator Iterator;
 

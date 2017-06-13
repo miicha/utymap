@@ -15,6 +15,7 @@ namespace utymap { namespace tests {
 class DependencyProvider
 {
 public:
+
     DependencyProvider() { }
 
     ~DependencyProvider()
@@ -77,13 +78,15 @@ public:
                                                                  *getStringTable(),
                                                                  *getElevationProvider(),
                                                                  meshCallback,
-                                                                 elementCallback);
+                                                                 elementCallback,
+                                                                 cancelToken);
     }
 
 private:
     std::shared_ptr<utymap::heightmap::FlatElevationProvider> eleProvider_;
     std::shared_ptr<utymap::index::StringTable> stringTable_;
     std::shared_ptr<utymap::mapcss::StyleProvider> styleProvider_;
+    const utymap::CancellationToken cancelToken;
 };
 
 }}

@@ -6,6 +6,7 @@
 #include "QuadKey.hpp"
 #include "LodRange.hpp"
 #include "builders/BuilderContext.hpp"
+#include "builders/CacheBuilder.hpp"
 #include "builders/MeshCache.hpp"
 #include "builders/QuadKeyBuilder.hpp"
 #include "builders/buildings/BuildingBuilder.hpp"
@@ -43,9 +44,7 @@ public:
         stringTable_(dataPath),
         geoStore_(stringTable_),
         flatEleProvider_(), srtmEleProvider_(dataPath), gridEleProvider_(dataPath),
-        meshCache_(dataPath),
-        quadKeyBuilder_(geoStore_, stringTable_, meshCache_) {
-        meshCache_.disable();
+        quadKeyBuilder_(geoStore_, stringTable_) {
         registerDefaultBuilders();
     }
 
@@ -69,8 +68,10 @@ public:
 
     /// Enables or disables mesh caching.
     void enableMeshCache(bool enabled) {
-        if (enabled) meshCache_.enable();
-        else meshCache_.disable();
+        for (const auto& entry : meshCaches_) {
+            if (enabled) entry.second->enable();
+            else entry.second->disable();
+        }
     }
 
     /// Adds data to store.
@@ -209,28 +210,36 @@ private:
     }
 
     void registerDefaultBuilders() {
-        quadKeyBuilder_.registerElementBuilder("terrain", [&](const utymap::builders::BuilderContext& context) {
-            return utymap::utils::make_unique<utymap::builders::TerraBuilder>(context);
-        });
-
-        quadKeyBuilder_.registerElementBuilder("building", [&](const utymap::builders::BuilderContext& context) {
-            return utymap::utils::make_unique<utymap::builders::BuildingBuilder>(context);
-        });
-
-        quadKeyBuilder_.registerElementBuilder("tree", [&](const utymap::builders::BuilderContext& context) {
-            return utymap::utils::make_unique<utymap::builders::TreeBuilder>(context);
-        });
-
-        quadKeyBuilder_.registerElementBuilder("barrier", [&](const utymap::builders::BuilderContext& context) {
-            return utymap::utils::make_unique<utymap::builders::BarrierBuilder>(context);
-        });
-
-        quadKeyBuilder_.registerElementBuilder("lamp", [&](const utymap::builders::BuilderContext& context) {
-            return utymap::utils::make_unique<utymap::builders::LampBuilder>(context);
-        });
+        registerBuilder<utymap::builders::TerraBuilder>("terrain", true);
+        registerBuilder<utymap::builders::BuildingBuilder>("building");
+        registerBuilder<utymap::builders::TreeBuilder>("tree");
+        registerBuilder<utymap::builders::BarrierBuilder>("barrier");
+        registerBuilder<utymap::builders::LampBuilder>("lamp");
     }
 
-    void createDataDirs(const std::string& root, OnNewDirectory* directoryCallback) {
+    template <typename Builder>
+    void registerBuilder(const std::string& name, bool useCache = false) {
+        if (useCache)
+            meshCaches_.insert({ name, utymap::utils::make_unique<utymap::builders::MeshCache>(dataPath_, name) });
+        
+        quadKeyBuilder_.registerElementBuilder(name, useCache ? createCacheFactory<Builder>(name) : createFactory<Builder>());
+    }
+
+    template <typename Builder>
+    utymap::builders::QuadKeyBuilder::ElementBuilderFactory createFactory() const {
+        return [](const utymap::builders::BuilderContext& context) {
+            return utymap::utils::make_unique<Builder>(context);
+        };
+    }
+
+    template <typename Builder>
+    utymap::builders::QuadKeyBuilder::ElementBuilderFactory createCacheFactory(const std::string& name) const {
+        return [&](const utymap::builders::BuilderContext& context) {
+            return utymap::utils::make_unique<utymap::builders::CacheBuilder<Builder>>(*meshCaches_.find(name)->second, context);
+        };
+    }
+
+    static void createDataDirs(const std::string& root, OnNewDirectory* directoryCallback) {
         const int MinLevelOfDetail = 1;
         const int MaxLevelOfDetail = 16;
         for (int i = MinLevelOfDetail; i <= MaxLevelOfDetail; ++i) {
@@ -247,8 +256,8 @@ private:
     utymap::heightmap::SrtmElevationProvider srtmEleProvider_;
     utymap::heightmap::GridElevationProvider gridEleProvider_;
 
-    utymap::builders::MeshCache meshCache_;
     utymap::builders::QuadKeyBuilder quadKeyBuilder_;
+    std::unordered_map<std::string, std::unique_ptr<utymap::builders::MeshCache>> meshCaches_;
     std::unordered_map<std::string, std::unique_ptr<const utymap::mapcss::StyleProvider>> styleProviders_;
 };
 

@@ -43,12 +43,13 @@ namespace {
             style(dependencyProvider.getStyleProvider(stylesheet)
                 ->forElement(ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, { { "natural", "tree" } }), 1)),
             builderContext(
-            QuadKey(1, 35205, 21489),
+                QuadKey(1, 35205, 21489),
                 *dependencyProvider.getStyleProvider(stylesheet),
                 *dependencyProvider.getStringTable(),
                 *dependencyProvider.getElevationProvider(),
                 [](const Mesh&) {},
-                [](const Element&) {}),
+                [](const Element&) {},
+                 CancellationToken()),
             meshContext(mesh, style, gradient, textureRegion)
         {
         }

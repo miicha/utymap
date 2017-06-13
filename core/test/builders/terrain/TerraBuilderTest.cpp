@@ -30,13 +30,14 @@ namespace {
         DependencyProvider dependencyProvider;
         std::unique_ptr<BuilderContext> context = nullptr;
 
-        std::unique_ptr<TerraBuilder> create(const QuadKey& quadKey, std::function<void(const utymap::math::Mesh&)> meshCallback)
-        {
+        std::unique_ptr<TerraBuilder> create(const QuadKey& quadKey, std::function<void(const utymap::math::Mesh&)> meshCallback) {
             context = utymap::utils::make_unique<BuilderContext>(quadKey,
                                                                  *dependencyProvider.getStyleProvider(stylesheet),
                                                                  *dependencyProvider.getStringTable(),
                                                                  *dependencyProvider.getElevationProvider(),
-                                                                 meshCallback, nullptr);
+                                                                 meshCallback,
+                                                                 nullptr,
+                                                                 CancellationToken());
             return utymap::utils::make_unique<TerraBuilder>(*context);
         }
     };
