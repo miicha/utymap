@@ -220,7 +220,7 @@ private:
     template <typename Builder>
     void registerBuilder(const std::string& name, bool useCache = false) {
         if (useCache)
-            meshCaches_.insert({ name, utymap::utils::make_unique<utymap::builders::MeshCache>(dataPath_, name) });
+            meshCaches_.emplace(name, utymap::utils::make_unique<utymap::builders::MeshCache>(dataPath_, name));
         
         quadKeyBuilder_.registerElementBuilder(name, useCache ? createCacheFactory<Builder>(name) : createFactory<Builder>());
     }
