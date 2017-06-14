@@ -16,7 +16,7 @@ class DependencyProvider
 {
 public:
 
-    DependencyProvider() { }
+    DependencyProvider() : cancelToken() { }
 
     ~DependencyProvider()
     {
