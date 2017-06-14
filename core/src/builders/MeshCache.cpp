@@ -30,7 +30,7 @@ class MeshCache::MeshCacheImpl
 public:
     explicit MeshCacheImpl(const std::string& dataPath, const std::string& extension) :
         dataPath_(dataPath),
-        extension_(extension) { }
+        extension_('.' + extension) { }
 
     BuilderContext wrap(const BuilderContext& context) {
         auto filePath = getFilePath(context);
