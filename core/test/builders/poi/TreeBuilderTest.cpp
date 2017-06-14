@@ -46,7 +46,7 @@ namespace {
                     BOOST_CHECK_GT(mesh.colors.size(), 0);
                 },
                 nullptr,
-                CancellationToken()),
+                dependencyProvider.getCancellationToken()),
             isCalled(false) { }
 
         StyleSheet createStyleSheet() const

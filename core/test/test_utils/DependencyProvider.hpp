@@ -82,6 +82,10 @@ public:
                                                                  cancelToken);
     }
 
+    const utymap::CancellationToken& getCancellationToken() const {
+        return cancelToken;
+    }
+
 private:
     std::shared_ptr<utymap::heightmap::FlatElevationProvider> eleProvider_;
     std::shared_ptr<utymap::index::StringTable> stringTable_;

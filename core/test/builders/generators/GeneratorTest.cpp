@@ -49,7 +49,7 @@ namespace {
                 *dependencyProvider.getElevationProvider(),
                 [](const Mesh&) {},
                 [](const Element&) {},
-                 CancellationToken()),
+                dependencyProvider.getCancellationToken()),
             meshContext(mesh, style, gradient, textureRegion)
         {
         }

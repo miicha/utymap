@@ -62,7 +62,7 @@ namespace {
                 *dependencyProvider.getElevationProvider(),
                 std::bind(&Builders_MeshCacheFixture::meshCallback, this, std::placeholders::_1),
                 std::bind(&Builders_MeshCacheFixture::elementCallback, this, std::placeholders::_1),
-                CancellationToken()),
+                dependencyProvider.getCancellationToken()),
             wrapContext(wrap(*dependencyProvider.getStyleProvider(), origContext, cache_)),
             lastMesh_("")
         {
