@@ -234,8 +234,9 @@ private:
 
     template <typename Builder>
     utymap::builders::QuadKeyBuilder::ElementBuilderFactory createCacheFactory(const std::string& name) const {
-        return [&](const utymap::builders::BuilderContext& context) {
-            return utymap::utils::make_unique<utymap::builders::CacheBuilder<Builder>>(*meshCaches_.find(name)->second, context);
+        auto& meshCache = *meshCaches_.find(name)->second;
+        return [&,name](const utymap::builders::BuilderContext& context) {
+            return utymap::utils::make_unique<utymap::builders::CacheBuilder<Builder>>(meshCache, context);
         };
     }
 
