@@ -1,5 +1,4 @@
 #include "builders/terrain/ExteriorGenerator.hpp"
-#include "utils/CoreUtils.hpp"
 
 using namespace ClipperLib;
 using namespace utymap;
@@ -9,33 +8,30 @@ using namespace utymap::mapcss;
 using namespace utymap::math;
 
 namespace {
-    const std::string TerrainMeshName = "terrain_exterior";
+const std::string TerrainMeshName = "terrain_exterior";
 }
 
-class ExteriorGenerator::ExteriorGeneratorImpl 
-{
-    // TODO
+class ExteriorGenerator::ExteriorGeneratorImpl {
+  // TODO
 };
 
-ExteriorGenerator::ExteriorGenerator(const BuilderContext& context, const Style& style, const Path& tileRect) :
+ExteriorGenerator::ExteriorGenerator(const BuilderContext &context, const Style &style, const Path &tileRect) :
     TerraGenerator(context, style, tileRect, TerrainMeshName),
-    p_impl(utymap::utils::make_unique<ExteriorGeneratorImpl>())
-{
+    p_impl(utymap::utils::make_unique<ExteriorGeneratorImpl>()) {
 }
 
-void ExteriorGenerator::onNewRegion(const std::string& type, const Element& element, const Style& style, const std::shared_ptr<Region>& region)
-{
+void ExteriorGenerator::onNewRegion(const std::string &type,
+                                    const Element &element,
+                                    const Style &style,
+                                    const std::shared_ptr<Region> &region) {
 }
 
-void ExteriorGenerator::generateFrom(const std::vector<Layer>& layers)
-{
-    // TODO
+void ExteriorGenerator::generateFrom(const std::vector<Layer> &layers) {
+  // TODO
 }
 
-ExteriorGenerator::~ExteriorGenerator()
-{
+ExteriorGenerator::~ExteriorGenerator() {
 }
 
-void ExteriorGenerator::addGeometry(int level, Polygon& polygon, const RegionContext& regionContext)
-{
+void ExteriorGenerator::addGeometry(int level, Polygon &polygon, const RegionContext &regionContext) {
 }

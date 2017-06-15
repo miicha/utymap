@@ -1,6 +1,6 @@
 find_package(Boost COMPONENTS unit_test_framework system filesystem REQUIRED)
 
-enable_testing ()
+enable_testing()
 
 # Define test assets path
 file(READ ${TEST_SOURCE}/config.hpp FILE_CONTENT)
@@ -9,8 +9,8 @@ string(REPLACE "_TEST_ASSETS_PATH_" "${TEST_SOURCE}/test_assets/"
 file(WRITE ${TEST_SOURCE}/config.hpp "${MODIFIED_FILE_CONTENT}")
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
-    ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
-    ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+        ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
+        ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
 
 include_directories(${MAIN_SOURCE}
         ${LIB_SOURCE}
@@ -30,7 +30,7 @@ set(HEADER_FILES
         test_utils/ElementUtils.hpp
         )
 
-set (TEST Test)
+set(TEST Test)
 
 add_executable(${TEST}
         ${PROTO_SRCS}
@@ -76,9 +76,9 @@ add_executable(${TEST}
         )
 
 target_link_libraries(${TEST} UtyMap
-                              ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                              ${Boost_SYSTEM_LIBRARY}
-                              ${Boost_FILESYSTEM_LIBRARY})
+        ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+        ${Boost_SYSTEM_LIBRARY}
+        ${Boost_FILESYSTEM_LIBRARY})
 
-enable_testing ()
-add_test (${TEST} ${TEST})
+enable_testing()
+add_test(${TEST} ${TEST})

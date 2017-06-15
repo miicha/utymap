@@ -6,7 +6,6 @@
 #include "entities/Relation.hpp"
 #include "utils/GeometryUtils.hpp"
 #include "utils/MeshUtils.hpp"
-#include "lsys/LSystem.hpp"
 
 using namespace utymap::builders;
 using namespace utymap::entities;
@@ -15,54 +14,58 @@ using namespace utymap::math;
 using namespace utymap::utils;
 
 namespace {
-    const std::string NodeMeshNamePrefix = "tree:";
-    const std::string WayMeshNamePrefix = "trees:";
+const std::string NodeMeshNamePrefix = "tree:";
+const std::string WayMeshNamePrefix = "trees:";
 
-    const std::string TreeStepKey = "tree-step";
+const std::string TreeStepKey = "tree-step";
 }
 
-void TreeBuilder::visitNode(const utymap::entities::Node& node)
-{
-    Mesh mesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
-    Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
+void TreeBuilder::visitNode(const utymap::entities::Node &node) {
+  Mesh mesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
+  Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
 
-    const auto& lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
-    double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
-    
-    LSystemGenerator(context_, style, mesh)
-        .setPosition(node.coordinate, elevation)
-        .run(lsystem);
+  const auto &lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
+  double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
 
-    context_.meshCallback(mesh);
+  LSystemGenerator(context_, style, mesh)
+      .setPosition(node.coordinate, elevation)
+      .run(lsystem);
+
+  context_.meshCallback(mesh);
 }
 
-void TreeBuilder::visitWay(const utymap::entities::Way& way)
-{
-    Mesh treeMesh("");
-    Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));
+void TreeBuilder::visitWay(const utymap::entities::Way &way) {
+  Mesh treeMesh("");
+  Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));
 
-    Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
-    const auto center = context_.boundingBox.center();
-    const auto& lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
+  Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
+  const auto center = context_.boundingBox.center();
+  const auto &lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
 
-    LSystemGenerator(context_, style, treeMesh)
-        .setPosition(center, 0)
-        .run(lsystem);
+  LSystemGenerator(context_, style, treeMesh)
+      .setPosition(center, 0)
+      .run(lsystem);
 
-    double treeStepInMeters = style.getValue(TreeStepKey);
+  double treeStepInMeters = style.getValue(TreeStepKey);
 
-    for (std::size_t i = 0; i < way.coordinates.size() - 1; ++i) {
-        const auto& p0 = way.coordinates[i];
-        const auto& p1 = way.coordinates[i + 1];
-        utymap::utils::copyMeshAlong(context_.quadKey, center, p0, p1, treeMesh, newMesh, treeStepInMeters, context_.eleProvider);
-    }
+  for (std::size_t i = 0; i < way.coordinates.size() - 1; ++i) {
+    const auto &p0 = way.coordinates[i];
+    const auto &p1 = way.coordinates[i + 1];
+    utymap::utils::copyMeshAlong(context_.quadKey,
+                                 center,
+                                 p0,
+                                 p1,
+                                 treeMesh,
+                                 newMesh,
+                                 treeStepInMeters,
+                                 context_.eleProvider);
+  }
 
-    context_.meshCallback(newMesh);
+  context_.meshCallback(newMesh);
 }
 
-void TreeBuilder::visitRelation(const utymap::entities::Relation& relation)
-{
-    for (const auto& element : relation.elements) {
-        element->accept(*this);
-    }
+void TreeBuilder::visitRelation(const utymap::entities::Relation &relation) {
+  for (const auto &element : relation.elements) {
+    element->accept(*this);
+  }
 }

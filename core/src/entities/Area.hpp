@@ -7,21 +7,21 @@
 
 #include <vector>
 
-namespace utymap { namespace entities {
+namespace utymap {
+namespace entities {
 
 /// Represents closed polyline on map.
-struct Area final: public Element
-{
-    /// Returns way's coordinates on map.
-    std::vector<GeoCoordinate> coordinates;
+struct Area final : public Element {
+  /// Returns way's coordinates on map.
+  std::vector<GeoCoordinate> coordinates;
 
-    /// Accepts visitor.
-    void accept(ElementVisitor& visitor) const override
-    {
-        visitor.visitArea(*this);
-    }
+  /// Accepts visitor.
+  void accept(ElementVisitor &visitor) const override {
+    visitor.visitArea(*this);
+  }
 };
 
-}}
+}
+}
 
 #endif // ENTITIES_AREA_HPP_DEFINED

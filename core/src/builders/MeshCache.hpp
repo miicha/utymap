@@ -5,37 +5,42 @@
 
 #include <memory>
 
-namespace utymap { namespace builders {
+namespace utymap {
+namespace builders {
 
 /// Provides the way to cache built meshes to speed up performance.
-class MeshCache final
-{
-public:
-    MeshCache(const std::string& directory, const std::string& extension);
+class MeshCache final {
+ public:
+  MeshCache(const std::string &directory, const std::string &extension);
 
-    /// Enables cache.
-    void enable() { isEnabled_ = true; }
+  /// Enables cache.
+  void enable() {
+    isEnabled_ = true;
+  }
 
-    /// Disables cache.
-    void disable() { isEnabled_ = false; }
+  /// Disables cache.
+  void disable() {
+    isEnabled_ = false;
+  }
 
-    /// Wraps the context to provide caching behaviour
-    BuilderContext wrap(const BuilderContext& context) const;
+  /// Wraps the context to provide caching behaviour
+  BuilderContext wrap(const BuilderContext &context) const;
 
-    /// Fetches data from cache. Returns true if operation is successful
-    bool fetch(const BuilderContext& context) const;
+  /// Fetches data from cache. Returns true if operation is successful
+  bool fetch(const BuilderContext &context) const;
 
-    /// Releases context.
-    void unwrap(const BuilderContext& context) const;
+  /// Releases context.
+  void unwrap(const BuilderContext &context) const;
 
-    ~MeshCache();
+  ~MeshCache();
 
-private:
-    class MeshCacheImpl;
-    std::unique_ptr<MeshCacheImpl> pimpl_;
-    bool isEnabled_;
+ private:
+  class MeshCacheImpl;
+  std::unique_ptr<MeshCacheImpl> pimpl_;
+  bool isEnabled_;
 };
 
-}}
+}
+}
 
 #endif // BUILDERS_MESHCACHE_HPP_DEFINED

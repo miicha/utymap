@@ -5,21 +5,21 @@
 #include "ElementVisitor.hpp"
 #include "GeoCoordinate.hpp"
 
-namespace utymap { namespace entities {
+namespace utymap {
+namespace entities {
 
 /// Represents point on map.
-struct Node final: public Element
-{
-    /// Returns coordinate on map.
-    GeoCoordinate coordinate;
+struct Node final : public Element {
+  /// Returns coordinate on map.
+  GeoCoordinate coordinate;
 
-    /// Accepts visitor.
-    void accept(ElementVisitor& visitor) const override
-    {
-        visitor.visitNode(*this);
-    }
+  /// Accepts visitor.
+  void accept(ElementVisitor &visitor) const override {
+    visitor.visitNode(*this);
+  }
 };
 
-}}
+}
+}
 
 #endif // ENTITIES_NODE_HPP_DEFINED

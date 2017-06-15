@@ -6,29 +6,30 @@
 
 #include <memory>
 
-namespace utymap { namespace builders {
+namespace utymap {
+namespace builders {
 
 /// Responsible for building generation.
-class BuildingBuilder final: public utymap::builders::ElementBuilder
-{
-public:
-    explicit BuildingBuilder(const utymap::builders::BuilderContext&);
+class BuildingBuilder final : public utymap::builders::ElementBuilder {
+ public:
+  explicit BuildingBuilder(const utymap::builders::BuilderContext &);
 
-    virtual ~BuildingBuilder();
+  virtual ~BuildingBuilder();
 
-    void visitNode(const utymap::entities::Node&) override {};
+  void visitNode(const utymap::entities::Node &) override {};
 
-    void visitWay(const utymap::entities::Way&) override {};
+  void visitWay(const utymap::entities::Way &) override {};
 
-    void visitArea(const utymap::entities::Area& area) override;
+  void visitArea(const utymap::entities::Area &area) override;
 
-    void visitRelation(const utymap::entities::Relation&) override;
+  void visitRelation(const utymap::entities::Relation &) override;
 
-private:
-    class BuildingBuilderImpl;
-    std::unique_ptr<BuildingBuilderImpl> pimpl_;
+ private:
+  class BuildingBuilderImpl;
+  std::unique_ptr<BuildingBuilderImpl> pimpl_;
 };
 
-}}
+}
+}
 
 #endif // BUILDERS_BUILDINGS_LOWPOLYBUILDINGBUILDER_HPP_DEFINED

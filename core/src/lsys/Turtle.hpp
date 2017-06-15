@@ -3,74 +3,72 @@
 
 #include <functional>
 
-namespace utymap { namespace lsys {
+namespace utymap {
+namespace lsys {
 
 struct LSystem;
 
 /// Defines abstract turtle behaviour by utilizing common l-system notation.
-class Turtle
-{
-public:
-    /// F: Move forward by line length drawing a line.
-    virtual void moveForward() {}
+class Turtle {
+ public:
+  /// F: Move forward by line length drawing a line.
+  virtual void moveForward() {}
 
-    /// G: Move forward by line length without drawing a line.
-    virtual void jumpForward() {}
+  /// G: Move forward by line length without drawing a line.
+  virtual void jumpForward() {}
 
-   
-    /// +: Turn left by turning angle.
-    virtual void turnLeft() {}
+  /// +: Turn left by turning angle.
+  virtual void turnLeft() {}
 
-    /// -: Turn right by turning angle.
-    virtual void turnRight() {}
+  /// -: Turn right by turning angle.
+  virtual void turnRight() {}
 
-    /// |: Turn around (ie: turn by 180 degrees).
-    virtual void turnAround() {}
+  /// |: Turn around (ie: turn by 180 degrees).
+  virtual void turnAround() {}
 
-    /// ^: Pitch up by turning angle.
-    virtual void pitchUp() {}
+  /// ^: Pitch up by turning angle.
+  virtual void pitchUp() {}
 
-    /// &: Pitch down by turning angle.
-    virtual void pitchDown() {}
+  /// &: Pitch down by turning angle.
+  virtual void pitchDown() {}
 
-    /// \: Roll left by turning angle.
-    virtual void rollLeft() {}
+  /// \: Roll left by turning angle.
+  virtual void rollLeft() {}
 
-    /// /: Roll right by turning angle.
-    virtual void rollRight() {}
+  /// /: Roll right by turning angle.
+  virtual void rollRight() {}
 
+  /// $: Increment the line width by line width scale factor.
+  virtual void increment() {}
 
-    /// $: Increment the line width by line width scale factor.
-    virtual void increment() {}
+  /// !: Decrement the line width by line width scale factor.
+  virtual void decrement() {}
 
-    /// !: Decrement the line width by line width scale factor.
-    virtual void decrement() {}
+  /// >: Multiply the line length by the line length scale factor.
+  virtual void scaleUp() {}
 
-    /// >: Multiply the line length by the line length scale factor.
-    virtual void scaleUp() {}
+  /// <: Divide the line length by the line length scale factor.
+  virtual void scaleDown() {}
 
-    /// <: Divide the line length by the line length scale factor.
-    virtual void scaleDown() {}
+  /// @: Switch to next style.
+  virtual void switchStyle() {}
 
-    /// @: Switch to next style.
-    virtual void switchStyle() {}
+  /// [: Saves current state on stack.
+  virtual void save() {}
 
+  /// ]: Restores current state from stack.
+  virtual void restore() {}
 
-    /// [: Saves current state on stack.
-    virtual void save() {}
+  /// Performs instructions specific for given word.
+  virtual void say(const std::string &word) {}
 
-    /// ]: Restores current state from stack.
-    virtual void restore() {}
+  virtual ~Turtle() {}
 
-    /// Performs instructions specific for given word.
-    virtual void say(const std::string& word) {}
-
-    virtual ~Turtle() {}
-
-    /// Runs turtle using lsystem provided.
-    virtual void run(const LSystem& lsystem);
+  /// Runs turtle using lsystem provided.
+  virtual void run(const LSystem &lsystem);
 };
 
-}}
+}
+}
 
 #endif // LSYS_TURTLE_HPP_DEFINED
