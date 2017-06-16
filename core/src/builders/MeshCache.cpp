@@ -71,8 +71,10 @@ class MeshCache::MeshCacheImpl {
   bool isCacheHit(const QuadKey &quadKey, const std::string &filePath) const {
     // NOTE if quadkey is preset in collection, then caching is in progress.
     // in this case, we let app to behaviour as there is no cache at all
-    return cachingQuads_.find(quadKey)==cachingQuads_.end() &&
-        std::ifstream(filePath).good();
+    if (cachingQuads_.find(quadKey) != cachingQuads_.end()) return false;
+    // NOTE if file is on disk, it should not be empty.
+    std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+    return file.good() && file.tellg() > 0;
   }
 
   /// Gets path to cache file on disk.
