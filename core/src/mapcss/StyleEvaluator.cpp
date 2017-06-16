@@ -1,6 +1,8 @@
 #include "mapcss/StyleEvaluator.hpp"
 
+#include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <boost/fusion/include/adapt_struct.hpp>
 
 using namespace utymap::entities;
 using namespace utymap::index;
