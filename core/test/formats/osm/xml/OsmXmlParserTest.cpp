@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <boost/test/unit_test.hpp>
+#include <numeric>
 
 using namespace utymap::entities;
 using namespace utymap::formats;

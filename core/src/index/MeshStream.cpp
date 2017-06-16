@@ -1,5 +1,7 @@
 #include "index/MeshStream.hpp"
 
+#include <cstdint>
+
 using namespace utymap::index;
 using namespace utymap::math;
 

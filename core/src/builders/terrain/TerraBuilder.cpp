@@ -8,8 +8,9 @@
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
-
 #include "utils/GeometryUtils.hpp"
+
+#include <numeric>
 
 using namespace ClipperLib;
 using namespace utymap::builders;
