@@ -34,8 +34,8 @@ class QuadKeyBuilder final {
   void build(const utymap::QuadKey &quadKey,
              const utymap::mapcss::StyleProvider &styleProvider,
              const utymap::heightmap::ElevationProvider &eleProvider,
-             utymap::builders::BuilderContext::MeshCallback meshCallback,
-             utymap::builders::BuilderContext::ElementCallback elementCallback,
+             const utymap::builders::BuilderContext::MeshCallback &meshCallback,
+             const utymap::builders::BuilderContext::ElementCallback &elementCallback,
              const utymap::CancellationToken &cancelToken);
 
  private:

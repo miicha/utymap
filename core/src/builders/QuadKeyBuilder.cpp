@@ -113,8 +113,8 @@ class QuadKeyBuilder::QuadKeyBuilderImpl {
              const BuilderContext::MeshCallback &meshCallback,
              const BuilderContext::ElementCallback &elementCallback,
              const utymap::CancellationToken &cancelToken) {
-    auto context =
-        BuilderContext(quadKey, styleProvider, stringTable_, eleProvider, meshCallback, elementCallback, cancelToken);
+    auto context = BuilderContext(quadKey, styleProvider, stringTable_, eleProvider,
+      meshCallback, elementCallback, cancelToken);
     auto visitor = BuilderElementVisitor(context, builderFactory_, builderKeyId_);
     geoStore_.search(quadKey, styleProvider, visitor, cancelToken);
     visitor.complete();
@@ -134,8 +134,8 @@ void QuadKeyBuilder::registerElementBuilder(const std::string &name, ElementBuil
 void QuadKeyBuilder::build(const QuadKey &quadKey,
                            const StyleProvider &styleProvider,
                            const ElevationProvider &eleProvider,
-                           BuilderContext::MeshCallback meshCallback,
-                           BuilderContext::ElementCallback elementCallback,
+                           const BuilderContext::MeshCallback &meshCallback,
+                           const BuilderContext::ElementCallback &elementCallback,
                            const utymap::CancellationToken &cancelToken) {
   pimpl_->build(quadKey, styleProvider, eleProvider, meshCallback, elementCallback, cancelToken);
 }

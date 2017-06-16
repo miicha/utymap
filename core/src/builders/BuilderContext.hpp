@@ -43,8 +43,8 @@ struct BuilderContext final {
                  const utymap::mapcss::StyleProvider &styleProvider,
                  utymap::index::StringTable &stringTable,
                  const utymap::heightmap::ElevationProvider &eleProvider,
-                 const MeshCallback meshCallback,
-                 const ElementCallback elementCallback,
+                 const MeshCallback &meshCallback,
+                 const ElementCallback &elementCallback,
                  const utymap::CancellationToken &cancelToken) :
       quadKey(quadKey),
       boundingBox(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey)),
