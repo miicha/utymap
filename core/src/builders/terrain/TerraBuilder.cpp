@@ -154,6 +154,8 @@ class TerraBuilder::TerraBuilderImpl final : public ElementBuilder {
 
   /// Builds tile mesh using created layers and registered terra generators.
   void complete() override {
+    if (context_.cancelToken.isCancelled()) return;
+
     std::vector<Layer> layers;
     layers.reserve(layers_.size());
 

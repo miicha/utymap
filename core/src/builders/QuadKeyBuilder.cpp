@@ -44,7 +44,6 @@ class BuilderElementVisitor : public ElementVisitor {
 
   void complete() {
     for (const auto &builder : builders_) {
-      if (context_.cancelToken.isCancelled()) break;
       builder.second->complete();
     }
   }
