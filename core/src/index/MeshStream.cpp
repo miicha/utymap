@@ -6,12 +6,42 @@ using namespace utymap::index;
 using namespace utymap::math;
 
 namespace {
+const float Precision = 1E7;
+
+template<typename T>
+T read(std::istream &stream) {
+  T data;
+  stream.read(reinterpret_cast<char *>(&data), sizeof(data));
+  return data;
+}
+
+/// Restores double stored as signed 4-bytes integer.
+template<>
+double read<double>(std::istream &stream) {
+  std::int32_t data;
+  stream.read(reinterpret_cast<char *>(&data), sizeof(data));
+  return data / Precision;
+}
+
+template<typename T>
+void write(std::ostream &stream, const T &data) {
+  stream.write(reinterpret_cast<const char *>(&data), sizeof(data));
+}
+
+/// Stores double as signed 4-bytes integer.
+/// 
+template<>
+void write<double>(std::ostream &stream, const double &data) {
+  auto simplified = static_cast<std::int32_t>(data * Precision);
+  stream.write(reinterpret_cast<const char *>(&simplified), sizeof(simplified));
+}
+
 template<typename T>
 std::ostream &operator<<(std::ostream &stream, const std::vector<T> &data) {
   auto size = static_cast<std::uint32_t>(data.size());
   stream.write(reinterpret_cast<const char *>(&size), sizeof(size));
   for (const auto &item : data)
-    stream.write(reinterpret_cast<const char *>(&item), sizeof(item));
+    write<T>(stream, item);
   return stream;
 }
 
@@ -21,7 +51,7 @@ std::istream &operator>>(std::istream &stream, std::vector<T> &data) {
   stream.read(reinterpret_cast<char *>(&size), sizeof(size));
   data.resize(size);
   for (size_t i = 0; i < size; ++i)
-    stream.read(reinterpret_cast<char *>(&data[i]), sizeof(data[i]));
+    data[i] = read<T>(stream);
   return stream;
 }
 

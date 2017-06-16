@@ -10,6 +10,18 @@
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 
+#define CHECK_CLOSE_COLLECTION(aa, bb, tolerance) { \
+    using std::distance; \
+    using std::begin; \
+    using std::end; \
+    auto a = begin(aa), ae = end(aa); \
+    auto b = begin(bb); \
+    BOOST_REQUIRE_EQUAL(distance(a, ae), distance(b, end(bb))); \
+    for(; a != ae; ++a, ++b) { \
+        BOOST_CHECK_CLOSE(*a, *b, tolerance); \
+        } \
+}
+
 using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
@@ -18,6 +30,7 @@ using namespace utymap::mapcss;
 using namespace utymap::tests;
 
 namespace {
+const double Precision = 1e-5;
 const QuadKey quadKey = QuadKey(1, 0, 0);
 const std::string stylesheet = "node|z1[any], way|z1[any], area|z1[any], relation|z1[any] { clip: false; }";
 
@@ -101,20 +114,14 @@ struct Builders_MeshCacheFixture {
 
   void assertMesh(const Mesh &mesh) const {
     BOOST_CHECK_EQUAL(lastMesh_.name, mesh.name);
-    BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.vertices.begin(),
-                                  lastMesh_.vertices.end(),
-                                  mesh.vertices.begin(),
-                                  mesh.vertices.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.triangles.begin(),
-                                  lastMesh_.triangles.end(),
-                                  mesh.triangles.begin(),
-                                  mesh.triangles.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.colors.begin(),
-                                  lastMesh_.colors.end(),
-                                  mesh.colors.begin(),
-                                  mesh.colors.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.uvs.begin(), lastMesh_.uvs.end(), mesh.uvs.begin(), mesh.uvs.end());
-    BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.uvMap.begin(), lastMesh_.uvMap.end(), mesh.uvMap.begin(), mesh.uvMap.end());
+    CHECK_CLOSE_COLLECTION(lastMesh_.vertices, mesh.vertices, Precision);
+    CHECK_CLOSE_COLLECTION(lastMesh_.uvs, mesh.uvs, Precision);
+    BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.triangles.begin(), lastMesh_.triangles.end(),
+      mesh.triangles.begin(), mesh.triangles.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.colors.begin(), lastMesh_.colors.end(),
+      mesh.colors.begin(), mesh.colors.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(lastMesh_.uvMap.begin(), lastMesh_.uvMap.end(),
+      mesh.uvMap.begin(), mesh.uvMap.end());
   }
 
   DependencyProvider dependencyProvider;
