@@ -40,21 +40,18 @@ namespace Assets.Scripts.Environment.Data
                 indexPath = _pathResolver.Resolve(indexPath);
 
                 _trace.Debug(TraceCategory, "Configure with {0}", indexPath);
-                // NOTE this directories should be created in advance (and some others..)
+                
                 if (!Directory.Exists(indexPath))
                     throw new DirectoryNotFoundException(String.Format("Cannot find {0}", indexPath));
 
                 if (_isConfigured)
                     return;
 
-                // create directory for downloaded raw map data.
-                CreateDirectory(Path.Combine(indexPath, "import"));
-
                 configure(indexPath, OnErrorHandler);
                 // NOTE actually, it is possible to have multiple in-memory and persistent 
                 // storages at the same time.
                 registerInMemoryStore(InMemoryStoreKey);
-                registerPersistentStore(PersistentStoreKey, indexPath, CreateDirectory);
+                registerPersistentStore(PersistentStoreKey, indexPath, OnCreateDirectory);
                 // NOTE Enable mesh caching mechanism for speed up tile loading.
                 enableMeshCache(1);
                 
@@ -159,11 +156,6 @@ namespace Assets.Scripts.Environment.Data
             return dataStorageType == MapDataStorageType.InMemory ? InMemoryStoreKey : PersistentStoreKey;
         }
 
-        private static void CreateDirectory(string directory)
-        {
-            Directory.CreateDirectory(directory);
-        }
-
         private string RegisterStylesheet(Stylesheet stylesheet)
         {
             var stylePath = _pathResolver.Resolve(stylesheet.Path);
@@ -172,7 +164,7 @@ namespace Assets.Scripts.Environment.Data
                 return stylePath;
 
             _stylePaths.Add(stylePath);
-            registerStylesheet(stylePath, CreateDirectory);
+            registerStylesheet(stylePath, OnCreateDirectory);
 
             return stylePath;
         }

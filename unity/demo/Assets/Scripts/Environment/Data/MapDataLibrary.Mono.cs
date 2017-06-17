@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using UtyMap.Unity;
 using UtyMap.Unity.Infrastructure.Diagnostic;
@@ -46,6 +47,11 @@ namespace Assets.Scripts.Environment.Data
         #endregion
 
         #region Callbacks
+
+        private static void OnCreateDirectory(string directory)
+        {
+            Directory.CreateDirectory(directory);
+        }
 
         private static void OnErrorHandler(string message)
         {

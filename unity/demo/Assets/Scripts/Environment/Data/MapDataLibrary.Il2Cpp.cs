@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UtyMap.Unity;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Infrastructure.Primitives;
@@ -43,6 +44,11 @@ namespace Assets.Scripts.Environment.Data
 
         private delegate void OnError(string message);
 
+        [AOT.MonoPInvokeCallback(typeof(OnError))]
+        private static void OnCreateDirectory(string directory)
+        {
+            Directory.CreateDirectory(directory);
+        }
 
         [AOT.MonoPInvokeCallback(typeof(OnError))]
         private static void OnMeshBuiltHandler(int tag, string name, IntPtr vertexPtr, int vertexCount,
