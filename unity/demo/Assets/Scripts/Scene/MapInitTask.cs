@@ -3,7 +3,6 @@ using Assets.Scripts.Environment;
 using Assets.Scripts.Environment.Data;
 using Assets.Scripts.Environment.Reactive;
 using Assets.Scripts.Plugins;
-using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
@@ -56,7 +55,7 @@ namespace Assets.Scripts.Scene
         {
             // create configuration from default overriding some properties
             var config = ConfigBuilder.GetDefault()
-                .SetIndex("Index/")
+                .SetIndex("index/")
                 .Build();
 
             // create entry point for utymap functionallity
@@ -70,7 +69,7 @@ namespace Assets.Scripts.Scene
                 .RegisterAction((c, _) => c.Register(Component.For<UnityModelBuilder>().Use<UnityModelBuilder>()))
                 .RegisterAction((c, _) => c.Register(Component.For<MaterialProvider>().Use<MaterialProvider>()))
                 // register default mapcss
-                .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"MapCss/default/default.mapcss")));
+                .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss")));
 
             // setup object graph
             compositionRoot.Setup();

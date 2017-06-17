@@ -21,8 +21,6 @@ namespace Assets.Scripts.Environment
             // NOTE On unity editor is easier for development to use original files.
 #if !UNITY_EDITOR
             CopyFiles(GetMapCssFileNames(), trace);
-            CopyFiles(GetNaturalEarthFileNames(), trace);
-            CopyFiles(GetOsmFileNames(), trace);
             CopyFiles(GetLsysFileNames(), trace);
 #endif
             MarkAsInstalled();
@@ -54,7 +52,7 @@ namespace Assets.Scripts.Environment
                 "detail-roads.mapcss",
                 "detail-terrain.mapcss",
                 "detail-water.mapcss"
-            }.Select(f => "MapCss/default/default." + f);
+            }.Select(f => "mapcss/default/default." + f);
         }
 
         private static IEnumerable<string> GetLsysFileNames()
@@ -64,28 +62,7 @@ namespace Assets.Scripts.Environment
                 "conifer.lsys",
                 "lamp.lsys",
                 "tree.lsys"
-            }.Select(f => "MapCss/default/" + f);
-        }
-
-        private static IEnumerable<string> GetNaturalEarthFileNames()
-        {
-            return new List<string>()
-            {
-                // NOTE use mapzen data so far
-            }.SelectMany(f => new List<string>()
-            {
-                String.Format("{0}.dbf",Path.Combine("NaturalEarth", f)),
-                String.Format("{0}.prj",Path.Combine("NaturalEarth", f)),
-                String.Format("{0}.shp",Path.Combine("NaturalEarth", f)),
-                String.Format("{0}.shx",Path.Combine("NaturalEarth", f))
-            });
-        }
-
-        private static IEnumerable<string> GetOsmFileNames()
-        {
-            return new List<string>()
-            {
-            }.Select(f => "Osm/" + f);
+            }.Select(f => "mapcss/default/" + f);
         }
 
         #endregion
@@ -105,12 +82,6 @@ namespace Assets.Scripts.Environment
         {
             foreach (var fileName in files)
                 CopyStreamingAsset(fileName, EnvironmentApi.ExternalDataPath, trace);
-        }
-
-        private static void CreateDirectories(IEnumerable<string> directories)
-        {
-            foreach (var directoryName in directories)
-                Directory.CreateDirectory(Path.Combine(EnvironmentApi.ExternalDataPath, directoryName));
         }
 
         private static void CopyStreamingAsset(string srcAssetRelativePath, string destAbsoluteDirPath, ITrace trace)

@@ -42,7 +42,7 @@ namespace UtyMap.Unity.Tests.Providers
             _config.Setup(c => c.GetString("data/mapzen/ele_format", It.IsAny<string>())).Returns("ele");
             _config.Setup(c => c.GetBool("data/mapzen/limit", It.IsAny<bool>())).Returns(false);
             _config.Setup(c => c.GetInt("data/mapzen/ele_grid", It.IsAny<int>())).Returns(2);
-            _config.Setup(c => c.GetString("data/elevation/local", It.IsAny<string>())).Returns("Index/data");
+            _config.Setup(c => c.GetString("data/elevation/local", It.IsAny<string>())).Returns("index/data");
 
             _writeStream = new Mock<Stream>();
             _responseBytes = Encoding.UTF8.GetBytes("{\"encoded_polyline\":\"kzcecBqdapX?sjD?ujDmgBhvI?sjD?ujDmgBhvI?sjD?ujD\",\"height\":[43,38,37,37]}");
@@ -76,7 +76,7 @@ namespace UtyMap.Unity.Tests.Providers
         {
             _eleProvider.GetResultSync(_tile);
 
-            _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("Index/data", Path.Combine("16", "1202102332220103.ele"))));
+            _fileSystemService.Verify(fs => fs.WriteStream(Path.Combine("index/data", Path.Combine("16", "1202102332220103.ele"))));
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace UtyMap.Unity.Tests.Providers
         {
             var result = _eleProvider.GetResultSync(_tile);
 
-            Assert.AreEqual(Path.Combine("Index/data", Path.Combine("16", "1202102332220103.ele")), result.Item2);
+            Assert.AreEqual(Path.Combine("index/data", Path.Combine("16", "1202102332220103.ele")), result.Item2);
         }
 
         [Test]

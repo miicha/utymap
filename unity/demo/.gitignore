@@ -1,4 +1,5 @@
 #Unity
+*.meta
 Library/
 Temp/
 Assets/StreamingAssets/Index/
