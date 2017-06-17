@@ -10,10 +10,10 @@ namespace UtyMap.Unity.Infrastructure.Diagnostic
         public enum RecordType
         {
             None = 0,
-            Debug = 1 << 0,
-            Info = 1 << 1,
-            Warn = 1 << 2,
-            Error = 1 << 3
+            Debug = 15,
+            Info = 7,
+            Warn = 3,
+            Error = 1
         }
 
         public DefaultTrace(RecordType level = RecordType.Error)
