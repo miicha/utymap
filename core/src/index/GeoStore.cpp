@@ -4,7 +4,9 @@
 #include "formats/shape/ShapeParser.hpp"
 #include "formats/osm/json/OsmJsonParser.hpp"
 #include "formats/osm/xml/OsmXmlParser.hpp"
+#ifdef PBF_SUPPORTED_ENABLED
 #include "formats/osm/pbf/OsmPbfParser.hpp"
+#endif
 #include "index/GeoStore.hpp"
 #include "index/InMemoryElementStore.hpp"
 
@@ -82,6 +84,7 @@ class GeoStore::GeoStoreImpl final {
         visitor.complete();
         break;
       }
+#ifdef PBF_SUPPORTED_ENABLED
       case FormatType::Pbf: {
         OsmPbfParser<OsmDataVisitor> parser;
         std::ifstream pbfFile(path, std::ios::in | std::ios::binary);
@@ -90,6 +93,7 @@ class GeoStore::GeoStoreImpl final {
         visitor.complete();
         break;
       }
+#endif
       case FormatType::Json: {
         OsmJsonParser<OsmDataVisitor> parser(stringTable_);
         std::ifstream jsonFile(path);
@@ -98,7 +102,7 @@ class GeoStore::GeoStoreImpl final {
         visitor.complete();
         break;
       }
-      default:throw std::domain_error("Not implemented.");
+      default:throw std::domain_error("Not supported.");
     }
   }
 

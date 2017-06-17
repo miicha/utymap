@@ -8,9 +8,15 @@ string(REPLACE "_TEST_ASSETS_PATH_" "${TEST_SOURCE}/test_assets/"
         MODIFIED_FILE_CONTENT "${FILE_CONTENT}")
 file(WRITE ${TEST_SOURCE}/config.hpp "${MODIFIED_FILE_CONTENT}")
 
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
-        ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
-        ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+if(WITH_FEATURE_PBF_SUPPORT)
+  add_definitions(-DPBF_SUPPORTED_ENABLED)
+  PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
+      ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
+      ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+else()
+    set(PROTO_HDRS "")
+    set(PROTO_SRCS "")
+endif()
 
 include_directories(${MAIN_SOURCE}
         ${LIB_SOURCE}

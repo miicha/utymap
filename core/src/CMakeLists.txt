@@ -1,8 +1,16 @@
 set(LIBRARY_NAME UtyMap)
 
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
-    ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
-    ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+if(WITH_FEATURE_PBF_SUPPORT)
+  add_definitions(-DPBF_SUPPORTED_ENABLED)
+  PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS
+      ${MAIN_SOURCE}/formats/osm/pbf/fileformat.proto
+      ${MAIN_SOURCE}/formats/osm/pbf/osmformat.proto)
+else()
+    set(PROTO_HDRS "")
+    set(PROTO_SRCS "")
+    set(PROTOBUF_LIBRARY "")
+    set(ZLIB_LIBRARY "")
+endif()
 
 set(HEADER_FILES
         ${PROTO_HDRS}
