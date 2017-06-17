@@ -10,20 +10,36 @@ namespace Assets.Scripts.Environment
     /// <summary> Provides the way to extract embedded data to persistent storage. </summary>
     internal static class InstallationApi
     {
+        private const string TraceCategory = "install";
         private const string MarkerFileName = "install_log.txt";
 
         /// <summary> Ensures required filesystem structure. Should be called from main thread. </summary>
         public static void EnsureFileHierarchy(ITrace trace)
         {
-            if (IsInstalled())
-                return;
+            trace.Info(TraceCategory, "checking installed version..");
+            if (IsInstalled(trace)) return;
 
-            // NOTE On unity editor is easier for development to use original files.
+            try
+            {
+// NOTE On unity editor is easier for development to use original files.
 #if !UNITY_EDITOR
-            CopyFiles(GetMapCssFileNames(), trace);
-            CopyFiles(GetLsysFileNames(), trace);
+                trace.Info(TraceCategory, "creating directories..");
+                Directory.CreateDirectory(Path.Combine(EnvironmentApi.ExternalDataPath, "index/cache"));
+                Directory.CreateDirectory(Path.Combine(EnvironmentApi.ExternalDataPath, "index/data"));
+                Directory.CreateDirectory(Path.Combine(EnvironmentApi.ExternalDataPath, "index/import"));
+                
+                trace.Info(TraceCategory, "copying assets..");
+                CopyFiles(GetMapCssFileNames(), trace);
+                CopyFiles(GetLsysFileNames(), trace);
 #endif
-            MarkAsInstalled();
+                MarkAsInstalled();
+                trace.Info(TraceCategory, "assets are copied.");
+            }
+            catch (Exception ex)
+            {
+                trace.Error(TraceCategory, ex, "cannot copy assets.");
+                throw;
+            }
         }
 
         #region Hard coded file/directory names
@@ -67,10 +83,24 @@ namespace Assets.Scripts.Environment
 
         #endregion
 
-        private static bool IsInstalled()
+        private static bool IsInstalled(ITrace trace)
         {
             var file = Path.Combine(EnvironmentApi.ExternalDataPath, MarkerFileName);
-            return File.Exists(file) && File.ReadAllText(file) == EnvironmentApi.Version;
+            if (!File.Exists(file))
+            {
+                trace.Info(TraceCategory, "no previous versions detected: fresh install.");
+                return false;
+            }
+
+            string version = File.ReadAllText(file);
+            if (version == EnvironmentApi.Version)
+            {
+                trace.Info(TraceCategory, "found actual version: {0}.", EnvironmentApi.Version);
+                return true;
+            }
+
+            trace.Info(TraceCategory, "found old version: {0}; current is {1}.", version, EnvironmentApi.Version);
+            return false;
         }
 
         private static void MarkAsInstalled()
@@ -97,7 +127,7 @@ namespace Assets.Scripts.Environment
             WWW reader = new WWW(srcAssetAbsolutePath);
             while (!reader.isDone) { }
 
-            trace.Info("install", string.Format("copy from {0} to {1} bytes:{2}", srcAssetAbsolutePath, destAbsolutePath, reader.bytes.Length));
+            trace.Info(TraceCategory, string.Format("copy from {0} to {1} bytes:{2}", srcAssetAbsolutePath, destAbsolutePath, reader.bytes.Length));
 
             File.WriteAllBytes(destAbsolutePath, reader.bytes);
         }
