@@ -1,7 +1,7 @@
 #define TEST_ASSETS_PATH "_TEST_ASSETS_PATH_"
 
 #define TEST_MAPCSS_PATH TEST_ASSETS_PATH "mapcss/"
-#define TEST_MAPCSS_DEFAULT "../../../unity/demo/Assets/StreamingAssets/MapCss/default/default.mapcss"
+#define TEST_MAPCSS_DEFAULT "../../../unity/demo/Assets/StreamingAssets/mapcss/default/default.mapcss"
 
 #define TEST_OSM_PATH TEST_ASSETS_PATH "osm/"
 #define TEST_JSON_FILE TEST_OSM_PATH "moscow.osm.json"
