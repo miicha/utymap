@@ -18,12 +18,12 @@ namespace UtyMap.Unity.Tests.Helpers
 
         public static GeoCoordinate WorldZeroPoint = new GeoCoordinate(52.5317429, 13.3871987);
 
-        public const string TestAssetsFolder = @"../../../../demo/Assets/StreamingAssets";
+        public const string TestAssetsFolder = @"../../../../../core/test/test_assets/";
         
-        public const string BerlinXmlData = TestAssetsFolder + @"/Osm/berlin.osm.xml";
-        public const string BerlinPbfData = TestAssetsFolder + @"/Osm/berlin.osm.pbf";
-        public const string MoscowJsonData = TestAssetsFolder + @"/Osm/moscow.osm.json";
-        public const string DefaultMapCss = TestAssetsFolder + @"/MapCss/default/default.mapcss";
+        public const string BerlinXmlData = TestAssetsFolder + @"osm/berlin.osm.xml";
+        public const string BerlinPbfData = TestAssetsFolder + @"osm/berlin.osm.pbf";
+        public const string MoscowJsonData = TestAssetsFolder + @"osm/moscow.osm.json";
+        public const string DefaultMapCss = @"../../../../demo/Assets/StreamingAssets/MapCss/default/default.mapcss";
 
         #endregion
 
