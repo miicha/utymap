@@ -16,7 +16,7 @@ struct Heightmap_GridElevationProviderFixture {
   Heightmap_GridElevationProviderFixture() :
       quadKey(16, 35205, 21489),
       bbox(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey)),
-      eleProvider(TEST_ASSETS_PATH) {
+      eleProvider(TEST_ASSETS_PATH "index/data/") {
   }
 
   QuadKey quadKey;
