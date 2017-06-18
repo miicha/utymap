@@ -78,7 +78,8 @@ class MeshCache::MeshCacheImpl {
     // in this case, we let app to behaviour as there is no cache at all
     if (cachingQuads_.find(quadKey) != cachingQuads_.end()) return false;
     // NOTE if file is on disk, it should be processed.
-    std::ifstream file(filePath, std::ios::in | std::ios::binary | std::ios::beg);
+    std::ifstream file(filePath, std::ios::in | std::ios::binary | std::ios::ate);
+    file.seekg(0, std::ios::beg);
     return isGood(file);
   }
 
@@ -130,7 +131,8 @@ class MeshCache::MeshCacheImpl {
 
   static void readCache(std::string &filePath, const BuilderContext &context) {
     std::fstream file;
-    file.open(filePath, std::ios::in | std::ios::binary | std::ios::app | std::ios::beg);
+    file.open(filePath, std::ios::in | std::ios::binary | std::ios::app | std::ios::ate);
+    file.seekg(0, std::ios::beg);
     
     if (!isGood(file)) return;
 
