@@ -5,14 +5,14 @@ namespace Assets.Scripts.Environment
 {
     internal sealed class UnityLogTrace : DefaultTrace
     {
-        protected override void OnWriteRecord(RecordType type, string category, string message, Exception exception)
+        protected override void OnWriteRecord(TraceLevel type, string category, string message, Exception exception)
         {
             switch (type)
             {
-                case RecordType.Error:
+                case TraceLevel.Error:
                     UnityEngine.Debug.LogError(String.Format("[{0}] {1}:{2}. Exception: {3}", type, category, message, exception));
                     break;
-                case RecordType.Warn:
+                case TraceLevel.Warn:
                     UnityEngine.Debug.LogWarning(String.Format("[{0}] {1}:{2}", type, category, message));
                     break;
                 default:
