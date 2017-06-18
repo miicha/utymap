@@ -19,14 +19,16 @@ class CacheBuilder final : public ElementBuilder {
  public:
   CacheBuilder(MeshCache &meshCache, const BuilderContext &context) :
       ElementBuilder(context),
-      meshCache_(meshCache),
-      cacheContext_(meshCache_.wrap(context)) {}
+      meshCache_(meshCache) {}
 
   void prepare() override {
     if (meshCache_.fetch(context_))
       builder_ = utymap::utils::make_unique<EmptyBuilder>(context_);
     else
-      builder_ = utymap::utils::make_unique<T>(cacheContext_);
+    {
+      cacheContext_ = utymap::utils::make_unique<BuilderContext>(meshCache_.wrap(context_));
+      builder_ = utymap::utils::make_unique<T>(*cacheContext_);
+    }
   }
 
   void visitNode(const utymap::entities::Node &node) override {
@@ -47,12 +49,15 @@ class CacheBuilder final : public ElementBuilder {
 
   void complete() override {
     builder_->complete();
-    meshCache_.unwrap(cacheContext_);
+    if (cacheContext_) {
+      meshCache_.unwrap(*cacheContext_);
+      cacheContext_.release();
+    }
   }
 
  private:
   MeshCache &meshCache_;
-  BuilderContext cacheContext_;
+  std::unique_ptr<BuilderContext> cacheContext_;
   std::unique_ptr<ElementBuilder> builder_;
 };
 

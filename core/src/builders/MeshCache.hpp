@@ -13,6 +13,10 @@ class MeshCache final {
  public:
   MeshCache(const std::string &directory, const std::string &extension);
 
+  /// Disable copying to prevent accidental copy
+  MeshCache(const MeshCache &) = delete;
+  MeshCache &operator=(const MeshCache &) = delete;
+
   /// Enables cache.
   void enable() {
     isEnabled_ = true;
