@@ -1,3 +1,5 @@
+<img src="https://cloud.githubusercontent.com/assets/1611077/19216383/4c10f3ee-8db9-11e6-8877-b652aa846734.png" />
+
 <a href="https://play.google.com/store/apps/details?id=com.utymap.demo">
     <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="" height="48" />
 </a>
@@ -8,53 +10,75 @@
 [![Release](https://img.shields.io/github/release/reinterpretcat/utymap.svg)](https://github.com/reinterpretcat/utymap/releases/latest)
 [![Join the chat at https://gitter.im/reinterpretcat/utymap](https://badges.gitter.im/reinterpretcat/utymap.svg)](https://gitter.im/reinterpretcat/utymap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+# Table of Contents
 
-<h2> Description </h2>
+* [Description](#description)
+* [Structure](#structure)
+* [Status](#status)
+* [Build](#build)
+* [Features](#features)
+  * [Mobile support](#mobile-support)
+  * [Various map data](#various-map-data)
+  * [Multiple zoom levels](#multiple-zoom-levels)
+  * [Non flat terrain](#non-flat-terrain)
+  * [Custom styles](#custom-styles)
+  * [Tree generation](#tree-generation)
+  * [Flexible extension](#flexible-extension)
+  * [Map editor](#map-editor)
+* [Contacts](#contacts)
 
-UtyMap is a library which provides highly customizable API for procedural world generation based on real vector map data, e.g. OpenStreetMap, NaturalEarth. Core logic is written on C++11 and can be used on many platforms as it has no dependency to specific game engine or application framework. It is designed for interactive world creation at different zoom levels, including globe and ground.
+## Description
 
-<img src="https://cloud.githubusercontent.com/assets/1611077/19216383/4c10f3ee-8db9-11e6-8877-b652aa846734.png" />
+utymap is a library which provides highly customizable API for procedural world generation using real vector map data, e.g. OpenStreetMap, NaturalEarth. Core logic is written on C++11 and can be used on many platforms as it has no dependency to specific game engine or application framework. It is designed for interactive world creation at different zoom levels, including globe and street level.
 
-<h2> Status </h2>
+## Structure
+
+Project consists of tree sub-projects:
+
+* **android** contains Android Studio project to build core library for Android plaform.
+* **core** contains essential logic written on C++11 for constructing of map based apps: mesh generators, mapcss parser, spatial geo index, etc. It does not depend on any 3D render framework or game engine.
+* **unity** contains examples written on C# which can be reused to build map oriented Unity3D apps using core library. It demonstrates basic use cases: globe zoom level rendering, 3D scene with all details.
+
+## Status
 
 Current master branch has a very experimental version. It is recommended to use the latest release.
 
-<h2> Features </h2>
+## Build
 
-<h3> Mobile platform support </h3>
+See instructions [here](https://github.com/reinterpretcat/utymap/wiki/Build-instructions).
+
+## Features
+
+### Mobile support
 
 Performance is constantly in main focus. As result, utymap can be used on mobile phone: just check demo app in play store. Of course, there are still areas for improvements.
 
-<h3> Map data </h3>
+### Various map data
 utymap can use various vector map data sources and file formats:
-<ul>
-    <li>Mapzen (json)
-    <li>OpenStreetMap (pbf, xml)
-    <li>NaturalEarth (shape data)
-</ul>
+* Mapzen (geojson)
+* OpenStreetMap (pbf, xml)
+* NaturalEarth (shape data)
 
 Theoretically, you can extend utymap with any vector map data format support.
 
-<h3> Zoom levels </h3>
+### Multiple zoom levels
 utymap can load your scene at different zoom levels:
 
 [![Zoom:Demo](http://img.youtube.com/vi/683Q876QrO0/0.jpg)](https://www.youtube.com/watch?v=683Q876QrO0)
 
 In this demo, mapzen data is used for zoom levels from 1 till 15 and OpenStreetMap for zoom level 16.
 
-<h3> Non flat world </h3>
+### Non flat terrain
 utymap encapsulates elevation processing internally to support different elevation data providers:
-<ul>
-    <li>raw SRTM</li>
-    <li>mapzen elevation data</li>
-    <li>your own elevation data by conversion in simple text format.</li>
-</ul>
+* raw SRTM
+* mapzen elevation data
+* your own elevation data by conversion in simple text format
 
 This old demo is built using elevation data provided by mapzen:
 
 [![Elevation:Prague](http://img.youtube.com/vi/mZzOWsoM5EY/0.jpg)](https://www.youtube.com/watch?v=mZzOWsoM5EY)
 
-<h3> Styling </h3>
+### Custom styles
 utymap supports styling via CSS-like language:
 
 ```CSS
@@ -82,13 +106,13 @@ For example, you can have different styles for different seasons of year. Or you
 
 <img src="https://cloud.githubusercontent.com/assets/1611077/19216355/3730d936-8db8-11e6-9c51-29b097b97bb7.png" />
 
-<h3>Tree generation</h3>
+### Tree generation
 
 utymap can consume map data to generate more complex tries via custom [L-System implementation](https://github.com/reinterpretcat/utymap/wiki/Tree-generation-via-L-System)
 
 <img src="https://cloud.githubusercontent.com/assets/1611077/21949038/692a8b16-d9ef-11e6-9ff9-b03e5b052f73.png" />
 
-<h3>Flexible extension</h3>
+### Flexible extension
 
 If you want to build or use your own models, extend application logic (for example, by attaching MonoBehaviour to generated meshes), you can do it using custom scripts in Unity:
 
@@ -112,7 +136,7 @@ public GameObject Build(Tile tile, Element element)
 
 Map data is encapsulated via Element class which provides access to raw geometry and attributes.
 
-<h3>Map editor</h3>
+### Map editor
 
 You can build your own objects (buildings, roads, etc.) on top of generated objects:
 
@@ -129,12 +153,6 @@ editor.Add(MapStorageType.InMemory, node, new Range<int>(minLevelOfDetail, maxLe
 
 This data can be stored in multiple data storages located on disk or memory to keep original map data untouched.
 
-<h2> Project structure </h2>
-Project consists of two sub-projects:
-<ul>
-    <li><b>core</b> contains essential logic written on C++11 to build library for constructing of map based apps: terrain/buildings/osm-objects mesh generators, mapcss parser, spatial geo index, etc. It does not depend on any 3D render framework or game engine. </li>
-    <li><b>unity</b> contains examples written on C# which can be reused to build map oriented Unity3D apps using core library. It demonstrates basic use cases: globe zoom level rendering, 3D scene with all details.</li>
-</ul>
+## Contacts
 
-<h2> Install </h2>
-See instructions [here] (https://github.com/reinterpretcat/utymap/wiki#install).
+Do not hesitate to contact me using gitter chat link above.
