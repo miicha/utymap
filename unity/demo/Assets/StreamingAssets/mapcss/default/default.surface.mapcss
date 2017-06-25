@@ -9,6 +9,13 @@ canvas|z9-16 {
     color-noise-freq: 0;
     ele-noise-freq: 0;
     color: gradient(#b5d0d0);
+    
+    building-max-area: 0.1%;
+    building-color-noise-freq: 0;
+    building-ele-noise-freq: 0;
+    building-color: gradient(#d9d0c9);
+    building-sort-order: 1009;
+    building-mesh-name: terrain_building;
 
     railway-max-area: 0.1%;
     railway-color-noise-freq: 0;
