@@ -35,24 +35,29 @@ way,relation|z9-15[kind=train] {
     width: 0.4%;
 }
 
-/* from zoom 11 */
-way,relation|z11-15[kind=major_road][kind_detail=secondary] {
+way,relation|z9-15[kind=highway],
+way,relation|z9-15[kind=major_road] {
     clip:true;
     builders: terrain;
     terrain-layer: road-major-secondary;
     width: 0.3%;
 }
 
-/* from zoom 12 */
-way,relation|z12-15[kind=major_road][kind_detail=tertiary] {
+way,relation|z9-15[kind=major_road][kind_detail=secondary] {
+    clip:true;
+    builders: terrain;
+    terrain-layer: road-major-secondary;
+    width: 0.3%;
+}
+
+way,relation|z9-15[kind=major_road][kind_detail=tertiary] {
     clip:true;
     builders: terrain;
     terrain-layer: road-major-tertiary;
     width: 0.25%;
 }
 
-/* from zoom 13 */
-way,relation|z13-15[kind=minor_road] {
+way,relation|z9-15[kind=minor_road] {
     clip:true;
     builders: terrain;
     terrain-layer: road-minor;
