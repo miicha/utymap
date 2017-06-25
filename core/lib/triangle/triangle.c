@@ -1423,7 +1423,10 @@ int status;
 #endif /* not ANSI_DECLARATORS */
 
 {
-  exit(status);
+  // NOTE Calling exit leads process to be killed by OS
+  // The fix is really ugly, but alternative is introducing error code
+  // support from any function which requires quite a lot of changes.
+  //exit(status);
 }
 
 #ifdef ANSI_DECLARATORS
