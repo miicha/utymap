@@ -1,7 +1,7 @@
 ﻿using System;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 
-namespace Assets.Scripts.Environment
+namespace Assets.Scripts.Core.Plugins
 {
     internal sealed class UnityLogTrace : DefaultTrace
     {

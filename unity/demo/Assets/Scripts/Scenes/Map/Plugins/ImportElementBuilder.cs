@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Core.Plugins;
+using UnityEngine;
 using UtyMap.Unity;
 
 namespace Assets.Scripts.Scenes.Map.Plugins

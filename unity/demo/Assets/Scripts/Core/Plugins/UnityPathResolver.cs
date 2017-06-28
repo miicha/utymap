@@ -1,7 +1,8 @@
 ﻿using System.IO;
+using Assets.Scripts.Environment;
 using UtyMap.Unity.Infrastructure.IO;
 
-namespace Assets.Scripts.Environment
+namespace Assets.Scripts.Core.Plugins
 {
     internal class UnityPathResolver : IPathResolver
     {

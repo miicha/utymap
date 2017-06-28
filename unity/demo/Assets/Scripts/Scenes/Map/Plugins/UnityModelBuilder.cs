@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Assets.Scripts.Core.Plugins;
 using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity;
@@ -7,7 +8,7 @@ using Mesh = UtyMap.Unity.Mesh;
 namespace Assets.Scripts.Scenes.Map.Plugins
 {
     /// <summary> Responsible for building Unity game objects from meshes and elements. </summary>
-    internal class UnityModelBuilder
+    internal class UnityModelBuilder : IModelBuilder
     {
         private readonly MaterialProvider _materialProvider;
 

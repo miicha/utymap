@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Scenes.Map.Animations;
+﻿using Assets.Scripts.Core.Plugins;
+using Assets.Scripts.Scenes.Map.Animations;
 using Assets.Scripts.Scenes.Map.Gestures;
 using Assets.Scripts.Scenes.Map.Plugins;
 using Assets.Scripts.Scenes.Map.Tiling;

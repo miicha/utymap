@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts.Core;
+using Assets.Scripts.Core.Plugins;
 using Assets.Scripts.Scenes.Map.Gestures;
 using Assets.Scripts.Scenes.Map.Plugins;
 using Assets.Scripts.Scenes.Map.Spaces;
@@ -10,6 +12,8 @@ using UtyMap.Unity;
 using UtyMap.Unity.Animations.Time;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
+
+using Component = UtyDepend.Component;
 using Space = Assets.Scripts.Scenes.Map.Spaces.Space;
 
 namespace Assets.Scripts.Scenes.Map
@@ -52,7 +56,12 @@ namespace Assets.Scripts.Scenes.Map
 
         void Start()
         {
-            _compositionRoot = MapInitTask.Run();
+            _compositionRoot = InitTask.Run((container, config) =>
+            {
+                container
+                    .Register(Component.For<IModelBuilder>().Use<UnityModelBuilder>())
+                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss"));
+            });
 
             var mapDataStore = _compositionRoot.GetService<IMapDataStore>();
             var stylesheet = _compositionRoot.GetService<Stylesheet>();

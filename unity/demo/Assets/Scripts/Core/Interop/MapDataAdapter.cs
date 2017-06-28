@@ -10,7 +10,7 @@ using UtyMap.Unity.Utils;
 using UtyRx;
 using Mesh = UtyMap.Unity.Mesh;
 
-namespace Assets.Scripts.Environment.Data
+namespace Assets.Scripts.Core.Interop
 {
     /// <summary> Adapts map tile data received from utymap API to the type used by the app. </summary>
     /// <remarks>

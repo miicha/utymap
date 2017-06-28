@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Assets.Scripts.Environment.Data
+namespace Assets.Scripts.Core.Interop
 {
     internal static class MarshalUtils
     {

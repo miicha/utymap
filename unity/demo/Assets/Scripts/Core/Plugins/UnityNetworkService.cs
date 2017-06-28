@@ -3,7 +3,7 @@ using Assets.Scripts.Environment.Reactive;
 using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
 
-namespace Assets.Scripts.Environment
+namespace Assets.Scripts.Core.Plugins
 {
     internal class UnityNetworkService : INetworkService
     {

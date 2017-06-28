@@ -11,7 +11,7 @@ using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyRx;
 
-namespace Assets.Scripts.Environment.Data
+namespace Assets.Scripts.Core.Interop
 {
     internal sealed partial class MapDataLibrary : IMapDataLibrary
     {

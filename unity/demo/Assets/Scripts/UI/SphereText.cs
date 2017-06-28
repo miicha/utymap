@@ -5,6 +5,7 @@ using UtyMap.Unity;
 
 namespace Assets.Scripts.UI
 {
+    /// <summary> Draws text on sphere. </summary>
     [ExecuteInEditMode]
     public class SphereText : Text
     {

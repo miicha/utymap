@@ -1,9 +1,10 @@
 ﻿using System;
+using Assets.Scripts.Core.Interop;
+using Assets.Scripts.Core.Plugins;
 using Assets.Scripts.Environment;
-using Assets.Scripts.Environment.Data;
 using Assets.Scripts.Environment.Reactive;
-using Assets.Scripts.Scenes.Map.Plugins;
 using UtyDepend;
+using UtyDepend.Config;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Config;
@@ -12,18 +13,15 @@ using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
 using Component = UtyDepend.Component;
 
-namespace Assets.Scripts.Scenes.Map
+namespace Assets.Scripts.Core
 {
-    /// <summary> Provides the way to initialize the map. </summary>
-    internal static class MapInitTask
+    /// <summary> Provides the way to initialize utymap library. </summary>
+    internal static class InitTask
     {
         /// <summary> Run library initialization logic. </summary>
-        public static CompositionRoot Run()
+        public static CompositionRoot Run(Action<IContainer, IConfigSection> action)
         {
             const string fatalCategoryName = "Fatal";
-
-            // create default container which should not be exposed outside to avoid Service Locator pattern.
-            var container = new Container();
 
             // create trace to log important messages
             var trace = new UnityLogTrace();
@@ -39,7 +37,7 @@ namespace Assets.Scripts.Scenes.Map
 
             try
             {
-                var compositionRoot = BuildCompositionRoot(container, trace);
+                var compositionRoot = BuildCompositionRoot(action, trace);
                 SubscribeOnMapData(compositionRoot, trace);
                 return compositionRoot;
             }
@@ -51,37 +49,31 @@ namespace Assets.Scripts.Scenes.Map
         }
 
         /// <summary> Builds instance responsible for composing object graph. </summary>
-        private static CompositionRoot BuildCompositionRoot(IContainer container, ITrace trace)
+        private static CompositionRoot BuildCompositionRoot(Action<IContainer, IConfigSection> action, ITrace trace)
         {
-            // create configuration from default overriding some properties
-            var config = ConfigBuilder.GetDefault()
-                .SetIndex("index/")
-                .Build();
-
-            // create entry point for utymap functionallity
-            var compositionRoot = new CompositionRoot(container, config)
-                // override default services with unity specific implementation
-                .RegisterAction((c, _) => c.RegisterInstance<ITrace>(trace))
-                .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<UnityPathResolver>()))
-                .RegisterAction((c, _) => c.Register(Component.For<INetworkService>().Use<UnityNetworkService>()))
-                .RegisterAction((c, _) => c.Register(Component.For<IMapDataLibrary>().Use<MapDataLibrary>()))
-                // register scene specific services (plugins)
-                .RegisterAction((c, _) => c.Register(Component.For<UnityModelBuilder>().Use<UnityModelBuilder>()))
-                .RegisterAction((c, _) => c.Register(Component.For<MaterialProvider>().Use<MaterialProvider>()))
-                // register default mapcss
-                .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss")));
-
-            // setup object graph
-            compositionRoot.Setup();
-
-            return compositionRoot;
+            // create entry point for library functionallity using default configuration overriding some properties
+            return new CompositionRoot(new Container(), ConfigBuilder.GetDefault().SetIndex("index/").Build())
+                // override library's default services with demo specific implementations
+                .RegisterAction((container, config) =>
+                {
+                    container
+                        .RegisterInstance<ITrace>(trace)
+                        .Register(Component.For<IPathResolver>().Use<UnityPathResolver>())
+                        .Register(Component.For<INetworkService>().Use<UnityNetworkService>())
+                        .Register(Component.For<IMapDataLibrary>().Use<MapDataLibrary>())
+                        .Register(Component.For<MaterialProvider>().Use<MaterialProvider>());
+                })
+                // override with scene specific implementations
+                .RegisterAction(action)
+                // setup object graph
+                .Setup();
         }
 
         /// <summary> Starts listening for mapdata from core library to convert it into unity game objects. </summary>
         private static void SubscribeOnMapData(CompositionRoot compositionRoot, ITrace trace)
         {
             const string traceCategory = "mapdata";
-            var modelBuilder = compositionRoot.GetService<UnityModelBuilder>();
+            var modelBuilder = compositionRoot.GetService<IModelBuilder>();
             compositionRoot.GetService<IMapDataStore>()
                .SubscribeOn<MapData>(Scheduler.ThreadPool)
                .ObserveOn(Scheduler.MainThread)

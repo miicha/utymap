@@ -6,7 +6,7 @@ using UtyMap.Unity;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyRx;
 
-namespace Assets.Scripts.Environment.Data
+namespace Assets.Scripts.Core.Interop
 {
     /// <summary> Mono scripting backend specific implementation. </summary>
     partial class MapDataLibrary

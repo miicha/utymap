@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using UtyMap.Unity;
-using UtyMap.Unity.Infrastructure.Diagnostic;
-using UtyMap.Unity.Infrastructure.Primitives;
-using UtyRx;
-
-namespace Assets.Scripts.Environment.Data
+﻿namespace Assets.Scripts.Core.Interop
 {
     /// <summary> Il2Cpp scripting backend specific implementation. </summary>
     partial class MapDataLibrary

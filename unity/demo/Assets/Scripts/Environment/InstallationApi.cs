@@ -7,7 +7,7 @@ using UtyMap.Unity.Infrastructure.Diagnostic;
 
 namespace Assets.Scripts.Environment
 {
-    /// <summary> Provides the way to extract embedded data to persistent storage. </summary>
+    /// <summary> Provides platform specific way to extract embedded data to persistent storage. </summary>
     internal static class InstallationApi
     {
         private const string TraceCategory = "install";
