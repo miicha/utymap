@@ -60,6 +60,18 @@ namespace Assets.Scripts.Core.Interop
         }
 
         /// <inheritdoc />
+        public void EnableCache()
+        {
+            enableMeshCache(1);
+        }
+
+        /// <inheritdoc />
+        public void DisableCache()
+        {
+            enableMeshCache(0);
+        }
+
+        /// <inheritdoc />
         public bool Exists(QuadKey quadKey)
         {
             return hasData(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail);

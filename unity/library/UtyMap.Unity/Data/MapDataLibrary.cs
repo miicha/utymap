@@ -26,6 +26,12 @@ namespace UtyMap.Unity.Data
         /// <param name="indexPath"> Path to index data. </param>
         void Configure(string indexPath);
 
+        /// <summary> Enable mesh caching mechanism for speed up tile loading. </summary>
+        void EnableCache();
+
+        /// <summary> Disable mesh caching mechanism. </summary>
+        void DisableCache();
+
         /// <summary> Checks whether there is data for given quadkey. </summary>
         /// <returns> True if there is data for given quadkey. </returns>
         bool Exists(QuadKey quadKey);
@@ -127,6 +133,18 @@ namespace UtyMap.Unity.Data
                 
                 _isConfigured = true;
             }
+        }
+
+        /// <inheritdoc />
+        public void EnableCache()
+        {
+            enableMeshCache(1);
+        }
+
+        /// <inheritdoc />
+        public void DisableCache()
+        {
+            enableMeshCache(0);
         }
 
         /// <inheritdoc />
