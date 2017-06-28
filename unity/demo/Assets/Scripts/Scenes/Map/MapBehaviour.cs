@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.Plugins;
-using Assets.Scripts.Scene.Gestures;
-using Assets.Scripts.Scene.Spaces;
-using Assets.Scripts.Scene.Tiling;
+using Assets.Scripts.Scenes.Map.Gestures;
+using Assets.Scripts.Scenes.Map.Plugins;
+using Assets.Scripts.Scenes.Map.Spaces;
+using Assets.Scripts.Scenes.Map.Tiling;
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Animations.Time;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
-using Space = Assets.Scripts.Scene.Spaces.Space;
+using Space = Assets.Scripts.Scenes.Map.Spaces.Space;
 
-namespace Assets.Scripts.Scene
+namespace Assets.Scripts.Scenes.Map
 {
     /// <summary> Provides an entry point for building the map and reacting on user interaction with it. </summary>
     internal class MapBehaviour : MonoBehaviour

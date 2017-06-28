@@ -6,7 +6,7 @@ using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 
-namespace Assets.Scripts.Scene.Tiling
+namespace Assets.Scripts.Scenes.Map.Tiling
 {
     /// <summary>  </summary>
     internal sealed class SurfaceTileController : TileController

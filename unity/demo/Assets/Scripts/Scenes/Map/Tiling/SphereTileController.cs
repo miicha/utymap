@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UtyMap.Unity;
@@ -8,7 +7,7 @@ using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 using Object = UnityEngine.Object;
 
-namespace Assets.Scripts.Scene.Tiling
+namespace Assets.Scripts.Scenes.Map.Tiling
 {
     internal sealed class SphereTileController : TileController
     {

@@ -1,8 +1,8 @@
-﻿using Assets.Scripts.Scene.Tiling;
+﻿using Assets.Scripts.Scenes.Map.Tiling;
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 
-namespace Assets.Scripts.Scene.Gestures
+namespace Assets.Scripts.Scenes.Map.Gestures
 {
     /// <summary> Encapsulates gesture processing. </summary>
     internal abstract class GestureStrategy

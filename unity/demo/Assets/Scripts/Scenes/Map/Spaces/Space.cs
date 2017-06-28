@@ -1,12 +1,12 @@
 ﻿using System;
-using Assets.Scripts.Plugins;
-using Assets.Scripts.Scene.Animations;
-using Assets.Scripts.Scene.Gestures;
-using Assets.Scripts.Scene.Tiling;
+using Assets.Scripts.Scenes.Map.Animations;
+using Assets.Scripts.Scenes.Map.Gestures;
+using Assets.Scripts.Scenes.Map.Plugins;
+using Assets.Scripts.Scenes.Map.Tiling;
 using UnityEngine;
 using UtyMap.Unity;
 
-namespace Assets.Scripts.Scene.Spaces
+namespace Assets.Scripts.Scenes.Map.Spaces
 {
     internal abstract class Space : IDisposable
     {

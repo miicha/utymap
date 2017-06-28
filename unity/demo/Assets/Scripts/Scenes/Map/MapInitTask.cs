@@ -2,7 +2,7 @@
 using Assets.Scripts.Environment;
 using Assets.Scripts.Environment.Data;
 using Assets.Scripts.Environment.Reactive;
-using Assets.Scripts.Plugins;
+using Assets.Scripts.Scenes.Map.Plugins;
 using UtyDepend;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
@@ -12,7 +12,7 @@ using UtyMap.Unity.Infrastructure.IO;
 using UtyRx;
 using Component = UtyDepend.Component;
 
-namespace Assets.Scripts.Scene
+namespace Assets.Scripts.Scenes.Map
 {
     /// <summary> Provides the way to initialize the map. </summary>
     internal static class MapInitTask

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Scripts.Plugins
+namespace Assets.Scripts.Scenes.Map.Plugins
 {
     /// <summary> Provides unity materials.</summary>
     internal class MaterialProvider

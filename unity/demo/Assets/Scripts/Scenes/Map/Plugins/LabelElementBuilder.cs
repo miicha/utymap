@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.Scene;
 using Assets.Scripts.UI;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Utils;
 
-namespace Assets.Scripts.Plugins
+namespace Assets.Scripts.Scenes.Map.Plugins
 {
     /// <summary> Builds a label. </summary>
     internal sealed class LabelElementBuilder : IElementBuilder

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.Scene.Tiling;
+using Assets.Scripts.Scenes.Map.Tiling;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Animations;
@@ -8,7 +8,7 @@ using UtyMap.Unity.Animations.Time;
 using Animator = UtyMap.Unity.Animations.Animator;
 using Animation = UtyMap.Unity.Animations.Animation;
 
-namespace Assets.Scripts.Scene.Animations
+namespace Assets.Scripts.Scenes.Map.Animations
 {
     internal abstract class SpaceAnimator : Animator
     {

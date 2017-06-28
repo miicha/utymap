@@ -1,9 +1,8 @@
-﻿using System;
-using Assets.Scripts.Scene.Tiling;
+﻿using Assets.Scripts.Scenes.Map.Tiling;
 using TouchScript.Gestures.TransformGestures;
 using UnityEngine;
 
-namespace Assets.Scripts.Scene.Gestures
+namespace Assets.Scripts.Scenes.Map.Gestures
 {
     internal class SurfaceGestureStrategy : GestureStrategy
     {
