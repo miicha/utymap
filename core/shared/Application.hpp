@@ -38,11 +38,11 @@ class Application {
   enum class ElevationDataType { Flat = 0, Srtm, Grid };
 
   /// Composes object graph.
-  explicit Application(const char *dataPath) :
-      dataPath_(dataPath),
-      stringTable_(dataPath),
+  explicit Application(const char *indexPath) :
+      indexPath_(indexPath),
+      stringTable_(indexPath),
       geoStore_(stringTable_),
-      flatEleProvider_(), srtmEleProvider_(dataPath), gridEleProvider_(dataPath),
+      flatEleProvider_(), srtmEleProvider_(indexPath), gridEleProvider_(indexPath),
       quadKeyBuilder_(geoStore_, stringTable_) {
     registerDefaultBuilders();
   }
@@ -50,7 +50,7 @@ class Application {
   /// Registers stylesheet.
   void registerStylesheet(const char *path, OnNewDirectory *directoryCallback) {
     auto &styleProvider = getStyleProvider(path);
-    std::string root = dataPath_ + "cache/" + styleProvider.getTag() + '/';
+    std::string root = indexPath_ + "cache/" + styleProvider.getTag() + '/';
     createDataDirs(root, directoryCallback);
   }
 
@@ -63,7 +63,7 @@ class Application {
   void registerPersistentStore(const char *key, const char *dataPath, OnNewDirectory *directoryCallback) {
     geoStore_
         .registerStore(key, utymap::utils::make_unique<utymap::index::PersistentElementStore>(dataPath, stringTable_));
-    createDataDirs(dataPath_ + "data/", directoryCallback);
+    createDataDirs(indexPath_ + "data/", directoryCallback);
   }
 
   /// Enables or disables mesh caching.
@@ -218,7 +218,7 @@ class Application {
   template<typename Builder>
   void registerBuilder(const std::string &name, bool useCache = false) {
     if (useCache)
-      meshCaches_.emplace(name, utymap::utils::make_unique<utymap::builders::MeshCache>(dataPath_, name));
+      meshCaches_.emplace(name, utymap::utils::make_unique<utymap::builders::MeshCache>(indexPath_, name));
 
     quadKeyBuilder_
         .registerElementBuilder(name, useCache ? createCacheFactory<Builder>(name) : createFactory<Builder>());
@@ -248,7 +248,7 @@ class Application {
     }
   }
 
-  std::string dataPath_;
+  std::string indexPath_;
   utymap::index::StringTable stringTable_;
   utymap::index::GeoStore geoStore_;
 

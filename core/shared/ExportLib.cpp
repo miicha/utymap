@@ -18,10 +18,10 @@ void EXPORT_API cleanup() {
 }
 
 /// Composes object graph.
-void EXPORT_API configure(const char *dataPath,   // path to data directory which stores index/ele data
+void EXPORT_API configure(const char *indexPath,    // path to index directory
                           OnError *errorCallback) {
   try {
-    applicationPtr = new Application(dataPath);
+    applicationPtr = new Application(indexPath);
   } catch (std::exception &ex) {
     errorCallback(ex.what());
   }

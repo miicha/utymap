@@ -35,8 +35,8 @@ class GridElevationProvider final : public ElevationProvider {
   const double Scale = 1E7;
 
  public:
-  GridElevationProvider(std::string dataDirectory) :
-      dataDirectory_(dataDirectory) {
+  GridElevationProvider(const std::string& indexPath) :
+      dataPath_(indexPath + "data/") {
   }
 
   /// Gets elevation for given geocoordinate.
@@ -129,13 +129,13 @@ class GridElevationProvider final : public ElevationProvider {
 
   std::string getFilePath(const QuadKey &quadKey) const {
     std::stringstream ss;
-    ss << dataDirectory_ << quadKey.levelOfDetail << "/" << utymap::utils::GeoUtils::quadKeyToString(quadKey) << ".ele";
+    ss << dataPath_ << quadKey.levelOfDetail << "/" << utymap::utils::GeoUtils::quadKeyToString(quadKey) << ".ele";
     return ss.str();
   }
 
   mutable std::map<const QuadKey, EleData, QuadKey::Comparator> data_;
   mutable std::mutex lock_;
-  const std::string dataDirectory_;
+  const std::string dataPath_;
 };
 
 }

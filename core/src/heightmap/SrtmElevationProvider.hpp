@@ -45,8 +45,8 @@ class SrtmElevationProvider final : public ElevationProvider {
 
  public:
 
-  SrtmElevationProvider(std::string dataDirectory, int maxCacheSize = 4) :
-      dataDirectory_(dataDirectory), maxCacheSize_(maxCacheSize) {
+  SrtmElevationProvider(const std::string& indexPath, int maxCacheSize = 4) :
+      dataPath_(indexPath + "data/"), maxCacheSize_(maxCacheSize) {
   }
 
   double getElevation(const utymap::QuadKey &quadKey, const utymap::GeoCoordinate &coordinate) const override {
@@ -174,7 +174,7 @@ class SrtmElevationProvider final : public ElevationProvider {
 
   std::string getFilePath(const HgtCellKey &key) const {
     std::ostringstream stream;
-    stream << dataDirectory_
+    stream << dataPath_
            << std::setfill('0')
            << (key.lat > 0 ? 'N' : 'S')
            << std::setw(2) << std::abs(key.lat) << std::setw(0)
@@ -186,7 +186,7 @@ class SrtmElevationProvider final : public ElevationProvider {
 
   mutable std::map<HgtCellKey, HgtCell> cells_;
   mutable std::mutex lock_;
-  std::string dataDirectory_;
+  std::string dataPath_;
   int maxCacheSize_;
 };
 
