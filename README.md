@@ -14,6 +14,8 @@
 
 * [Description](#description)
 * [Structure](#structure)
+  * [Source code](#source-code)
+  * [Demo scenes](#demo-scenes)
 * [Status](#status)
 * [Build](#build)
 * [Features](#features)
@@ -33,11 +35,21 @@ utymap is a library which provides highly customizable API for procedural world 
 
 ## Structure
 
+### Source code
+
 Project consists of tree sub-projects:
 
-* **android** contains Android Studio project to build core library for Android plaform.
+* **android** contains Android Studio project to build core library for Android platform.
 * **core** contains essential logic written on C++11 for constructing of map based apps: mesh generators, mapcss parser, spatial geo index, etc. It does not depend on any 3D render framework or game engine.
 * **unity** contains examples written on C# which can be reused to build map oriented Unity3D apps using core library. It demonstrates basic use cases: globe zoom level rendering, 3D scene with all details.
+
+### Demo scenes
+
+The simplest way to explore the project is to check source code of demo scenes:
+
+* **Import** scene shows how to import map data from a file. Please note, that import and rendering logic depends on mapcss rules which means you cannot use arbitrary mapcss with arbitrary data format.
+* **Elevation** scene shows how elevation support works. Please note, as scene loads multiple tiles at once, mapzen server might reject some of requests. Also, first time loading takes time: just wait a little bit and restart the scene again. Once processed, all downloaded data is cached inside _StreamingAssets/index_ folder.
+* **Map** scene is the most advanced one. It is designed to be a full functional map component which can be used in mobile builds. It supports zoom levels from globe overview till street view.
 
 ## Status
 
@@ -54,6 +66,7 @@ See instructions [here](https://github.com/reinterpretcat/utymap/wiki/Build-inst
 Performance is constantly in main focus. As result, utymap can be used on mobile phone: just check demo app in play store. Of course, there are still areas for improvements.
 
 ### Various map data
+
 utymap can use various vector map data sources and file formats:
 * Mapzen (geojson)
 * OpenStreetMap (pbf, xml)
@@ -62,6 +75,7 @@ utymap can use various vector map data sources and file formats:
 Theoretically, you can extend utymap with any vector map data format support.
 
 ### Multiple zoom levels
+
 utymap can load your scene at different zoom levels:
 
 [![Zoom:Demo](http://img.youtube.com/vi/683Q876QrO0/0.jpg)](https://www.youtube.com/watch?v=683Q876QrO0)
@@ -69,6 +83,7 @@ utymap can load your scene at different zoom levels:
 In this demo, mapzen data is used for zoom levels from 1 till 15 and OpenStreetMap for zoom level 16.
 
 ### Non flat terrain
+
 utymap encapsulates elevation processing internally to support different elevation data providers:
 * raw SRTM
 * mapzen elevation data
@@ -79,6 +94,7 @@ This old demo is built using elevation data provided by mapzen:
 [![Elevation:Prague](http://img.youtube.com/vi/mZzOWsoM5EY/0.jpg)](https://www.youtube.com/watch?v=mZzOWsoM5EY)
 
 ### Custom styles
+
 utymap supports styling via CSS-like language:
 
 ```CSS
