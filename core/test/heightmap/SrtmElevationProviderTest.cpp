@@ -9,7 +9,7 @@ using namespace utymap::heightmap;
 BOOST_AUTO_TEST_SUITE(Heightmap_SrtmElevationProvider)
 
 BOOST_AUTO_TEST_CASE(GivenTestLocation_WhenGetElevation_ThenReturnExpectedInteger) {
-  SrtmElevationProvider eleProvider(TEST_ASSETS_PATH);
+  SrtmElevationProvider eleProvider(TEST_ASSETS_PATH "index/");
 
   double ele = eleProvider.getElevation(QuadKey(16, 35205, 21489), 52.5317429, 13.3871987);
 
