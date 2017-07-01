@@ -17,11 +17,16 @@ std::string toString(T t) {
   return boost::lexical_cast<std::string>(t);
 }
 
-inline std::string removeExtension(const std::string &filename) {
-  auto lastdot = filename.find_last_of('.');
-  return lastdot==std::string::npos
-         ? filename
-         : filename.substr(0, lastdot);
+inline std::string getFileNameWithoutExtension(const std::string &filename) {
+  auto path = filename;
+  size_t sep = path.find_last_of("\\/");
+  if (sep != std::string::npos)
+    path = path.substr(sep + 1, path.size() - sep - 1);
+
+  size_t dot = path.find_last_of(".");
+  return dot != std::string::npos 
+    ? path.substr(0, dot) 
+    : path;
 }
 
 inline std::vector<std::string> splitBy(const char c, const std::string &str) {

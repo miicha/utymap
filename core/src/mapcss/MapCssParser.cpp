@@ -223,7 +223,7 @@ struct ExtraImportGrammar : qi::grammar<Iterator, CommentSkipper<Iterator> > {
 
   /// Parses lsystem from url and adds it to stylesheet.
   void addLSystem(const std::string &fileName) const {
-    auto name = utymap::utils::removeExtension(fileName);
+    auto name = utymap::utils::getFileNameWithoutExtension(fileName);
     auto lsystem = lsystemParser.parse(getContent(fileName));
     stylesheet.lsystems.emplace(name, lsystem);
   }
