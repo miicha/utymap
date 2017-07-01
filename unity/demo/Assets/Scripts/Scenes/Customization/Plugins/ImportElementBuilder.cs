@@ -2,7 +2,7 @@
 using UnityEngine;
 using UtyMap.Unity;
 
-namespace Assets.Scripts.Scenes.Map.Plugins
+namespace Assets.Scripts.Scenes.Customization.Plugins
 {
     /// <summary> Provides the way to import custom prefab instead of map object. </summary>
     internal class ImportElementBuilder : IElementBuilder

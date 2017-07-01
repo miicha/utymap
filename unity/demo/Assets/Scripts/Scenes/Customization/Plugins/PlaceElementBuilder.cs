@@ -5,9 +5,9 @@ using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity;
 
-namespace Assets.Scripts.Scenes.Map.Plugins
+namespace Assets.Scripts.Scenes.Customization.Plugins
 {
-    /// <summary> Builds Place of Interest as cube primitive with texture. </summary>
+    /// <summary> Builds Place of Interest as cube primitive with texture from Element. </summary>
     internal sealed class PlaceElementBuilder : IElementBuilder
     {
         private readonly MaterialProvider _materialProvider;
@@ -19,7 +19,7 @@ namespace Assets.Scripts.Scenes.Map.Plugins
         }
 
         /// <inheritdoc />
-        public string Name { get { return "info"; } }
+        public string Name { get { return "place"; } }
 
         /// <inheritdoc />
         public GameObject Build(Tile tile, Element element)
@@ -29,6 +29,7 @@ namespace Assets.Scripts.Scenes.Map.Plugins
             
             var transform = gameObject.transform;
             transform.parent = tile.GameObject.transform;
+            // NOTE We use this builder only for nodes, so we know that geometry is represented by single geocoordinate.
             transform.position = tile.Projection.Project(element.Geometry[0], GetMinHeight(element) + element.Heights[0]);
             transform.localScale = new Vector3(2, 2, 2);
 
