@@ -2,19 +2,24 @@
 using System.Linq;
 using Assets.Scripts.Core.Plugins;
 using UnityEngine;
+using UtyDepend;
 using UtyMap.Unity;
 
 namespace Assets.Scripts.Scenes.Map.Plugins
 {
-    /// <summary> Builds Place of Interest represented by cube primitive. </summary>
+    /// <summary> Builds Place of Interest as cube primitive with texture. </summary>
     internal sealed class PlaceElementBuilder : IElementBuilder
     {
         private readonly MaterialProvider _materialProvider;
 
+        [Dependency]
         public PlaceElementBuilder(MaterialProvider customizationService)
         {
             _materialProvider = customizationService;
         }
+
+        /// <inheritdoc />
+        public string Name { get { return "info"; } }
 
         /// <inheritdoc />
         public GameObject Build(Tile tile, Element element)

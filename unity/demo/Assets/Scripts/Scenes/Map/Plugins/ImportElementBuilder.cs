@@ -4,8 +4,13 @@ using UtyMap.Unity;
 
 namespace Assets.Scripts.Scenes.Map.Plugins
 {
-    class ImportElementBuilder : IElementBuilder
+    /// <summary> Provides the way to import custom prefab instead of map object. </summary>
+    internal class ImportElementBuilder : IElementBuilder
     {
+        /// <inheritdoc />
+        public string Name { get { return "import"; } }
+
+        /// <inheritdoc />
         public GameObject Build(Tile tile, Element element)
         {
             var modelName = @"Prefabs/" + element.Styles["model"];

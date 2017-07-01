@@ -23,8 +23,9 @@ namespace Assets.Scripts.Core
         {
             const string fatalCategoryName = "Fatal";
 
-            // create trace to log important messages
+            // create trace for logging and set its level
             var trace = new UnityLogTrace();
+            trace.Level = DefaultTrace.TraceLevel.Debug;
 
             // utymap requires some files/directories to be precreated.
             InstallationApi.EnsureFileHierarchy(trace);
@@ -60,8 +61,7 @@ namespace Assets.Scripts.Core
                         .RegisterInstance<ITrace>(trace)
                         .Register(Component.For<IPathResolver>().Use<UnityPathResolver>())
                         .Register(Component.For<INetworkService>().Use<UnityNetworkService>())
-                        .Register(Component.For<IMapDataLibrary>().Use<MapDataLibrary>())
-                        .Register(Component.For<MaterialProvider>().Use<MaterialProvider>());
+                        .Register(Component.For<IMapDataLibrary>().Use<MapDataLibrary>());
                 })
                 // override with scene specific implementations
                 .RegisterAction(action)
@@ -73,14 +73,14 @@ namespace Assets.Scripts.Core
         private static void SubscribeOnMapData(CompositionRoot compositionRoot, ITrace trace)
         {
             const string traceCategory = "mapdata";
-            var modelBuilder = compositionRoot.GetService<IModelBuilder>();
+            var modelBuilder = compositionRoot.GetService<GameObjectBuilder>();
             compositionRoot.GetService<IMapDataStore>()
                .SubscribeOn<MapData>(Scheduler.ThreadPool)
                .ObserveOn(Scheduler.MainThread)
                .Where(r => !r.Tile.IsDisposed)
                .Subscribe(r => r.Variant.Match(
-                               e => modelBuilder.BuildElement(r.Tile, e),
-                               m => modelBuilder.BuildMesh(r.Tile, m)),
+                               e => modelBuilder.BuildFromElement(r.Tile, e),
+                               m => modelBuilder.BuildFromMesh(r.Tile, m)),
                           ex => trace.Error(traceCategory, ex, "cannot process mapdata."),
                           () => trace.Warn(traceCategory, "stop listening mapdata."));
         }

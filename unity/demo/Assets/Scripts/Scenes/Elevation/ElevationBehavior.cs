@@ -1,6 +1,6 @@
-﻿using Assets.Scripts.Core;
+﻿using System.Collections.Generic;
+using Assets.Scripts.Core;
 using Assets.Scripts.Core.Plugins;
-using Assets.Scripts.Scenes.Elevation.Plugins;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
@@ -24,8 +24,10 @@ namespace Assets.Scripts.Scenes.Elevation
             _compositionRoot = InitTask.Run((container, config) =>
             {
                 container
-                    .Register(Component.For<IModelBuilder>().Use<UnityModelBuilder>())
-                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss"));
+                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss"))
+                    .Register(Component.For<MaterialProvider>().Use<MaterialProvider>())
+                    .Register(Component.For<GameObjectBuilder>().Use<GameObjectBuilder>())
+                    .RegisterInstance<IEnumerable<IElementBuilder>>(new List<IElementBuilder>());
             });
 
             // store map data store reference to member variable

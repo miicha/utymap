@@ -20,6 +20,9 @@ namespace Assets.Scripts.Scenes.Map.Plugins
         }
 
         /// <inheritdoc />
+        public string Name { get { return "label"; } }
+
+        /// <inheritdoc />
         public GameObject Build(Tile tile, Element element)
         {
             var gameObject = new GameObject(GetName(element));

@@ -59,8 +59,12 @@ namespace Assets.Scripts.Scenes.Map
             _compositionRoot = InitTask.Run((container, config) =>
             {
                 container
-                    .Register(Component.For<IModelBuilder>().Use<UnityModelBuilder>())
-                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss"));
+                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss"))
+                    .Register(Component.For<MaterialProvider>().Use<MaterialProvider>())
+                    .Register(Component.For<GameObjectBuilder>().Use<GameObjectBuilder>())
+                    .Register(Component.For<IElementBuilder>().Use<LabelElementBuilder>().Named("label"))
+                    .Register(Component.For<IElementBuilder>().Use<PlaceElementBuilder>().Named("place"))
+                    .Register(Component.For<IElementBuilder>().Use<ImportElementBuilder>().Named("import"));
             });
 
             var mapDataStore = _compositionRoot.GetService<IMapDataStore>();

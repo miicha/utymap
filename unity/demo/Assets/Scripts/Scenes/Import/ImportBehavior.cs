@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Assets.Scripts.Core;
 using Assets.Scripts.Core.Plugins;
-using Assets.Scripts.Scenes.Import.Plugins;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
@@ -33,7 +33,7 @@ namespace Assets.Scripts.Scenes.Import
         /// </remarks>
         private const string MapDataPathFormat = @"../../../../core/test/test_assets/osm/berlin.osm.{0}";
 
-        /// <summary> Start coordinate. </summary>
+        /// <summary> Start coordinate: Unity's world zero point. </summary>
         /// <remarks>
         ///    If coordinate is not inside imported map data, then data will be fetched from remote server
         ///    based on level of detail.
@@ -52,8 +52,10 @@ namespace Assets.Scripts.Scenes.Import
             _compositionRoot = InitTask.Run((container, config) =>
             {
                 container
-                    .Register(Component.For<IModelBuilder>().Use<UnityModelBuilder>())
-                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss"));
+                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss"))
+                    .Register(Component.For<MaterialProvider>().Use<MaterialProvider>())
+                    .Register(Component.For<GameObjectBuilder>().Use<GameObjectBuilder>())
+                    .RegisterInstance<IEnumerable<IElementBuilder>>(new List<IElementBuilder>());
             });
             // store map data store reference to member variable
             _mapDataStore = _compositionRoot.GetService<IMapDataStore>();
