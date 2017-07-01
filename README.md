@@ -49,6 +49,10 @@ The simplest way to explore the project is to check source code of demo scenes:
 
 * **Import** scene shows how to import map data from a file. Please note, that import and rendering logic depends on mapcss rules which means you cannot use arbitrary mapcss with arbitrary data format.
 * **Elevation** scene shows how elevation support works. Please note, as scene loads multiple tiles at once, mapzen server might reject some of requests. Also, first time loading takes time: just wait a little bit and restart the scene again. Once processed, all downloaded data is cached inside _StreamingAssets/index_ folder.
+* **Customization** scene demonstrates three aspects of customization:
+    * How to use custom logic for building game objects from existing map data
+    * How to use custom prefabs to replace arbitrary elements on the map
+    * How to add new elements to map data and scene
 * **Map** scene is the most advanced one. It is designed to be a full functional map component which can be used in mobile builds. It supports zoom levels from globe overview till street view.
 
 ## Status
