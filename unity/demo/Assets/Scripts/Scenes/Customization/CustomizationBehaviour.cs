@@ -19,6 +19,7 @@ namespace Assets.Scripts.Scenes.Customization
     ///     1. How to use custom logic for building GameObject from existing map data
     ///     2. How to use custom prefab for selected by id element
     ///     3. How to add a new element (e.g. tree) into map data.
+    ///     Check customization mapcss created for this scene.
     /// </remarks>
     public class CustomizationBehaviour : MonoBehaviour
     {
@@ -40,9 +41,9 @@ namespace Assets.Scripts.Scenes.Customization
                     .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/customization/customization.mapcss"))
                     .Register(Component.For<MaterialProvider>().Use<MaterialProvider>())
                     .Register(Component.For<GameObjectBuilder>().Use<GameObjectBuilder>())
-                    // NOTE for use case 1
+                    // NOTE for use case 1: put cubes for POI
                     .Register(Component.For<IElementBuilder>().Use<PlaceElementBuilder>().Named("place"))
-                    // NOTE for use case 2
+                    // NOTE for use case 2: search for capsule object in scene which replaces specific tree
                     .Register(Component.For<IElementBuilder>().Use<ImportElementBuilder>().Named("import"));
             });
 
@@ -81,17 +82,17 @@ namespace Assets.Scripts.Scenes.Customization
         /// <summary> Adds tree to in-memory tree. </summary>
         private void AddTree()
         {
-            // NOTE use case 3
+            // NOTE use case 3: lets add some conifer tree on the road
             // create an element which represents a tree
             Element tree = new Element(
                 // id of the object
                 0,
-                // geo coordinate: make a tree on the road
-                new [] { new GeoCoordinate(52.53138, 13.38827) },
+                // geo coordinate of the object
+                new[] { new GeoCoordinate(52.53150, 13.38724) },
                 // height in meters under sea
                 new [] { .0 },
                 // map data tags
-                new Dictionary<string, string> { {"natural", "tree"} },
+                new Dictionary<string, string> { {"natural", "tree"}, {"type", "conifer"} },
                 // styles: ignored by editor
                 new Dictionary<string, string>());
 
