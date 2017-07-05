@@ -9,8 +9,8 @@ namespace Assets.Scripts.Core.Plugins
         private readonly Dictionary<string, Material> _sharedMaterials = new Dictionary<string, Material>();
         private readonly List<MaterialDescription> _descriptions = new List<MaterialDescription>()
         {
-            new MaterialDescription(@"Materials/SurfaceColored", false),
-            new MaterialDescription(@"Materials/SurfaceTexturedColored", true)
+            new MaterialDescription(@"Materials/TextureColored", false),
+            new MaterialDescription(@"Materials/AtlasColored", true)
         };
 
         /// <summary> Checks whether texture is atlas. </summary>
