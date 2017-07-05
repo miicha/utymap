@@ -51,12 +51,7 @@ namespace Assets.Scripts.Core.Plugins
 
             gameObject.isStatic = true;
             gameObject.AddComponent<MeshFilter>().mesh = uMesh;
-            // TODO use TextureIndex to select proper material.
-            string texture = tile.QuadKey.LevelOfDetail == 16
-                ? @"Materials/SurfaceTexturedColored"
-                : @"Materials/SurfaceColored";
-
-            gameObject.AddComponent<MeshRenderer>().sharedMaterial = _materialProvider.GetSharedMaterial(texture);
+            gameObject.AddComponent<MeshRenderer>().sharedMaterial = _materialProvider.GetSharedMaterial(mesh.TextureIndex);
             gameObject.transform.parent = tile.GameObject.transform;
         }
     }

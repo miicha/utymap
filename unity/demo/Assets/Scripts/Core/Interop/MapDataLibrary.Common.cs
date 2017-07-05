@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Assets.Scripts.Core.Plugins;
 using UtyDepend;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
@@ -21,13 +22,15 @@ namespace Assets.Scripts.Core.Interop
 
         private static readonly object __lockObj = new object();
         private volatile bool _isConfigured;
+        private readonly MaterialProvider _materialProvider;
         private readonly IPathResolver _pathResolver;
 
         private HashSet<string> _stylePaths = new HashSet<string>();
 
         [Dependency]
-        public MapDataLibrary(IPathResolver pathResolver, ITrace trace)
+        public MapDataLibrary(MaterialProvider materialProvider, IPathResolver pathResolver, ITrace trace)
         {
+            _materialProvider = materialProvider;
             _pathResolver = pathResolver;
             _trace = trace;
         }

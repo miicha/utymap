@@ -27,7 +27,7 @@ canvas|z16 {
     color-noise-freq: 100000;
     ele-noise-freq: 7500;
     color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
-    texture-index: 0;
+    texture-index: 1;
     texture-type: background;
     texture-scale: 100;
 
@@ -38,7 +38,7 @@ canvas|z16 {
 	bridge-ele-noise-freq: 0.05;
 	bridge-color: gradient(#636363);
 	bridge-height-offset:0.05m;
-	bridge-texture-index: 0;
+	bridge-texture-index: 1;
 	bridge-texture-type: drive;
 	bridge-texture-scale: 200;
 
@@ -49,7 +49,7 @@ canvas|z16 {
     water-ele-noise-freq: 100000;
     water-color: gradient(#87cefa, #1e90ff);
     water-height-offset:-1m;
-    water-texture-index: 0;
+    water-texture-index: 1;
     water-texture-type: water;
     water-texture-scale: 100;
 
@@ -60,7 +60,7 @@ canvas|z16 {
     drive-ele-noise-freq: 0;
     drive-color: gradient(#4d4d4d);
     drive-height-offset:-0.2m;
-    drive-texture-index: 0;
+    drive-texture-index: 1;
     drive-texture-type: drive;
     drive-texture-scale: 10;
 

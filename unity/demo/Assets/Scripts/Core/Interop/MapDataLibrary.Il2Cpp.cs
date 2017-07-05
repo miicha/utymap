@@ -1,18 +1,37 @@
-﻿namespace Assets.Scripts.Core.Interop
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Assets.Scripts.Core.Plugins;
+using UtyMap.Unity;
+using UtyMap.Unity.Infrastructure.Diagnostic;
+using UtyMap.Unity.Infrastructure.Primitives;
+using UtyRx;
+
+namespace Assets.Scripts.Core.Interop
 {
     /// <summary> Il2Cpp scripting backend specific implementation. </summary>
     partial class MapDataLibrary
     {
 #if ENABLE_IL2CPP
         private static IList<IObserver<MapData>> _observers;
+        private static MaterialProvider _sMaterialProvider;
+
         private static readonly SafeDictionary<int, Tile> Tiles = new SafeDictionary<int, Tile>();
         private static ITrace _trace;
 
         /// <inheritdoc />
         public IObservable<int> Get(Tile tile, IList<IObserver<MapData>> observers)
         {
-            // NOTE dangerous for static case
-            _observers = observers;
+            // NOTE workaround for static methods requirement
+            if (_sMaterialProvider == null)
+            {
+                lock (this)
+                {
+                    _observers = observers;
+                    _sMaterialProvider = _materialProvider;
+                }
+            }
+
             var tag = tile.GetHashCode();
             Tiles.TryAdd(tag, tile);
             var observable = Get(tile, tag, OnMeshBuiltHandler, OnElementLoadedHandler, OnErrorHandler);
@@ -60,7 +79,7 @@
             var colors = MarshalUtils.ReadInts(colorPtr, colorCount);
             var uvs = MarshalUtils.ReadDoubles(uvPtr, uvCount);
             var uvMap = MarshalUtils.ReadInts(uvMapPtr, uvMapCount);
-            MapDataAdapter.AdaptMesh(tile, _observers, _trace, name, vertices, triangles, colors, uvs, uvMap);
+            MapDataAdapter.AdaptMesh(tile, _sMaterialProvider, _observers, _trace, name, vertices, triangles, colors, uvs, uvMap);
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnError))]
@@ -76,7 +95,7 @@
             var tags = MarshalUtils.ReadStrings(tagPtr, tagCount);
             var styles = MarshalUtils.ReadStrings(stylePtr, styleCount);
 
-            MapDataAdapter.AdaptElement(tile, _observers, _trace, id, vertices, tags, styles);
+            MapDataAdapter.AdaptElement(tile, _sMaterialProvider, _observers, _trace, id, vertices, tags, styles);
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnError))]

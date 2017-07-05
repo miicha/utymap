@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Assets.Scripts.Core.Plugins;
 using UnityEngine;
 using UtyMap.Unity;
 using UtyMap.Unity.Infrastructure.Diagnostic;
@@ -23,7 +24,7 @@ namespace Assets.Scripts.Core.Interop
         private const string TraceCategory = "mapdata.loader";
         
         /// <summary> Adapts mesh data received in raw form. </summary>
-        public static void AdaptMesh(Tile tile, IList<IObserver<MapData>> observers, ITrace trace,
+        public static void AdaptMesh(Tile tile, MaterialProvider materialProvider, IList<IObserver<MapData>> observers, ITrace trace,
             string name, double[] vertices, int[] triangles, int[] colors, double[] uvs, int[] uvMap)
         {
             Vector3[] worldPoints;
@@ -31,22 +32,23 @@ namespace Assets.Scripts.Core.Interop
             Vector2[] unityUvs;
             Vector2[] unityUvs2;
             Vector2[] unityUvs3;
+            int textureIndex;
 
             // NOTE process terrain differently to emulate flat shading effect by avoiding 
             // triangles to share the same vertex. Remove "if" branch if you don't need it
             bool isCreated = name.Contains("terrain")
-                ? BuildTerrainMesh(tile, name, vertices, triangles, colors, uvs, uvMap,
-                    out worldPoints, out unityColors, out unityUvs, out unityUvs2, out unityUvs3)
-                : BuildObjectMesh(tile, name, vertices, triangles, colors, uvs, uvMap,
-                    out worldPoints, out unityColors, out unityUvs, out unityUvs2, out unityUvs3);
+                ? BuildTerrainMesh(tile, materialProvider, name, vertices, triangles, colors, uvs, uvMap,
+                    out worldPoints, out unityColors,  out textureIndex, out unityUvs, out unityUvs2, out unityUvs3)
+                : BuildObjectMesh(tile, materialProvider, name, vertices, triangles, colors, uvs, uvMap,
+                    out worldPoints, out unityColors, out textureIndex, out unityUvs, out unityUvs2, out unityUvs3);
 
             if (isCreated)
-                BuildMesh(tile, observers, trace, name,
-                    worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
+                BuildMesh(tile, observers, trace, name, worldPoints, triangles, unityColors, 
+                    textureIndex, unityUvs, unityUvs2, unityUvs3);
         }
 
         /// <summary> Adapts element data received from utymap. </summary>
-        public static void AdaptElement(Tile tile, IList<IObserver<MapData>> observers, ITrace trace, 
+        public static void AdaptElement(Tile tile, MaterialProvider materialProvider, IList<IObserver<MapData>> observers, ITrace trace, 
             long id, double[] vertices, string[] tags, string[] styles)
         {
             int vertexCount = vertices.Length;
@@ -64,21 +66,15 @@ namespace Assets.Scripts.Core.Interop
 
         #region Private members
 
-        private static bool BuildTerrainMesh(Tile tile, string name,
-            double[] vertices, int[] triangles, int[] colors,
-            double[] uvs, int[] uvMap, out Vector3[] worldPoints, out Color[] unityColors,
+        private static bool BuildTerrainMesh(Tile tile, MaterialProvider materialProvider, string name,
+            double[] vertices, int[] triangles, int[] colors, double[] uvs, int[] uvMap,
+            out Vector3[] worldPoints, out Color[] unityColors, out int textureIndex,
             out Vector2[] unityUvs, out Vector2[] unityUvs2, out Vector2[] unityUvs3)
         {
-            int triangleCount = triangles.Length;
+            worldPoints = new Vector3[triangles.Length];
+            unityColors = new Color[triangles.Length];
 
-            worldPoints = new Vector3[triangleCount];
-            unityColors = new Color[triangleCount];
-
-            unityUvs = new Vector2[triangleCount];
-            unityUvs2 = new Vector2[triangleCount];
-            unityUvs3 = new Vector2[triangleCount];
-
-            var textureMapper = CreateTextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, uvMap);
+            var atlasMapper = CreateTextureAtlasMapper(triangles.Length, uvs, uvMap, materialProvider);
 
             for (int i = 0; i < triangles.Length; ++i)
             {
@@ -87,17 +83,22 @@ namespace Assets.Scripts.Core.Interop
                     .Project(new GeoCoordinate(vertices[vertIndex + 1], vertices[vertIndex]), vertices[vertIndex + 2]);
 
                 unityColors[i] = ColorUtils.FromInt(colors[triangles[i]]);
-                textureMapper.SetUvs(i, triangles[i] * 2);
+                atlasMapper.SetUvs(i, triangles[i] * 2);
                 triangles[i] = i;
             }
+
+            unityUvs = atlasMapper.UnityUvs;
+            unityUvs2 = atlasMapper.UnityUvs2;
+            unityUvs3 = atlasMapper.UnityUvs3;
+            textureIndex = atlasMapper.TextureIndex;
 
             return true;
         }
 
-        private static bool BuildObjectMesh(Tile tile, string name,
+        private static bool BuildObjectMesh(Tile tile, MaterialProvider materialProvider, string name,
             double[] vertices, int[] triangles, int[] colors, double[] uvs, int[] uvMap,
-            out Vector3[] worldPoints, out Color[] unityColors, out Vector2[] unityUvs,
-            out Vector2[] unityUvs2, out Vector2[] unityUvs3)
+            out Vector3[] worldPoints, out Color[] unityColors, out int textureIndex,
+            out Vector2[] unityUvs, out Vector2[] unityUvs2, out Vector2[] unityUvs3)
         {
             long id;
             if (!ShouldLoad(tile, name, out id))
@@ -107,6 +108,7 @@ namespace Assets.Scripts.Core.Interop
                 unityUvs = null;
                 unityUvs2 = null;
                 unityUvs3 = null;
+                textureIndex = 0;
                 return false;
             }
 
@@ -124,22 +126,24 @@ namespace Assets.Scripts.Core.Interop
             
             if (uvCount > 0)
             {
-                unityUvs = new Vector2[uvCount / 2];
-                unityUvs2 = new Vector2[uvCount / 2];
-                unityUvs3 = new Vector2[uvCount / 2];
-
-                var textureMapper = CreateTextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, uvMap);
+                var textureMapper = CreateTextureAtlasMapper(uvCount / 2, uvs, uvMap, materialProvider);
                 for (int i = 0; i < uvCount; i += 2)
                 {
-                    unityUvs[i / 2] = new Vector2((float)uvs[i], (float)uvs[i + 1]);
+                    textureMapper.UnityUvs[i / 2] = new Vector2((float)uvs[i], (float)uvs[i + 1]);
                     textureMapper.SetUvs(i / 2, i);
                 }
+
+                unityUvs = textureMapper.UnityUvs;
+                unityUvs2 = textureMapper.UnityUvs2;
+                unityUvs3 = textureMapper.UnityUvs3;
+                textureIndex = textureMapper.TextureIndex;
             }
             else
             {
                 unityUvs = new Vector2[worldPoints.Length];
-                unityUvs2 = new Vector2[worldPoints.Length];
-                unityUvs3 = new Vector2[worldPoints.Length];
+                unityUvs2 = null;
+                unityUvs3 = null;
+                textureIndex = 0;
             }
 
             tile.Register(id);
@@ -168,8 +172,7 @@ namespace Assets.Scripts.Core.Interop
             return id == 0 || !tile.Has(id);
         }
 
-        private static TextureAtlasMapper CreateTextureAtlasMapper(Vector2[] unityUvs, Vector2[] unityUvs2, Vector2[] unityUvs3,
-                double[] uvs, int[] uvMap)
+        private static TextureAtlasMapper CreateTextureAtlasMapper(int triangleCount, double[] uvs, int[] uvMap, MaterialProvider materialProvider)
         {
             const int infoEntrySize = 8;
             var count = uvMap == null ? 0 : uvMap.Length;
@@ -178,7 +181,10 @@ namespace Assets.Scripts.Core.Interop
             {
                 var info = new TextureAtlasInfo();
                 info.UvIndexRange = new Range<int>(!infos.Any() ? 0 : infos.Last().UvIndexRange.Maximum, uvMap[i++]);
-                info.TextureIndex = uvMap[i++];
+
+                int textureIndex = uvMap[i++];
+                info.TextureIndex = textureIndex;
+                info.HasAtlas = materialProvider.HasAtlas(textureIndex);
 
                 int atlasWidth = uvMap[i++];
                 int atlasHeight = uvMap[i++];
@@ -194,18 +200,18 @@ namespace Assets.Scripts.Core.Interop
                 infos.Add(info);
             }
 
-            return new TextureAtlasMapper(unityUvs, unityUvs2, unityUvs3, uvs, infos);
+            return new TextureAtlasMapper(triangleCount, uvs, infos);
         }
 
         /// <summary> Builds mesh object and notifies observers. </summary>
         /// <remarks> Unity has vertex count limit and spliiting meshes here is quite expensive operation. </remarks>
-        private static void BuildMesh(Tile tile, IList<IObserver<MapData>> observers, ITrace trace, 
-            string name, Vector3[] worldPoints, int[] triangles, Color[] unityColors, 
+        private static void BuildMesh(Tile tile, IList<IObserver<MapData>> observers, ITrace trace,
+            string name, Vector3[] worldPoints, int[] triangles, Color[] unityColors, int textureIndex,
             Vector2[] unityUvs, Vector2[] unityUvs2, Vector2[] unityUvs3)
         {
             if (worldPoints.Length < VertexLimit)
             {
-                Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
+                Mesh mesh = new Mesh(name, textureIndex, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
                 NotifyObservers(new MapData(tile, new Union<Element, Mesh>(mesh)), observers);
                 return;
             }
@@ -224,7 +230,7 @@ namespace Assets.Scripts.Core.Interop
             {
                 var start = i * VertexLimit;
                 var end = Math.Min(start + VertexLimit, worldPoints.Length);
-                Mesh mesh = new Mesh(name + i, 0, 
+                Mesh mesh = new Mesh(name + i, textureIndex, 
                     worldPoints.Skip(start).Take(end - start).ToArray(),
                     i == 0
                         ? triangles.Skip(start).Take(end - start).ToArray()
@@ -255,20 +261,28 @@ namespace Assets.Scripts.Core.Interop
 
         private class TextureAtlasMapper
         {
-            private readonly Vector2[] _unityUvs;
-            private readonly Vector2[] _unityUvs2;
-            private readonly Vector2[] _unityUvs3;
+            public readonly Vector2[] UnityUvs;
+            public readonly Vector2[] UnityUvs2;
+            public readonly Vector2[] UnityUvs3;
+            public readonly int TextureIndex;
+
             private readonly double[] _uvs;
             private readonly List<TextureAtlasInfo> _infos;
 
-            public TextureAtlasMapper(Vector2[] unityUvs, Vector2[] unityUvs2, Vector2[] unityUvs3, double[] uvs,
-                List<TextureAtlasInfo> infos)
+            public TextureAtlasMapper(int triangleCount, double[] uvs, List<TextureAtlasInfo> infos)
             {
-                _unityUvs = unityUvs;
-                _unityUvs2 = unityUvs2;
-                _unityUvs3 = unityUvs3;
+                UnityUvs = new Vector2[triangleCount];
+                UnityUvs2 = GetExtraUvs(triangleCount, infos);
+                UnityUvs3 = GetExtraUvs(triangleCount, infos);
+                TextureIndex = infos.Any() ? infos.First().TextureIndex : 0;
+
                 _uvs = uvs;
                 _infos = infos;
+            }
+
+            private static Vector2[] GetExtraUvs(int triangleCount, List<TextureAtlasInfo> infos)
+            {
+                return infos.Any() && infos.First().HasAtlas ? new Vector2[triangleCount] : null;
             }
 
             public void SetUvs(int resultIndex, int origIindex)
@@ -282,9 +296,12 @@ namespace Assets.Scripts.Core.Interop
                     var info = _infos[middle];
                     if (info.UvIndexRange.Contains(origIindex))
                     {
-                        _unityUvs[resultIndex] = new Vector2((float)_uvs[origIindex], (float)_uvs[origIindex + 1]);
-                        _unityUvs2[resultIndex] = info.TextureSize;
-                        _unityUvs3[resultIndex] = info.TextureOffset;
+                        UnityUvs[resultIndex] = new Vector2((float)_uvs[origIindex], (float)_uvs[origIindex + 1]);
+                        if (info.HasAtlas)
+                        {
+                            UnityUvs2[resultIndex] = info.TextureSize;
+                            UnityUvs3[resultIndex] = info.TextureOffset;
+                        }
                         return;
                     }
                     if (info.UvIndexRange.Minimum > origIindex)
@@ -298,6 +315,7 @@ namespace Assets.Scripts.Core.Interop
         private struct TextureAtlasInfo
         {
             public int TextureIndex;
+            public bool HasAtlas;
             public Range<int> UvIndexRange;
             public Vector2 TextureSize;
             public Vector2 TextureOffset;

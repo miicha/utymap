@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using Assets.Scripts.Core.Plugins;
 using UtyMap.Unity;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyRx;
@@ -17,7 +18,7 @@ namespace Assets.Scripts.Core.Interop
         /// <inheritdoc />
         public IObservable<int> Get(Tile tile, IList<IObserver<MapData>> observers)
         {
-            TileHandler tileHandler = new TileHandler(tile, observers, _trace);
+            TileHandler tileHandler = new TileHandler(tile, _materialProvider, observers, _trace);
             return Get(tile, tile.GetHashCode(), tileHandler.OnMeshBuiltHandler, 
                 tileHandler.OnElementLoadedHandler, OnErrorHandler);
         }
@@ -61,12 +62,14 @@ namespace Assets.Scripts.Core.Interop
         private class TileHandler
         {
             private readonly Tile _tile;
+            private readonly MaterialProvider _materialProvider;
             private readonly IList<IObserver<MapData>> _observers;
             private readonly ITrace _trace;
 
-            public TileHandler(Tile tile, IList<IObserver<MapData>> observers, ITrace trace)
+            public TileHandler(Tile tile, MaterialProvider materialProvider, IList<IObserver<MapData>> observers, ITrace trace)
             {
                 _tile = tile;
+                _materialProvider = materialProvider;
                 _observers = observers;
                 _trace = trace;
             }
@@ -75,13 +78,13 @@ namespace Assets.Scripts.Core.Interop
                 int[] triangles, int triangleCount, int[] colors, int colorCount,
                 double[] uvs, int uvCount, int[] uvMap, int uvMapCount)
             {
-                MapDataAdapter.AdaptMesh(_tile, _observers, _trace, name, vertices, triangles, colors, uvs, uvMap);
+                MapDataAdapter.AdaptMesh(_tile, _materialProvider, _observers, _trace, name, vertices, triangles, colors, uvs, uvMap);
             }
 
             public void OnElementLoadedHandler(int tag, long id, string[] tags, int tagCount,
                 double[] vertices, int vertexCount, string[] styles, int styleCount)
             {
-                MapDataAdapter.AdaptElement(_tile, _observers, _trace, id, vertices, tags, styles);
+                MapDataAdapter.AdaptElement(_tile, _materialProvider, _observers, _trace, id, vertices, tags, styles);
             }
         }
      

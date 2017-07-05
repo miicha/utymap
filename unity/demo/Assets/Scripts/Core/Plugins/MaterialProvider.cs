@@ -7,15 +7,50 @@ namespace Assets.Scripts.Core.Plugins
     internal class MaterialProvider
     {
         private readonly Dictionary<string, Material> _sharedMaterials = new Dictionary<string, Material>();
-
-        /// <summary> Gets shared material. </summary>
-        /// <remarks> Should be called from UI thread only. </remarks>
-        public Material GetSharedMaterial(string key)
+        private readonly List<MaterialDescription> _descriptions = new List<MaterialDescription>()
         {
-            if (!_sharedMaterials.ContainsKey(key))
-                _sharedMaterials[key] = Resources.Load<Material>(key);
+            new MaterialDescription(@"Materials/SurfaceColored", false),
+            new MaterialDescription(@"Materials/SurfaceTexturedColored", true)
+        };
 
-            return _sharedMaterials[key];
+        /// <summary> Checks whether texture is atlas. </summary>
+        public bool HasAtlas(int textureIndex)
+        {
+            return GetDescriptionByIndex(textureIndex).HasAtlas;
+        }
+
+        /// <summary> Gets shared material by texture index. </summary>
+        /// <remarks> Should be called from UI thread only. </remarks>
+        public Material GetSharedMaterial(int textureIndex)
+        {
+            return GetSharedMaterial(GetDescriptionByIndex(textureIndex).Path);
+        }
+
+        /// <summary> Gets shared material by path. </summary>
+        /// <remarks> Should be called from UI thread only. </remarks>
+        public Material GetSharedMaterial(string path)
+        {
+            if (!_sharedMaterials.ContainsKey(path))
+                _sharedMaterials[path] = Resources.Load<Material>(path);
+
+            return _sharedMaterials[path];
+        }
+
+        private MaterialDescription GetDescriptionByIndex(int textureIndex)
+        {
+            return _descriptions[textureIndex % _descriptions.Count];
+        }
+
+        private class MaterialDescription
+        {
+            public readonly string Path;
+            public readonly bool HasAtlas;
+
+            public MaterialDescription(string path, bool hasAtlas)
+            {
+                Path = path;
+                HasAtlas = hasAtlas;
+            }
         }
     }
 }
