@@ -5,7 +5,8 @@
 @import url("default.detail-buildings.mapcss");
 @import url("default.detail-misc.mapcss");
 
-@texture url("default.detail.txt");
+@texture url("default.detail-single.txt");
+@texture url("default.detail-atlas.txt");
 
 @lsystem url("tree.lsys");
 @lsystem url("conifer.lsys");

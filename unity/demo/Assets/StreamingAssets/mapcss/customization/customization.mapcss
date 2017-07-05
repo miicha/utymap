@@ -9,7 +9,8 @@
 @import url("customization.poi.mapcss");
 @import url("customization.import.mapcss");
 
-@texture url("../default/default.detail.txt");
+@texture url("../default/default.detail-single.txt");
+@texture url("../default/default.detail-atlas.txt");
 
 @lsystem url("../default/tree.lsys");
 @lsystem url("../default/conifer.lsys");
@@ -27,7 +28,7 @@ canvas|z16 {
     color-noise-freq: 100000;
     ele-noise-freq: 7500;
     color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
-    texture-index: 1;
+    texture-index: 0;
     texture-type: background;
     texture-scale: 100;
 
