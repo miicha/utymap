@@ -13,11 +13,12 @@
 # Table of Contents
 
 * [Description](#description)
-* [Structure](#structure)
-  * [Source code](#source-code)
-  * [Demo scenes](#demo-scenes)
 * [Status](#status)
 * [Build](#build)
+* [Structure](#structure)
+  * [Source code](#source-code)
+  * [Documentation](#documentation)
+  * [Demo scenes](#demo-scenes)
 * [Features](#features)
   * [Mobile support](#mobile-support)
   * [Various map data](#various-map-data)
@@ -33,15 +34,36 @@
 
 utymap is a library which provides highly customizable API for procedural world generation using real vector map data, e.g. OpenStreetMap, NaturalEarth. Core logic is written on C++11 and can be used on many platforms as it has no dependency to specific game engine or application framework. It is designed for interactive world creation at different zoom levels, including globe and street level.
 
+## Status
+
+Current master branch has a very experimental version. It is recommended to use the latest release.
+
+## Build
+
+See instructions [here](docs/build.md).
+
 ## Structure
 
 ### Source code
 
-Project consists of tree sub-projects:
+Project consists of four sub-projects:
 
 * **android** contains Android Studio project to build core library for Android platform.
 * **core** contains essential logic written on C++11 for constructing of map based apps: mesh generators, mapcss parser, spatial geo index, etc. It does not depend on any 3D render framework or game engine.
+* **docs** contains documentation files.
 * **unity** contains examples written on C# which can be reused to build map oriented Unity3D apps using core library. It demonstrates basic use cases: globe zoom level rendering, 3D scene with all details.
+
+### Documentation
+
+Best way to start with the project is reading documentation files in _docs_ folder which cover the following topics:
+
+- [Build instructions](docs/build.md)
+- [Understanding data model](docs/data.md)
+- [Understanding mapcss](docs/mapcss.md)
+- [Terrain generator](docs/terrain.md)
+- [Using textures](docs/texture.md)
+- [Tree generation via L System](docs/lsystem.md)
+- [How to..](docs/howto.md)
 
 ### Demo scenes
 
@@ -55,13 +77,6 @@ The simplest way to explore the project is to check source code of demo scenes:
     * How to add new elements to map data and scene
 * **Map** scene is the most advanced one. It is designed to be a full functional map component which can be used in mobile builds. It supports zoom levels from globe overview till street view.
 
-## Status
-
-Current master branch has a very experimental version. It is recommended to use the latest release.
-
-## Build
-
-See instructions [here](https://github.com/reinterpretcat/utymap/wiki/Build-instructions).
 
 ## Features
 
@@ -128,7 +143,7 @@ For example, you can have different styles for different seasons of year. Or you
 
 ### Tree generation
 
-utymap can consume map data to generate more complex tries via custom [L-System implementation](https://github.com/reinterpretcat/utymap/wiki/Tree-generation-via-L-System)
+utymap can consume map data to generate more complex tries via custom [L-System implementation](docs/lsystem.md)
 
 <img src="https://cloud.githubusercontent.com/assets/1611077/21949038/692a8b16-d9ef-11e6-9ff9-b03e5b052f73.png" />
 
