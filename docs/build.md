@@ -94,7 +94,7 @@ Library is tested with gcc-4.9 and clang-3.7 on Ubuntu 16.04/12.04. If you have 
     cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
-```
+    ```
 
 * Copy core library
 
