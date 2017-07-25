@@ -1,7 +1,7 @@
 sudo: false
 language: cpp
 os: linux
-dist: precise
+dist: trusty
 mono:
  - latest
 compiler:
@@ -13,8 +13,6 @@ install:
 addons:
     apt:
         sources:
-            - kalakris-cmake
-            - george-edison55-precise-backports # cmake 3.x
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.7
             - boost-latest
@@ -42,4 +40,4 @@ script:
     - cd ../../../unity/library
     - xbuild /p:Configuration=Debug UtyMap.Unity.sln
     - cp ../../core/build/shared/libUtyMap.Shared.so UtyMap.Unity.Tests/bin/Debug/
-    - nunit-console -noshadow UtyMap.Unity.Tests/bin/Debug/UtyMap.Unity.Tests.exe
+    - nunit-console -noshadow -framework=4.0 UtyMap.Unity.Tests/bin/Debug/UtyMap.Unity.Tests.exe

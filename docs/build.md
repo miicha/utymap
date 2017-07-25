@@ -18,7 +18,7 @@ utymap is proven to work on the following platforms:
 There are two options for building utymap for Unity.
 
 ## Build using release artifacts
-Download source code and platform specific archive with binaries from [the latest release](https://github.com/reinterpretcat/utymap/releases) and copy content of Plugins.zip to _unity/demo/Assets/Plugins_. Then just import Unity project from _unity/demo_ folder.
+Download source code and platform specific archive with binaries from [the latest release](https://github.com/reinterpretcat/utymap/releases) and copy content of it to _unity/demo/Assets/Plugins_. Then just import Unity project from _unity/demo_ folder.
 
 ## Build from sources
 Core library is written on C++11 and has some dependencies. The following versions are used in development environment:
@@ -29,7 +29,7 @@ Core library is written on C++11 and has some dependencies. The following versio
 
 **Note:** Protobuf and zlib are required for importing map data from osm pbf format. If you don't need it, you can skip these dependencies by switching corresponding feature off in _core/CMakeLists.txt_
 
-UtyMap.Unity is written on  C# and has <b>dependency</b> on Unity3D specific dlls which can lead to some compiler errors if you have different Unity3D version. In this case, replace _UnityEditor.dll_ and _UnityEngine.dll_ in /unity/library/packages with appropriate versions of these dlls from your distribution.
+UtyMap.Unity is written on  C# and has <b>dependency</b> on Unity3D specific dlls which can lead to some compiler errors if you have different Unity3D version. In this case, replace _UnityEditor.dll_ and _UnityEngine.dll_ in /unity/library/packages with appropriate versions of these dlls from your distribution. 
 
 Please follow OS specific instructions below.
 
@@ -71,7 +71,7 @@ Library is tested with gcc-4.9 and clang-3.7 on Ubuntu 16.04/12.04. If you have 
 * Install dependencies
 
     ``` bash
-    #update repositories: you may skip this step
+    #update repositories: this is for ubuntu precise distributive
     git clone https://github.com/reinterpretcat/utymap.git
     sudo -E apt-add-repository -y "ppa:kalakris/cmake"
     sudo -E apt-add-repository -y "ppa:george-edison55/precise-backports"
