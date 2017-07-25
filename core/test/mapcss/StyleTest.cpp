@@ -15,20 +15,20 @@ using namespace utymap::utils;
 using namespace utymap::tests;
 
 namespace {
-  const std::string stylesheet = "way|z16[meters] { width: 10m; }"
-    "way|z16[percent] { width: 10%; }"
-    "way|z16[water] { width: -1m; }"
-    "node|z16[place] { builder: place; }"
-    "node|z16[place=stop] { builder: stop; }"
-    "node|z16[amenity] { builder: amenity; }"
-    "node|z16[amenity=bar] { builder: amenity; }";
-struct Utils_MapCssUtilsFixture {
+const std::string stylesheet = "way|z16[meters] { width: 10m; }"
+  "way|z16[percent] { width: 10%; }"
+  "way|z16[water] { width: -1m; }"
+  "node|z16[place] { builder: place; }"
+  "node|z16[place=stop] { builder: stop; }"
+  "node|z16[amenity] { builder: amenity; }"
+  "node|z16[amenity=bar] { builder: amenity; }";
+struct MapCss_StyleFixture {
   DependencyProvider dependencyProvider;
   BoundingBox boundingBox = GeoUtils::quadKeyToBoundingBox(QuadKey(16, 35205, 21489));
 };
 }
 
-BOOST_FIXTURE_TEST_SUITE(Utils_MapCssUtils, Utils_MapCssUtilsFixture)
+BOOST_FIXTURE_TEST_SUITE(MapCss_Style, MapCss_StyleFixture)
 
 BOOST_AUTO_TEST_CASE(GivenValueInMeters_WhenGetValue_ThenReturnPositiveValue) {
   int lod = 16;

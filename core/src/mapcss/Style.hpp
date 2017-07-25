@@ -11,7 +11,7 @@
 
 #include <cstdint>
 #include <string>
-#include <unordered_set>
+#include <set>
 #include <unordered_map>
 
 namespace utymap {
@@ -158,7 +158,7 @@ struct Style final {
   const std::uint64_t builderKeyId_;
   std::vector<utymap::entities::Tag> tags_;
   std::unordered_map<std::uint32_t, const StyleDeclaration *> declarations_;
-  std::unordered_set<std::string> builders_;
+  std::set<std::string> builders_;
 };
 
 }
