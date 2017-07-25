@@ -60,7 +60,8 @@ namespace Assets.Scripts.Environment
                 "surface-ways.mapcss",
                 "surface-areas.mapcss",
 
-                "detail.txt",
+                "detail-atlas.txt",
+                "detail-single.txt",
                 "detail.mapcss",
                 "detail-buildings.mapcss",
                 "detail-misc.mapcss",
