@@ -51,7 +51,7 @@ struct StyleEvaluator final {
   template<typename T>
   static T evaluate(const Tree &tree,
                     const std::vector<utymap::entities::Tag> &tags,
-                    utymap::index::StringTable &stringTable) {
+                    const utymap::index::StringTable &stringTable) {
     typedef typename std::conditional<std::is_same<T, std::string>::value, StringEvaluator, DoubleEvaluator>::type
         EvaluatorType;
     return EvaluatorType(tags, stringTable)(tree);
@@ -65,20 +65,20 @@ struct StyleEvaluator final {
     typedef T result_type;
 
     Evaluator(const std::vector<utymap::entities::Tag> &tags,
-              utymap::index::StringTable &stringTable) :
+              const utymap::index::StringTable &stringTable) :
         tags_(tags), stringTable_(stringTable) {}
 
    protected:
     static std::string throwException() { throw std::domain_error("Evaluator: unsupported operation."); }
 
     const std::vector<utymap::entities::Tag> &tags_;
-    utymap::index::StringTable &stringTable_;
+    const utymap::index::StringTable &stringTable_;
   };
 
   /// Evaluates double from AST.
   struct DoubleEvaluator : public Evaluator<double> {
     DoubleEvaluator(const std::vector<utymap::entities::Tag> &tags,
-                    utymap::index::StringTable &stringTable) :
+                    const utymap::index::StringTable &stringTable) :
         Evaluator(tags, stringTable) {}
 
     double operator()(Nil) const { return 0; }
@@ -120,7 +120,7 @@ struct StyleEvaluator final {
   /// Evaluates string from AST.
   struct StringEvaluator : public Evaluator<std::string> {
     StringEvaluator(const std::vector<utymap::entities::Tag> &tags,
-                    utymap::index::StringTable &stringTable)
+                    const utymap::index::StringTable &stringTable)
         : Evaluator(tags, stringTable) {}
 
     std::string operator()(Nil) const { return throwException(); }

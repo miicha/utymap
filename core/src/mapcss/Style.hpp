@@ -3,6 +3,7 @@
 
 #include "Exceptions.hpp"
 #include "entities/Element.hpp"
+#include "mapcss/StyleConsts.hpp"
 #include "mapcss/StyleDeclaration.hpp"
 #include "index/StringTable.hpp"
 #include "utils/CoreUtils.hpp"
@@ -10,6 +11,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_set>
 #include <unordered_map>
 
 namespace utymap {
@@ -18,14 +20,17 @@ namespace mapcss {
 /// Represents style for element.
 struct Style final {
   Style(const std::vector<utymap::entities::Tag> &tags,
-        utymap::index::StringTable &stringTable) :
-      stringTable_(stringTable), tags_(tags), declarations_() {
+        const utymap::index::StringTable &stringTable) :
+      stringTable_(stringTable), builderKeyId_(stringTable.getId(StyleConsts::BuilderKey())),
+      tags_(tags), declarations_(), builders_() {
   }
 
   Style(Style &&other) :
       stringTable_(other.stringTable_),
+      builderKeyId_(other.builderKeyId_),
       tags_(std::move(other.tags_)),
-      declarations_(std::move(other.declarations_)) {
+      declarations_(std::move(other.declarations_)),
+      builders_(std::move(other.builders_)) {
   }
 
   Style(const Style &) = default;
@@ -47,6 +52,10 @@ struct Style final {
   }
 
   void put(const StyleDeclaration &declaration) {
+    if (declaration.key()==builderKeyId_) {
+      builders_.insert(declaration.value());
+    }
+    // TODO remove this branch if condition above is true, after style migration
     declarations_[declaration.key()] = &declaration;
   }
 
@@ -66,6 +75,17 @@ struct Style final {
                    });
 
     return decs;
+  }
+
+  /// Gets list of builders extracted from declarations.
+  std::vector<std::string> getBuilders() const {
+    std::vector<std::string> builders;
+    std::transform(builders_.cbegin(), builders_.cend(), std::back_inserter(builders),
+      [](std::string const &item) {
+      return item;
+    });
+
+    return builders;
   }
 
   /// Gets string by given key. Empty string by default
@@ -134,9 +154,11 @@ struct Style final {
            : utymap::utils::parseDouble(rawValue);
   }
 
-  utymap::index::StringTable &stringTable_;
+  const utymap::index::StringTable &stringTable_;
+  const std::uint64_t builderKeyId_;
   std::vector<utymap::entities::Tag> tags_;
   std::unordered_map<std::uint32_t, const StyleDeclaration *> declarations_;
+  std::unordered_set<std::string> builders_;
 };
 
 }

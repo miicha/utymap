@@ -12,6 +12,11 @@ const std::string &StyleConsts::SkipKey() {
   return value;
 }
 
+const std::string &StyleConsts::BuilderKey() {
+  static const std::string value = "builder";
+  return value;
+}
+
 const std::string &StyleConsts::EleNoiseFreqKey() {
   static const std::string value = "ele-noise-freq";
   return value;

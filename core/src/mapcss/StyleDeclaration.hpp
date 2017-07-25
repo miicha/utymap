@@ -44,7 +44,7 @@ struct StyleDeclaration final {
   /// Evaluates expression using tags
   template<typename T>
   T evaluate(const std::vector<utymap::entities::Tag> &tags,
-             utymap::index::StringTable &stringTable) const {
+             const utymap::index::StringTable &stringTable) const {
     if (!isEval())
       throw utymap::MapCssException("Cannot evaluate raw value.");
 

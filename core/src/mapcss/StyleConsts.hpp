@@ -12,6 +12,8 @@ struct StyleConsts final {
   static const std::string &ClipKey();
   static const std::string &SkipKey();
 
+  static const std::string &BuilderKey();
+
   static const std::string &EleNoiseFreqKey();
   static const std::string &ColorNoiseFreqKey();
 
