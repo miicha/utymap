@@ -67,4 +67,24 @@ BOOST_AUTO_TEST_CASE(GivenOneTagOneNumber_WhenStringEvaluate_ThenReturnValue) {
   BOOST_CHECK_EQUAL(result, "red");
 }
 
+BOOST_AUTO_TEST_CASE(GivenTagStringConcatenation_WhenStringEvaluate_ThenReturnValue) {
+  StyleDeclaration styleDeclaration(0, "eval(\"tag('amenity') + '_string'\")");
+  auto node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0,
+                                                { { "amenity", "place_of_worship" } });
+
+  std::string result = styleDeclaration.evaluate<std::string>(node.tags, *dependencyProvider.getStringTable());
+
+  BOOST_CHECK_EQUAL(result, "place_of_worship_string");
+}
+
+BOOST_AUTO_TEST_CASE(GivenTwoTagsConcatenatedWithRawString_WhenStringEvaluate_ThenReturnValue) {
+  StyleDeclaration styleDeclaration(0, "eval(\"tag('amenity') + '_' + tag('religion')\")");
+  auto node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0,
+  { { "amenity", "place_of_worship" }, {"religion", "christian"} });
+
+  std::string result = styleDeclaration.evaluate<std::string>(node.tags, *dependencyProvider.getStringTable());
+
+  BOOST_CHECK_EQUAL(result, "place_of_worship_christian");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -22,10 +22,13 @@ namespace mapcss {
 struct StyleEvaluator final {
   /// NOTE has to put these declarations here due to evaluate function implementation
   struct Nil {};
+  struct Tag {
+    std::string key;
+  };
+
   struct Signed;
   struct Tree;
-  typedef boost::variant<Nil, double, std::string, boost::recursive_wrapper<Signed>, boost::recursive_wrapper<Tree>>
-      Operand;
+  typedef boost::variant<Nil, double, std::string, Tag, boost::recursive_wrapper<Signed>> Operand;
 
   struct Signed {
     char sign;
@@ -54,7 +57,7 @@ struct StyleEvaluator final {
                     const utymap::index::StringTable &stringTable) {
     typedef typename std::conditional<std::is_same<T, std::string>::value, StringEvaluator, DoubleEvaluator>::type
         EvaluatorType;
-    return EvaluatorType(tags, stringTable)(tree);
+    return EvaluatorType(tags, stringTable).visit(tree);
   }
 
  private:
@@ -68,9 +71,7 @@ struct StyleEvaluator final {
               const utymap::index::StringTable &stringTable) :
         tags_(tags), stringTable_(stringTable) {}
 
-   protected:
-    static std::string throwException() { throw std::domain_error("Evaluator: unsupported operation."); }
-
+  protected:
     const std::vector<utymap::entities::Tag> &tags_;
     const utymap::index::StringTable &stringTable_;
   };
@@ -81,22 +82,20 @@ struct StyleEvaluator final {
                     const utymap::index::StringTable &stringTable) :
         Evaluator(tags, stringTable) {}
 
-    double operator()(Nil) const { return 0; }
-    double operator()(double n) const { return n; }
-
-    double operator()(const Operation &o, double lhs) const {
-      double rhs = boost::apply_visitor(*this, o.operand);
-      switch (o.operator_) {
-        case '+': return lhs + rhs;
-        case '-': return lhs - rhs;
-        case '*': return lhs*rhs;
-        case '/': return lhs/rhs;
-        default: return 0;
-      }
+    double operator()(const Nil&) const {
+      return 0;
+    }
+ 
+    double operator()(const double &value) const {
+      return value;
     }
 
-    double operator()(const std::string &tagKey) const {
-      auto keyId = stringTable_.getId(tagKey);
+    double operator()(const std::string &value) const {
+      return utymap::utils::parseDouble(value);
+    }
+
+    double operator()(const Tag &tag) const {
+      auto keyId = stringTable_.getId(tag.key);
       return utymap::utils::parseDouble(utymap::utils::getTagValue(keyId, tags_, stringTable_));
     }
 
@@ -109,11 +108,23 @@ struct StyleEvaluator final {
       }
     }
 
-    double operator()(const Tree &tree) const {
+    double visit(const Tree &tree) const {
       double state = boost::apply_visitor(*this, tree.first);
-      for (const Operation &oper : tree.rest)
-        state = (*this)(oper, state);
+      for (const Operation &op : tree.rest)
+        merge(op, state);
       return state;
+    }
+
+  private:
+    void merge(const Operation &o, double& state) const {
+      double rhs = boost::apply_visitor(*this, o.operand);
+      switch (o.operator_) {
+        case '+': state += rhs; break;
+        case '-': state -= rhs; break;
+        case '*': state *= rhs; break;
+        case '/': state /= rhs; break;
+        default: return;
+      }
     }
   };
 
@@ -123,19 +134,40 @@ struct StyleEvaluator final {
                     const utymap::index::StringTable &stringTable)
         : Evaluator(tags, stringTable) {}
 
-    std::string operator()(Nil) const { return throwException(); }
-    std::string operator()(double n) const { return throwException(); }
-
-    std::string operator()(const Operation &o, double lhs) const { return throwException(); }
-
-    std::string operator()(const std::string &tagKey) const {
-      return utymap::utils::getTagValue(stringTable_.getId(tagKey), tags_, stringTable_);
+    std::string operator()(const Nil&) const {
+      return "";
+    }
+   
+    std::string operator()(const double& value) const {
+      return utymap::utils::toString(value);
     }
 
-    std::string operator()(const Signed &s) const { return throwException(); }
+    std::string operator()(const std::string &value) const {
+      return value;
+    }
 
-    std::string operator()(const Tree &tree) const {
-      return boost::apply_visitor(*this, tree.first);
+    std::string operator()(const Tag &tag) const {
+      return utymap::utils::getTagValue(stringTable_.getId(tag.key), tags_, stringTable_);
+    }
+
+    std::string operator()(const Signed &s) const {
+      throw std::domain_error("StringEvaluator: sign operation is not supported.");
+    }
+
+    std::string visit(const Tree &tree) const {
+      auto state = boost::apply_visitor(*this, tree.first);
+      for (const Operation &op : tree.rest)
+        merge(op, state);
+      return state;
+    }
+
+  private:
+    void merge(const Operation &o, std::string &state) const {
+      std::string rhs = boost::apply_visitor(*this, o.operand);
+      if (o.operator_ != '+')
+        throw std::domain_error(std::string("StringEvaluator: unsupported merge operation: ") + o.operator_);
+
+      state += rhs;
     }
   };
 

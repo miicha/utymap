@@ -11,6 +11,7 @@ using namespace utymap::mapcss;
 namespace {
 
 typedef StyleEvaluator::Nil Nil;
+typedef StyleEvaluator::Tag TagKey;
 typedef StyleEvaluator::Signed Signed;
 typedef StyleEvaluator::Tree Tree;
 typedef StyleEvaluator::Operation Operation;
@@ -27,27 +28,33 @@ struct EvalGrammar : qi::grammar<Iterator, Tree(), ascii::space_type> {
     qi::char_type char_;
 
     expression =
-      "eval(\"" >> term >> *((char_("+") >> term) | (char_("-") >> term)) >> "\")";
+      "eval(\"" >> operand >> *(operation) >> "\")";
 
-    term =
-      factor >> *((char_("*") >> factor) | (char_("/") >> factor));
+    operation =
+      (char_("+") | char_("-") | char_("/") | char_("*")) >> operand;
+
+    operand =
+      double_ | tag | string;
 
     tag =
       "tag('" >> qi::lexeme[+(ascii::char_ - '\'')] >> "')";
 
-    factor =
-      double_
-      | tag
-      | (char_("-") >> factor)
-      | (char_("+") >> factor);
+    string =
+      '\'' >> qi::lexeme[+(ascii::char_ - '\'')] >> '\'';
   }
 
-  qi::rule<Iterator, std::string()> tag;
+  qi::rule<Iterator, TagKey()> tag;
+  qi::rule<Iterator, std::string()> string;
+  qi::rule<Iterator, Operation(), ascii::space_type> operation;
+  qi::rule<Iterator, Operand(), ascii::space_type> operand;
   qi::rule<Iterator, Tree(), ascii::space_type> expression;
-  qi::rule<Iterator, Tree(), ascii::space_type> term;
-  qi::rule<Iterator, Operand(), ascii::space_type> factor;
 };
 }
+
+BOOST_FUSION_ADAPT_STRUCT(
+  TagKey,
+  (std::string, key)
+)
 
 BOOST_FUSION_ADAPT_STRUCT(
   Signed,
