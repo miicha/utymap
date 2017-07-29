@@ -38,7 +38,6 @@ struct EvalGrammar : qi::grammar<Iterator, Tree(), ascii::space_type> {
     factor =
       double_
       | tag
-      | '(' >> expression >> ')'
       | (char_("-") >> factor)
       | (char_("+") >> factor);
   }
