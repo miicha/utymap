@@ -77,6 +77,16 @@ BOOST_AUTO_TEST_CASE(GivenTagStringConcatenation_WhenStringEvaluate_ThenReturnVa
   BOOST_CHECK_EQUAL(result, "place_of_worship_string");
 }
 
+BOOST_AUTO_TEST_CASE(GivenStringTagConcatenation_WhenStringEvaluate_ThenReturnValue) {
+  StyleDeclaration styleDeclaration(0, "eval(\"'terrain_landuse_' + tag('landuse')\")");
+  auto node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0,
+  { { "landuse", "residential" } });
+
+  std::string result = styleDeclaration.evaluate<std::string>(node.tags, *dependencyProvider.getStringTable());
+
+  BOOST_CHECK_EQUAL(result, "terrain_landuse_residential");
+}
+
 BOOST_AUTO_TEST_CASE(GivenTwoTagsConcatenatedWithRawString_WhenStringEvaluate_ThenReturnValue) {
   StyleDeclaration styleDeclaration(0, "eval(\"tag('amenity') + '_' + tag('religion')\")");
   auto node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0,

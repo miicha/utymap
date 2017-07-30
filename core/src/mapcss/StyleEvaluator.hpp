@@ -111,12 +111,12 @@ struct StyleEvaluator final {
     double visit(const Tree &tree) const {
       double state = boost::apply_visitor(*this, tree.first);
       for (const Operation &op : tree.rest)
-        merge(op, state);
+        apply(op, state);
       return state;
     }
 
   private:
-    void merge(const Operation &o, double& state) const {
+    void apply(const Operation &o, double& state) const {
       double rhs = boost::apply_visitor(*this, o.operand);
       switch (o.operator_) {
         case '+': state += rhs; break;
@@ -157,12 +157,12 @@ struct StyleEvaluator final {
     std::string visit(const Tree &tree) const {
       auto state = boost::apply_visitor(*this, tree.first);
       for (const Operation &op : tree.rest)
-        merge(op, state);
+        apply(op, state);
       return state;
     }
 
   private:
-    void merge(const Operation &o, std::string &state) const {
+    void apply(const Operation &o, std::string &state) const {
       std::string rhs = boost::apply_visitor(*this, o.operand);
       if (o.operator_ != '+')
         throw std::domain_error(std::string("StringEvaluator: unsupported merge operation: ") + o.operator_);
