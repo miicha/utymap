@@ -29,14 +29,14 @@ canvas|z9-16 {
     road-highway-primary-color-noise-freq: 0;
     road-highway-primary-ele-noise-freq: 0;
     road-highway-primary-color: gradient(#8d4346);
-	road-highway-primary-sort-order: 1007;
+    road-highway-primary-sort-order: 1007;
     road-highway-primary-mesh-name: terrain_road_highway_primary;
 
     road-major-secondary-max-area: 0.1%;
     road-major-secondary-color-noise-freq: 0;
     road-major-secondary-ele-noise-freq: 0;
     road-major-secondary-color: gradient(#a37b48);
-	road-major-secondary-sort-order: 1006;
+    road-major-secondary-sort-order: 1006;
     road-major-secondary-mesh-name: terrain_road_major_secondary;
 
     road-major-tertiary-max-area: 0.1%;
@@ -50,42 +50,42 @@ canvas|z9-16 {
     road-minor-color-noise-freq: 0;
     road-minor-ele-noise-freq: 0;
     road-minor-color: gradient(#999999);
-	road-minor-sort-order: 1004;
+    road-minor-sort-order: 1004;
     road-minor-mesh-name: terrain_road_minor;
 
     path-footway-max-area: 0.1%;
     path-footway-color-noise-freq: 0;
     path-footway-ele-noise-freq: 0;
     path-footway-color: gradient(#ccddcc);
-	path-footway-sort-order: 1003;
+    path-footway-sort-order: 1003;
     path-footway-mesh-name: terrain_path_footway;
 
-	boundary-country-max-area: 10%;
+    boundary-country-max-area: 10%;
     boundary-country-color-noise-freq: 0;
     boundary-country-ele-noise-freq: 0;
     boundary-country-color: gradient(#d6abd0);
     boundary-country-height-offset: 11.5m;
-	boundary-country-sort-order:1002;
+    boundary-country-sort-order:1002;
     boundary-country-mesh-name: terrain_boundary_country;
 
     boundary-region-max-area: 10%;
     boundary-region-color-noise-freq: 0;
     boundary-region-ele-noise-freq: 0;
     boundary-region-color: gradient(#dcbad6);
-	boundary-region-sort-order:1001;
+    boundary-region-sort-order:1001;
     boundary-region-mesh-name: terrain_boundary_region;
 
-	water-max-area: 0.25%;
+    water-max-area: 0.25%;
     water-color-noise-freq: 0;
     water-ele-noise-freq: 0;
     water-color: gradient(#b5d0d0);
-	water-sort-order: 1000;
+    water-sort-order: 1000;
     water-mesh-name: water;
 
-	earth-max-area: 0.1%;
+    earth-max-area: 0.1%;
     earth-color-noise-freq: 0;
     earth-ele-noise-freq: 0;
     earth-color: gradient(#f1eee8);
-	earth-sort-order: -1;
+    earth-sort-order: -1;
     earth-mesh-name: terrain_earth;
 }

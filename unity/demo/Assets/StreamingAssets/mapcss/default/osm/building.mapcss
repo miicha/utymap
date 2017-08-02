@@ -1,7 +1,7 @@
 relation|z16[type=building] {
     clip: false;
     building: true;
-    builders: building;
+    builder: building;
 }
 
 area,relation|z16[man_made=stele],
@@ -13,21 +13,21 @@ area,relation|z16[building:shape],
 area,relation|z16[building:part] {
     clip: false;
     building: true;
-    builders: building;
+    builder: building;
 
     height: 12m;
     min-height: 0m;
 
-    facade-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
+    facade-color: #c0c0c0;
     facade-type: flat;
-    facade-texture-index: 1;
+    facade-texture-index: 0;
     facade-texture-type: facade;
     facade-texture-scale: 200;
 
-    roof-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
+    roof-color: #c0c0c0;
     roof-type: flat;
     roof-height: 0m;
-    roof-texture-index: 1;
+    roof-texture-index: 0;
     roof-texture-type: roof;
     roof-texture-scale: 200;
 }
@@ -63,30 +63,38 @@ area,relation|z16[roof:height] {
     roof-height: eval("tag('roof:height')");
 }
 
+
 area,relation|z16[roof:shape=dome] {
     roof-type: dome;
 }
+
 area,relation|z16[building:roof:shape=pyramidal],
 area,relation|z16[roof:shape=pyramidal] {
     roof-type: pyramidal;
 }
+
 area,relation|z16[roof:shape=mansard] {
     roof-type: mansard;
 }
+
 area,relation|z16[roof:shape=skillion] {
     roof-type: skillion;
 }
+
 area,relation|z16[roof:shape=round] {
     roof-type: round;
 }
+
 area,relation|z16[building:shape=cylinder] {
     roof-type: none;
     facade-type: cylinder;
 }
+
 area,relation|z16[building:shape=sphere] {
     roof-type: none;
     facade-type: sphere;
 }
+
 
 area,relation|z16[building:colour] {
     roof-color: eval("tag('building:colour')");
@@ -95,6 +103,26 @@ area,relation|z16[building:color] {
     roof-color: eval("tag('building:color')");
 }
 
+area,relation|z16[building=station] {
+    roof-color: #d4aaaa;
+}
+
+area,relation|z16[building=supermarket] {
+    roof-color: pink;
+}
+
+area,relation|z16[building=residential][railway!=station][amenity!=place_of_worship],
+area,relation|z16[building=house][railway!=station][amenity!=place_of_worship],
+area,relation|z16[building=garage][railway!=station][amenity!=place_of_worship],
+area,relation|z16[building=garages][railway!=station][amenity!=place_of_worship],
+area,relation|z16[building=detached][railway!=station][amenity!=place_of_worship],
+area,relation|z16[building=terrace][railway!=station][amenity!=place_of_worship],
+area,relation|z16[building=apartments][railway!=station][amenity!=place_of_worship] {
+    roof-color: #bca9a9;
+}
+
+/* TODO Ignore so far */
+/*
 area,relation|z16[building:material=brick],
 area,relation|z16[building:facade:material=brick],
 area,relation|z16[building:cladding=brick] {
@@ -256,34 +284,43 @@ area,relation|z16[roof:material=wood] {
     roof-color: gradient(#0eff94, #0deb88 50%, #07854d);
     roof-texture-type: wood;
 }
+*/
 
 area,relation|z16[building:colour] {
     facade-color: eval("tag('building:colour')");
 }
+
 area,relation|z16[building:color] {
     facade-color: eval("tag('building:color')");
 }
+
 area,relation|z16[roof:colour] {
     roof-color: eval("tag('roof:colour')");
 }
+
 area,relation|z16[roof:color] {
     roof-color: eval("tag('roof:color')");
 }
 
+
 area,relation|z16[roof:orientation] {
     roof-direction: eval("tag('roof:orientation')");
 }
+
 area,relation|z16[building:roof:orientation] {
     roof-direction: eval("tag('building:roof:orientation')");
 }
+
 area,relation|z16[roof:direction] {
     roof-direction: eval("tag('roof:direction')");
 }
+
 area,relation|z16[roof:slope:direction] {
     roof-direction: eval("tag('roof:slope:direction')");
 }
 
+
 area,relation|z16[building][height=0],
 area,relation|z16[building:part=no] {
-    skip:true;
+    skip: true;
 }

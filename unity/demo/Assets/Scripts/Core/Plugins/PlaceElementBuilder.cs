@@ -1,21 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Core.Plugins;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UtyDepend;
 using UtyMap.Unity;
+using UtyMap.Unity.Infrastructure.IO;
 
-namespace Assets.Scripts.Scenes.Customization.Plugins
+namespace Assets.Scripts.Core.Plugins
 {
     /// <summary> Builds Place of Interest as cube primitive with texture from Element. </summary>
     internal sealed class PlaceElementBuilder : IElementBuilder
     {
+        private const string IconImageStyleKey = "icon-image";
+        private const string IconSchemaFile = "config/icon.schema.txt";
+        private static readonly Regex IconSchemaRegex = new Regex(@"([a-zA-z_]*?): (\d+)_(\d+)_(\d+)_(\d+)");
+
         private readonly MaterialProvider _materialProvider;
+        private Dictionary<string, Rect> _iconMapping;
 
         [Dependency]
-        public PlaceElementBuilder(MaterialProvider customizationService)
+        public PlaceElementBuilder(MaterialProvider customizationService,
+            IFileSystemService fileSystemService, IPathResolver pathResolver)
         {
             _materialProvider = customizationService;
+            var iconMappingString = fileSystemService.ReadText(pathResolver.Resolve(IconSchemaFile));
+            _iconMapping = CreateIconMapping(iconMappingString);
         }
 
         /// <inheritdoc />
@@ -91,24 +101,41 @@ namespace Assets.Scripts.Scenes.Customization.Plugins
 
         private Rect GetUvRect(Element element)
         {
-            var values = element.Styles["rect"].Split('_');
-            if (values.Length != 4)
-                throw new InvalidOperationException("Cannot read uv mapping.");
-
             var textureHeight = float.Parse(element.Styles["height"]);
             var textureWidth = float.Parse(element.Styles["width"]);
 
-            var width = (float)int.Parse(values[2]);
-            var height = (float)int.Parse(values[3]);
+            var key = element.Styles[IconImageStyleKey];
+            // TODO handle this case with default icon?
+            if (!_iconMapping.ContainsKey(key))
+                return new Rect();
 
-            var offset = int.Parse(values[1]);
-            var x = (float)int.Parse(values[0]);
-            var y = Math.Abs((offset + height) - textureHeight);
+            var rect = _iconMapping[key];
 
-            var leftBottom = new Vector2(x / textureWidth, y / textureHeight);
-            var rightUpper = new Vector2((x + width) / textureWidth, (y + height) / textureHeight);
+            var leftBottom = new Vector2(rect.x / textureWidth, rect.y / textureHeight);
+            var rightUpper = new Vector2((rect.x + rect.width) / textureWidth, (rect.y + rect.height) / textureHeight);
 
             return new Rect(leftBottom.x, leftBottom.y, rightUpper.x - leftBottom.x, rightUpper.y - leftBottom.y);
         }
+
+        private static Dictionary<string, Rect> CreateIconMapping(string iconMappingString)
+        {
+            var iconMapping = new Dictionary<string, Rect>();
+            foreach (var line in iconMappingString.Split('\n'))
+            {
+                var match = IconSchemaRegex.Match(line);
+                if (match.Success)
+                {
+                    var key = match.Groups[1].Value;
+                    var value = new Rect(
+                        Int32.Parse(match.Groups[2].Value),
+                        Int32.Parse(match.Groups[3].Value),
+                        Int32.Parse(match.Groups[4].Value),
+                        Int32.Parse(match.Groups[5].Value));
+                    iconMapping.Add(key, value);
+                }
+            }
+            return iconMapping;
+        }
     }
 }
+

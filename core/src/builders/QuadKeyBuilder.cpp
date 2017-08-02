@@ -13,18 +13,13 @@ using namespace utymap::mapcss;
 using namespace utymap::math;
 
 namespace {
-const std::string BuilderKeyName = "builders";
-
 typedef std::unordered_map<std::string, QuadKeyBuilder::ElementBuilderFactory> BuilderFactoryMap;
 
 /// Responsible for processing elements of quadkey in consistent way.
 class BuilderElementVisitor : public ElementVisitor {
  public:
-  BuilderElementVisitor(const BuilderContext &context, BuilderFactoryMap &builderFactoryMap, std::uint32_t builderKeyId)
-      :
-      context_(context),
-      builderFactoryMap_(builderFactoryMap),
-      builderKeyId_(builderKeyId) {}
+  BuilderElementVisitor(const BuilderContext &context, BuilderFactoryMap &builderFactoryMap) :
+    context_(context), builderFactoryMap_(builderFactoryMap) { }
 
   void visitNode(const Node &node) override {
     visitElement(node);
@@ -53,24 +48,19 @@ class BuilderElementVisitor : public ElementVisitor {
   void visitElement(const Element &element) {
     Style style = context_.styleProvider.forElement(element, context_.quadKey.levelOfDetail);
 
-    if (!canBuild(element, style))
-      return;
+    if (canBuild(element, style)) {
 
-    ids_.insert(element.id);
+      ids_.insert(element.id);
 
-    std::stringstream ss(style.get(builderKeyId_).value());
-    std::string name;
-    while (ss.good()) {
-      getline(ss, name, ',');
-      element.accept(getBuilder(name));
-      name.clear();
+      for (const auto &name : style.getBuilders()) {
+        element.accept(getBuilder(name));
+      }
     }
   }
 
   bool canBuild(const Element &element, const Style &style) {
     // check do we know how to build it and prevent multiple building
-    return !style.empty() && style.has(builderKeyId_) &&
-        (element.id==0 || ids_.find(element.id)==ids_.end());
+    return !style.empty() && (element.id==0 || ids_.find(element.id)==ids_.end());
   }
 
   ElementBuilder &getBuilder(const std::string &name) {
@@ -91,7 +81,6 @@ class BuilderElementVisitor : public ElementVisitor {
 
   const BuilderContext &context_;
   BuilderFactoryMap &builderFactoryMap_;
-  std::uint32_t builderKeyId_;
   std::set<std::uint64_t> ids_;
   std::unordered_map<std::string, std::unique_ptr<ElementBuilder>> builders_;
 };
@@ -100,8 +89,7 @@ class BuilderElementVisitor : public ElementVisitor {
 class QuadKeyBuilder::QuadKeyBuilderImpl {
  public:
   QuadKeyBuilderImpl(GeoStore &geoStore, StringTable &stringTable) :
-      geoStore_(geoStore), stringTable_(stringTable),
-      builderKeyId_(stringTable.getId(BuilderKeyName)), builderFactory_() {}
+      geoStore_(geoStore), stringTable_(stringTable), builderFactory_() {}
 
   void registerElementVisitor(const std::string &name, ElementBuilderFactory factory) {
     builderFactory_[name] = factory;
@@ -115,7 +103,7 @@ class QuadKeyBuilder::QuadKeyBuilderImpl {
              const utymap::CancellationToken &cancelToken) {
     auto context = BuilderContext(quadKey, styleProvider, stringTable_, eleProvider,
       meshCallback, elementCallback, cancelToken);
-    auto visitor = BuilderElementVisitor(context, builderFactory_, builderKeyId_);
+    auto visitor = BuilderElementVisitor(context, builderFactory_);
     geoStore_.search(quadKey, styleProvider, visitor, cancelToken);
     visitor.complete();
   }
@@ -123,7 +111,6 @@ class QuadKeyBuilder::QuadKeyBuilderImpl {
  private:
   GeoStore &geoStore_;
   StringTable &stringTable_;
-  const std::uint32_t builderKeyId_;
   BuilderFactoryMap builderFactory_;
 };
 

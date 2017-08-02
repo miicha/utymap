@@ -1,9 +1,0 @@
-@import url("default.orbit.mapcss");
-@import url("default.surface.mapcss");
-@import url("default.detail.mapcss");
-
-/* Ignore all objects under surface. */
-node,area,way,relation|z9-16[layer<0] {
-	skip:true;
-}
-

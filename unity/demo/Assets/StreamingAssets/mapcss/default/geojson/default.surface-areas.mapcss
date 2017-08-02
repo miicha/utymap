@@ -16,9 +16,9 @@ area,relation|z9-15[kind=nature_reserve],
 area,relation|z9-15[kind=park],
 /*area,relation|z9-15[kind=national_park],*/
 area,relation|z9-15[kind=urban_area] {
-	clip:true;
+    clip:true;
     builders: terrain;
-	max-area: 0.25%;
+    max-area: 0.25%;
     color-noise-freq: 0;
     ele-noise-freq: 0;
 }
@@ -48,9 +48,9 @@ area,relation|z11-15[kind=meadow],
 area,relation|z11-15[kind=grass],
 area,relation|z11-15[kind=park],
 area,relation|z11-15[kind=residential] {
-	clip:true;
+    clip:true;
     builders: terrain;
-	max-area: 0.25%;
+    max-area: 0.25%;
     color-noise-freq: 0;
     ele-noise-freq: 0;
 }
@@ -70,12 +70,12 @@ area,relation|z11-15[kind=aerodrome] {
 area,relation|z11-15[kind=meadow],
 area,relation|z11-15[kind=grass],
 area,relation|z11-15[kind=village_green] {
-	color: gradient(#cfeca8);
+    color: gradient(#cfeca8);
     mesh-name: village_green;
 }
 
 area,relation|z11-15[kind=scrub] {
-	color: gradient(#b5e3b5);
+    color: gradient(#b5e3b5);
     mesh-name: scrub;
 }
 
@@ -102,22 +102,22 @@ area,relation|z11-15[kind=commercial] {
 
 /* from zoom 13 */
 area,relation|z13-14[kind=building]{
-	clip: true;
+    clip: true;
     builders: terrain;
     terrain-layer: building;
 }
 
 /* from zoom 15 */
 area,relation|z15[kind=building]{
-	clip: false;
+    clip: false;
     building: true;
-	multipolygon: true;
+    multipolygon: true;
     builders: building;
 
-	height: 20m;
+    height: 20m;
     min-height: 0m;
 
-	facade-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
+    facade-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
     facade-type: flat;
     facade-texture-index: 0;
     facade-texture-type: facade;

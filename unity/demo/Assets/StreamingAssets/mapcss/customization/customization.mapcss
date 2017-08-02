@@ -18,11 +18,11 @@
 
 /* Ignore all objects under surface. */
 node,area,way,relation|z16[layer<0] {
-	skip:true;
+    skip:true;
 }
 
 canvas|z16 {
-	grid-cell-size: 5%;
+    grid-cell-size: 5%;
 
     max-area: 0.1%;
     color-noise-freq: 100000;
@@ -32,19 +32,19 @@ canvas|z16 {
     texture-type: background;
     texture-scale: 100;
 
-	bridge-mesh-name: terrain_bridges;
-	bridge-sort-order: 1003;
-	bridge-max-area: 5%;
-	bridge-color-noise-freq: 0.1;
-	bridge-ele-noise-freq: 0.05;
-	bridge-color: gradient(#636363);
-	bridge-height-offset:0.05m;
-	bridge-texture-index: 1;
-	bridge-texture-type: drive;
-	bridge-texture-scale: 200;
+    bridge-mesh-name: terrain_bridges;
+    bridge-sort-order: 1003;
+    bridge-max-area: 5%;
+    bridge-color-noise-freq: 0.1;
+    bridge-ele-noise-freq: 0.05;
+    bridge-color: gradient(#636363);
+    bridge-height-offset:0.05m;
+    bridge-texture-index: 1;
+    bridge-texture-type: drive;
+    bridge-texture-scale: 200;
 
-	water-mesh-name: terrain_water;
-	water-sort-order: 1002;
+    water-mesh-name: terrain_water;
+    water-sort-order: 1002;
     water-max-area: 0.01%;
     water-color-noise-freq: 100000;
     water-ele-noise-freq: 100000;
@@ -54,8 +54,8 @@ canvas|z16 {
     water-texture-type: water;
     water-texture-scale: 100;
 
-	drive-mesh-name: terrain_drive;
-	drive-sort-order: 1001;
+    drive-mesh-name: terrain_drive;
+    drive-sort-order: 1001;
     drive-max-area: 5%;
     drive-color-noise-freq: 0.1;
     drive-ele-noise-freq: 0;
@@ -65,8 +65,8 @@ canvas|z16 {
     drive-texture-type: drive;
     drive-texture-scale: 10;
 
-	pedestrian-mesh-name: terrain_pedestrian;
-	pedestrian-sort-order: 1000;
+    pedestrian-mesh-name: terrain_pedestrian;
+    pedestrian-sort-order: 1000;
     pedestrian-max-area: 5%;
     pedestrian-color-noise-freq: 0.1;
     pedestrian-ele-noise-freq: 0.05;

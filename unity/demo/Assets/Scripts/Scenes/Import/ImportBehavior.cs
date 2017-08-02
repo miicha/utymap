@@ -52,7 +52,7 @@ namespace Assets.Scripts.Scenes.Import
             _compositionRoot = InitTask.Run((container, config) =>
             {
                 container
-                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss"))
+                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/index.mapcss"))
                     .Register(Component.For<MaterialProvider>().Use<MaterialProvider>())
                     .Register(Component.For<GameObjectBuilder>().Use<GameObjectBuilder>())
                     .RegisterInstance<IEnumerable<IElementBuilder>>(new List<IElementBuilder>());

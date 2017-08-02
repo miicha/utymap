@@ -25,7 +25,7 @@ namespace Assets.Scripts.Core.Plugins
         {
             foreach (var builder in _elementBuilders)
             {
-                if (!element.Styles["builders"].Contains(builder.Name))
+                if (!element.Styles["builder"].Contains(builder.Name))
                     continue;
 
                 var gameObject = builder.Build(tile, element);
