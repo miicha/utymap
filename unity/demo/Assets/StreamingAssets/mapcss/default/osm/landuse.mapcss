@@ -14,75 +14,75 @@ node|z16[landuse][point=yes] {
 */
 
 /*** areas ***/
-area,relation|z16[landuse] {
+area|z16[landuse] {
     mesh-name: eval("'terrain_landuse_' + tag('landuse')");
 }
 
-area,relation|z16[landuse=quarry] {
+area|z16[landuse=quarry] {
     color: grey;
 }
 
-area,relation|z16[landuse=orchard] {
+area|z16[landuse=orchard] {
     color: green;
 /*
     texture-type: orchard;
 */
 }
 
-area,relation|z16[landuse=vineyard] {
+area|z16[landuse=vineyard] {
     color: #abdf96;
 /*
     texture-type: vineyard;
 */
 }
 
-area,relation|z16[landuse=cemetery],
-area,relation|z16[landuse=grave_yard] {
+area|z16[landuse=cemetery],
+area|z16[landuse=grave_yard] {
     color: #aacbaf;
 }
 
-area,relation|z16[landuse=residential] {
+area|z16[landuse=residential] {
     color: #dddddd;
 }
 
-area,relation|z16[landuse=garages] {
+area|z16[landuse=garages] {
     color: #999966;
 }
 
-area,relation|z16[landuse=field] {
+area|z16[landuse=field] {
     color: #666600;
 }
 
 /*
-area,relation|z16[landuse=cemetery][religion=jewish],
-area,relation|z16[landuse=grave_yard][religion=jewish] {
+area|z16[landuse=cemetery][religion=jewish],
+area|z16[landuse=grave_yard][religion=jewish] {
     texture-type: cemetery-jewish;
 }
 
-area,relation|z16[landuse=cemetery][religion=christian],
-area,relation|z16[landuse=grave_yard][religion=christian] {
+area|z16[landuse=cemetery][religion=christian],
+area|z16[landuse=grave_yard][religion=christian] {
     texture-type: grave-yard;
 }
 
-area,relation|z16[landuse=cemetery][religion!=christian][religion!=jewish],
-area,relation|z16[landuse=grave_yard][religion!=christian][religion!=jewish] {
+area|z16[landuse=cemetery][religion!=christian][religion!=jewish],
+area|z16[landuse=grave_yard][religion!=christian][religion!=jewish] {
     texture-type: grave-yard-generic;
 }
 */
 
-area,relation|z16[landuse=meadow],
-area,relation|z16[landuse=grass] {
+area|z16[landuse=meadow],
+area|z16[landuse=grass] {
     color: #cfeca8;
 }
 
-area,relation|z16[landuse=allotments] {
+area|z16[landuse=allotments] {
     color: #e5c7ab;
 /*
     texture-type: allotments;
 */
 }
 
-area,relation|z16[landuse=forest] {
+area|z16[landuse=forest] {
     color: #8dc56c;
 
     mesh-extras: forest;
@@ -98,7 +98,7 @@ area,relation|z16[landuse=forest] {
     lsys-texture-scales: 200,50;
 }
 
-area,relation|z16[landuse=farmyard] {
+area|z16[landuse=farmyard] {
     color: #ddbf92;
 }
 
@@ -107,47 +107,47 @@ area|z16[landuse=farmland] {
     color: #ead8bd;
 }
 
-area,relation|z16[landuse=recreation_ground],
-area,relation|z16[landuse=conservation] {
+area|z16[landuse=recreation_ground],
+area|z16[landuse=conservation] {
     color: #cfeca8;
 }
 
-area,relation|z16[landuse=village_green] {
+area|z16[landuse=village_green] {
     mesh-name: terrain_landuse_green;
     color: #cfeca8;
 }
 
-area,relation|z16[landuse=retail] {
+area|z16[landuse=retail] {
     color: #f1dada;
 }
 
-area,relation|z16[landuse=industrial],
-area,relation|z16[landuse=railway] {
+area|z16[landuse=industrial],
+area|z16[landuse=railway] {
     color: #dfd1d6;
 }
 
-area,relation|z16[landuse=commercial] {
+area|z16[landuse=commercial] {
     color: #efc8c8;
 }
 
-area,relation|z16[landuse=brownfield],
-area,relation|z16[landuse=landfill],
-area,relation|z16[landuse=greenfield],
-area,relation|z16[landuse=construction] {
+area|z16[landuse=brownfield],
+area|z16[landuse=landfill],
+area|z16[landuse=greenfield],
+area|z16[landuse=construction] {
     color: #9d9d6c;
 }
 
-area,relation|z16[landuse=wood] {
+area|z16[landuse=wood] {
     color: #aed1a0;
 }
 
-area,relation|z16[landuse=basin],
-area,relation|z16[landuse=reservoir],
-area,relation|z16[landuse=water] {
+area|z16[landuse=basin],
+area|z16[landuse=reservoir],
+area|z16[landuse=water] {
     terrain-layer: water-generic;
 }
 
-area,relation|z16[landuse=military] {
+area|z16[landuse=military] {
     color: #ff5555;
 /*
     texture-type: military;

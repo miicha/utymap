@@ -99,17 +99,17 @@ bool ElementStore::store(const Element &element,
       element.accept(bboxVisitor);
 
     utymap::utils::GeoUtils::visitTileRange(bboxVisitor.boundingBox, lod,
-                                            [&](const QuadKey &quadKey, const BoundingBox &quadKeyBbox) {
-                                              if (!visitor(bboxVisitor.boundingBox, quadKeyBbox))
-                                                return;
+      [&](const QuadKey &quadKey, const BoundingBox &quadKeyBbox) {
+        if (!visitor(bboxVisitor.boundingBox, quadKeyBbox))
+          return;
 
-                                              if (style.has(clipKeyId_, TrueValue))
-                                                geometryClipper.clipAndCall(element, quadKey, quadKeyBbox);
-                                              else
-                                                storeImpl(element, quadKey);
+        if (style.has(clipKeyId_, TrueValue))
+          geometryClipper.clipAndCall(element, quadKey, quadKeyBbox);
+        else
+          storeImpl(element, quadKey);
 
-                                              wasStored = true;
-                                            });
+        wasStored = true;
+      });
   }
 
   // NOTE still might be clipped and then skipped

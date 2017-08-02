@@ -17,20 +17,20 @@ relation|z16[type=multipolygon] {
 }
 
 /* Terrain generic properties. */
-area,relation|z16[aerialway],
-area,relation|z16[aeroway],
-area,relation|z16[boundary],
-area,relation|z16[highway],
-area,relation|z16[historic],
-area,relation|z16[landuse],
-area,relation|z16[leisure],
-area,relation|z16[man_made],
-area,relation|z16[military],
-area,relation|z16[natural],
-area,relation|z16[power],
-area,relation|z16[railway],
-area,relation|z16[shop],
-area,relation|z16[tourism] {
+area|z16[aerialway],
+area|z16[aeroway],
+area|z16[boundary],
+area|z16[highway],
+area|z16[historic],
+area|z16[landuse],
+area|z16[leisure],
+area|z16[man_made],
+area|z16[military],
+area|z16[natural],
+area|z16[power],
+area|z16[railway],
+area|z16[shop],
+area|z16[tourism] {
     clip: true;
     builder: terrain;
     mesh-name: terrain_common;
@@ -89,7 +89,7 @@ node|z16[waterway] {
 @import url("osm/boundary.mapcss");
 @import url("osm/building.mapcss");
 @import url("osm/highway.mapcss");
-@import url("osm/historic.mapcss");
+/*@import url("osm/historic.mapcss");*/
 @import url("osm/landuse.mapcss");
 @import url("osm/leisure.mapcss");
 @import url("osm/manmade.mapcss");
@@ -103,6 +103,6 @@ node|z16[waterway] {
 @import url("osm/waterway.mapcss");
 
 /* Ignore all objects under surface. */
-node,area,way,relation|z16[layer<0] {
+node,way,area,relation|z16[layer<0] {
     skip: true;
 }

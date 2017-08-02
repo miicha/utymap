@@ -1,5 +1,5 @@
 /* Nodes */
-node,area,relation|z16[tourism] {
+node,area|z16[tourism] {
     icon-image: eval("'tourism_' + tag('tourism')");
 /*
     font-family: DejaVu Sans Book;
@@ -21,20 +21,20 @@ node|z16[tourism=attraction] {
 */
 
 /* Areas */
-area,relation|z16[tourism] {
+area|z16[tourism] {
     mesh-name: eval("'terrain_tourism_' + tag('tourism')");
 }
 
-area,relation|z16[tourism=camp_site],
-area,relation|z16[tourism=caravan_site],
-area,relation|z16[tourism=picnic_site] {
+area|z16[tourism=camp_site],
+area|z16[tourism=caravan_site],
+area|z16[tourism=picnic_site] {
     color: #ccff99;
 }
 
-area,relation|z16[tourism=attraction] {
+area|z16[tourism=attraction] {
     color: #f2caea;
 }
 
-area,relation|z16[tourism=theme_park] {
+area|z16[tourism=theme_park] {
     color: #734a08;
 }

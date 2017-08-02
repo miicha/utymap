@@ -10,14 +10,14 @@ node|z16[military=danger_area] {
 }
 
 /* areas */
-area,relation|z16[military] {
+area|z16[military] {
     mesh-name: eval("'terrain_military_' + tag('military')");
 }
 
-area,relation|z16[military=barracks] {
+area|z16[military=barracks] {
     color: #ff8f8f;
 }
 
-area,relation|z16[military=danger_area] {
+area|z16[military=danger_area] {
     color: pink;
 }

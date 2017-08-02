@@ -58,13 +58,6 @@ void setCoordinates(T &t, const ClipperLib::Path &path) {
   }
 }
 
-template<typename T>
-void setData(T &t, const utymap::entities::Element &element, const ClipperLib::Path &path) {
-  t.id = element.id;
-  t.tags = element.tags;
-  setCoordinates<T>(t, path);
-}
-
 ClipperLib::Path createPathFromBoundingBox(const BoundingBox &quadKeyBbox) {
   double xMin = quadKeyBbox.minPoint.longitude, yMin = quadKeyBbox.minPoint.latitude,
       xMax = quadKeyBbox.maxPoint.longitude, yMax = quadKeyBbox.maxPoint.latitude;
@@ -110,19 +103,22 @@ std::shared_ptr<Element> clipElement(ClipperLib::ClipperEx &clipper,
   // 3. way intersects border only once: store a copy with clipped geometry
   if (count==1) {
     auto clippedElement = std::make_shared<T>();
-    setData(*clippedElement, element, solution.GetFirst()->Contour);
+    clippedElement->id = element.id;
+    clippedElement->tags = element.tags;
+    setCoordinates(*clippedElement, solution.GetFirst()->Contour);
+    
     return clippedElement;
   }
   // 4. in this case, result should be stored as relation (collection of ways)
   if (count > 1) {
     auto relation = std::make_shared<Relation>();
     relation->id = element.id;
-    relation->tags = element.tags;
     relation->elements.reserve(count);
     ClipperLib::PolyNode *polyNode = solution.GetFirst();
     while (polyNode) {
       auto clippedElement = std::make_shared<T>();
-      clippedElement->id = element.id;
+      clippedElement->id = 0;
+      clippedElement->tags = element.tags;
       setCoordinates(*clippedElement, polyNode->Contour);
       relation->elements.push_back(clippedElement);
       polyNode = polyNode->GetNext();
@@ -160,15 +156,15 @@ struct RelationVisitor : public ElementVisitor {
   }
 
   void visitWay(const Way &way) override {
-    addElement(clipWay(clipper_, bbox_, way), way);
+    addElement(clipWay(clipper_, bbox_, way));
   }
 
   void visitArea(const Area &area) override {
-    addElement(clipArea(clipper_, bbox_, area), area);
+    addElement(clipArea(clipper_, bbox_, area));
   }
 
   void visitRelation(const Relation &relation) override {
-    addElement(clipRelation(clipper_, bbox_, relation), relation);
+    addElement(clipRelation(clipper_, bbox_, relation));
   }
 
   std::shared_ptr<Relation> relation;
@@ -180,14 +176,10 @@ struct RelationVisitor : public ElementVisitor {
       relation = std::make_shared<Relation>();
   }
 
-  void addElement(std::shared_ptr<Element> element, const Element &original) {
-    if (element==nullptr)
-      return;
+  void addElement(std::shared_ptr<Element> element) {
+    if (element==nullptr) return;
 
     ensureRelation();
-
-    element->id = original.id;
-    element->tags = original.tags;
 
     relation->elements.push_back(element);
   }
@@ -208,11 +200,10 @@ std::shared_ptr<Element> clipRelation(ClipperLib::ClipperEx &clipper,
     return nullptr;
 
   std::shared_ptr<Element> element = visitor.relation->elements.size()==1
-                                     ? visitor.relation->elements.at(0)
-                                     : visitor.relation;
+    ? visitor.relation->elements.at(0)
+    : visitor.relation;
 
   element->id = relation.id;
-  element->tags = relation.tags;
 
   return element;
 }

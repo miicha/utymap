@@ -51,14 +51,14 @@ node|z16[amenity=pharmacy] {
 */
 
 /* areas */
-area,relation|z16[amenity=grave_yard],
-area,relation|z16[amenity=university],
-area,relation|z16[amenity=college],
-area,relation|z16[amenity=school],
-area,relation|z16[amenity=hospital],
-area,relation|z16[amenity=kindergarten],
-area,relation|z16[amenity=parking],
-area,relation|z16[amenity=place_of_worship] {
+area|z16[amenity=grave_yard],
+area|z16[amenity=university],
+area|z16[amenity=college],
+area|z16[amenity=school],
+area|z16[amenity=hospital],
+area|z16[amenity=kindergarten],
+area|z16[amenity=parking],
+area|z16[amenity=place_of_worship] {
     mesh-name: eval("'terrain_amenity_' + tag('amenity')");
     color: brown;
 /*
@@ -66,18 +66,18 @@ area,relation|z16[amenity=place_of_worship] {
 */
 }
 
-area,relation|z16[amenity=fountain] {
+area|z16[amenity=fountain] {
     terrain-layer: water-generic;
 }
 
-area,relation|z16[amenity=grave_yard] {
+area|z16[amenity=grave_yard] {
     color: #aacbaf;
 }
 
-area,relation|z16[amenity=parking] {
+area|z16[amenity=parking] {
     color: #eeeed1;
 }
 
-area,relation|z16[amenity=place_of_worship] {
+area|z16[amenity=place_of_worship] {
     color: #777777;
 }

@@ -34,7 +34,13 @@ class BuilderElementVisitor : public ElementVisitor {
   }
 
   void visitRelation(const Relation &relation) override {
-    visitElement(relation);
+    if (relation.tags.empty()) {
+      // processing clipped element
+      ids_.insert(relation.id);
+      for (const auto &element : relation.elements)
+        visitElement(*element);
+    } else
+      visitElement(relation);
   }
 
   void complete() {
@@ -70,8 +76,8 @@ class BuilderElementVisitor : public ElementVisitor {
 
     auto factory = builderFactoryMap_.find(name);
     builders_.emplace(name, factory==builderFactoryMap_.end()
-                            ? utymap::utils::make_unique<ExternalBuilder>(context_) // use external builder by default
-                            : factory->second(context_));
+      ? utymap::utils::make_unique<ExternalBuilder>(context_) // use external builder by default
+      : factory->second(context_));
 
     auto &builder = *builders_[name];
     builder.prepare();

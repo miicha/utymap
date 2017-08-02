@@ -9,25 +9,25 @@ node|z16[power=generator][power_source=wind] {
 
 /* Ways */
 /*
-way,relation|z16[power=line] {
+way|z16[power=line] {
     color: #777777;
     width: 1.5;
 }
 
-way,relation|z16[power=minor_line] {
+way|z16[power=minor_line] {
     color: #777777;
     width: 0.5;
 }
 */
 
 /* Areas */
-area,relation|z16[power] {
+area|z16[power] {
     mesh-name: eval("'terrain_power_' + tag('power')");
     color: #bbbbbb;
 }
 
 /*
-area,relation|z16[power=generator][power_source=wind] {
+area|z16[power=generator][power_source=wind] {
     icon-image: power_wind;
 }
 */

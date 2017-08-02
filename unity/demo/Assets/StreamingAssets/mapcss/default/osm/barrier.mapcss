@@ -1,4 +1,4 @@
-node,way,area,relation|z16[barrier] {
+node,way,area|z16[barrier] {
     clip: true;
     builder: barrier;
     mesh-name: eval("'barrier_' + tag('barrier')");
@@ -18,21 +18,21 @@ node,way,area,relation|z16[barrier] {
     icon-image: eval("'barrier_' + tag('barrier')");
 }
 
-node,way,area,relation|z16[barrier=bollard],
-node,way,area,relation|z16[barrier=block] {
+node,way,area|z16[barrier=bollard],
+node,way,area|z16[barrier=block] {
     radius: 0.2m;
     height: 1m;
     step: 5m;
     type: pillar;
 }
 
-way,area,relation|z16[barrier=hedge] {
+way,area|z16[barrier=hedge] {
     color: #aed1a0;
     width: 0.2m;
     gap: 0;
 }
 
-way,area,relation|z16[barrier=kerb] {
+way,area|z16[barrier=kerb] {
     height: 0.2m;
     width: 0.1m;
     length: 0.5m;

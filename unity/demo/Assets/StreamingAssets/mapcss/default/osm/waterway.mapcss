@@ -45,7 +45,7 @@ node|z16[waterway] {
 }
 
 /* Ways */
-way,relation|z16[waterway] {
+way|z16[waterway] {
     clip: true;
     builder: terrain;
     terrain-layer: water-generic;
@@ -59,31 +59,31 @@ way,relation|z16[waterway] {
 */
 }
 
-way,relation|z16[waterway][bridge] {
+way|z16[waterway][bridge] {
     terrain-layer: water-bridge;
 }
 
-way,relation|z16[waterway=wadi] {
+way|z16[waterway=wadi] {
     width: 2m;
 }
 
-way,relation|z16[waterway=river] {
+way|z16[waterway=river] {
     width: 12m;
 }
 
-way,relation|z16[waterway=canal] {
+way|z16[waterway=canal] {
     width: 4m;
 }
 
 /*
-way,relation|z16[waterway=river][tunnel] {
+way|z16[waterway=river][tunnel] {
     width: 13m;
 }
 */
 
-way,relation|z16[waterway=derelict_canal],
-way,relation|z16[waterway=canal][disused=yes],
-way,relation|z16[waterway=canal][lock=yes] {
+way|z16[waterway=derelict_canal],
+way|z16[waterway=canal][disused=yes],
+way|z16[waterway=canal][lock=yes] {
     terrain-layer: water-disused;
     width: 4m;
 /*
@@ -91,18 +91,18 @@ way,relation|z16[waterway=canal][lock=yes] {
 */
 }
 
-way,relation|z16[waterway=stream] {
+way|z16[waterway=stream] {
     width: 2m;
 }
 
-way,relation|z16[waterway=drain],
-way,relation|z16[waterway=ditch] {
+way|z16[waterway=drain],
+way|z16[waterway=ditch] {
     terrain-layer: water-disused;
     width: 1m;
 }
 
 /*
-way,relation|z16[waterway=dam] {
+way|z16[waterway=dam] {
     text-color: #222222;
 }
 */

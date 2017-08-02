@@ -11,7 +11,7 @@ node|z16[historic=archaeological_site] {
 }
 
 /* ways */
-way,relation|z16[historic=citywalls] {
+way|z16[historic=citywalls] {
     clip: true;
     builder: barrier;
     mesh-name: historic_citywalls;
@@ -30,17 +30,17 @@ way,relation|z16[historic=citywalls] {
 }
 
 /* areas */
-area,relation|z16[historic] {
+area|z16[historic] {
     mesh-name: eval("'terrain_historic_' + tag('historic')");
 }
 
-area,relation|z16[historic=castle_walls] {
+area|z16[historic=castle_walls] {
     color: #888888;
 }
 
 /*
-area,relation|z16[historic=archaeological_site],
-area,relation|z16[historic=memorial] {
+area|z16[historic=archaeological_site],
+area|z16[historic=memorial] {
     icon-image: eval("'historic_' + tag('historic')");
 }
 */

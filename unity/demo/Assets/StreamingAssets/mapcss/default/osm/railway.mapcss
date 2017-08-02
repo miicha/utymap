@@ -36,47 +36,47 @@ node|z16[railway=station][disused=yes] {
 */
 
 /*** Ways ***/
-way,relation|z16[railway] {
+way|z16[railway] {
     clip: true;
     builder: terrain;
     terrain-layer: railway-generic;
 }
 
-way,relation|z16[railway][bridge] {
+way|z16[railway][bridge] {
     terrain-layer: railway-bridge;
 }
 
 /*
-way,relation|z16[railway=subway],
-way,relation|z16[railway][tunnel=yes] {
+way|z16[railway=subway],
+way|z16[railway][tunnel=yes] {
     texture-type: railway-tunnel;
 }
 */
 /*
-way,relation|z16[railway=disused],
-way,relation|z16[railway=abandoned],
-way,relation|z16[railway=construction] {
+way|z16[railway=disused],
+way|z16[railway=abandoned],
+way|z16[railway=construction] {
     texture-type: railway-disused;
 }
 */
 
 /*** Areas ***/
-area,relation|z16[railway] {
+area|z16[railway] {
     mesh-name: eval("'terrain_railway_' + tag('railway')");
 }
 
-area,relation|z16[railway=station] {
+area|z16[railway=station] {
     color: #d4aaaa;
 }
 
-area,relation|z16[railway=platform] {
+area|z16[railway=platform] {
     color: #bbbbbb;
 }
 
 /*
-area,relation|z16[railway=halt],
-area,relation|z16[railway=tram_stop],
-area,relation|z16[railway=station][disused!=yes] {
+area|z16[railway=halt],
+area|z16[railway=tram_stop],
+area|z16[railway=station][disused!=yes] {
     font-family: DejaVu Sans Bold;
     font-size: 9;
     text: "name";
@@ -85,7 +85,7 @@ area,relation|z16[railway=station][disused!=yes] {
 */
 
 /*
-area,relation|z16[railway=station][disused=yes] {
+area|z16[railway=station][disused=yes] {
     font-family: DejaVu Sans Bold;
     font-size: 9;
     text: name;

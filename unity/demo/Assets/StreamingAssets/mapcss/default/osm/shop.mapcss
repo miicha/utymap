@@ -1,4 +1,4 @@
-node,area,relation|z16[shop] {
+node,area|z16[shop] {
     icon-image: eval("'shop_' + tag('shop')");
 /*
     font-family: DejaVu Sans Book;

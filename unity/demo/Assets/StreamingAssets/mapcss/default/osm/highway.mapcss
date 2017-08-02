@@ -28,14 +28,14 @@ node|z16[highway=mini_roundabout] {
 }
 
 /* ways */
-way,relation|z16[highway] {
+way|z16[highway] {
     clip: true;
     builder: terrain;
     terrain-layer: pedestrian;
     width: 1m;
 }
 
-way,relation|z16[highway] {
+/*way|z16[highway] {
     builder: lamp;
 
     lamp-step: 30m;
@@ -45,116 +45,116 @@ way,relation|z16[highway] {
     lsys-texture-indices: 0,0;
     lsys-texture-types: background,background;
     lsys-texture-scales: 200,200;
-}
+}*/
 
-way,relation|z16[highway=path][foot=designated] {
+way|z16[highway=path][foot=designated] {
     terrain-layer: pedestrian;
     width: 1m;
 }
 
-way,relation|z16[highway=proposed][construction],
-way,relation|z16[highway=construction][construction],
-way,relation|z16[highway=service] {
+way|z16[highway=proposed][construction],
+way|z16[highway=construction][construction],
+way|z16[highway=service] {
     terrain-layer: drive;
     width: 2.5m;
 }
-way,relation|z16[highway=footway] {
+way|z16[highway=footway] {
     terrain-layer: pedestrian;
     width: 1m;
 }
 
-way,relation|z16[highway=tertiary],
-way,relation|z16[highway=residential],
-way,relation|z16[highway=unclassified],
-way,relation|z16[highway=road] {
+way|z16[highway=tertiary],
+way|z16[highway=residential],
+way|z16[highway=unclassified],
+way|z16[highway=road] {
     terrain-layer: drive;
     width: 4.5m;
 }
-way,relation|z16[highway=living_street] {
+way|z16[highway=living_street] {
     width: 4m;
 }
-way,relation|z16[highway=trunk],
-way,relation|z16[highway=trunk_link],
-way,relation|z16[highway=primary],
-way,relation|z16[highway=primary_link],
-way,relation|z16[highway=motorway],
-way,relation|z16[highway=motorway_link] {
+way|z16[highway=trunk],
+way|z16[highway=trunk_link],
+way|z16[highway=primary],
+way|z16[highway=primary_link],
+way|z16[highway=motorway],
+way|z16[highway=motorway_link] {
     terrain-layer: drive;
     width: 4m;
 }
-way,relation|z16[highway=secondary],
-way,relation|z16[highway=secondary_link] {
+way|z16[highway=secondary],
+way|z16[highway=secondary_link] {
     terrain-layer: drive;
     width: 3.5m;
 }
-way,relation|z16[highway=tertiary],
-way,relation|z16[highway=tertiary_link] {
+way|z16[highway=tertiary],
+way|z16[highway=tertiary_link] {
     terrain-layer: drive;
     width: 4m;
 }
 
-way,relation|z16[highway][lanes] {
+way|z16[highway][lanes] {
     width: eval("tag('lanes') * 1.8");
     dimension: 1m;
 }
 
 /* Areas */
-area,relation|z16[highway] {
+area|z16[highway] {
     mesh-name: eval("'terrain_highway_' + tag('highway')");
 }
 
-area,relation|z16[highway=services],
-area,relation|z16[highway=rest_area] {
+area|z16[highway=services],
+area|z16[highway=rest_area] {
     color: #efc8c8;
 }
 
-area,relation|z16[highway=residential],
-area,relation|z16[highway=unclassified] {
+area|z16[highway=residential],
+area|z16[highway=unclassified] {
     color: #999999;
 }
 
-area,relation|z16[highway=pedestrian],
-area,relation|z16[highway=service],
-area,relation|z16[highway=footway],
-area,relation|z16[highway=path],
-area,relation|z16[highway=platform] {
+area|z16[highway=pedestrian],
+area|z16[highway=service],
+area|z16[highway=footway],
+area|z16[highway=path],
+area|z16[highway=platform] {
     color: grey;
 }
 
-area,relation|z16[highway=track] {
+area|z16[highway=track] {
     color: #996600;
 }
 
-area,relation|z16[highway=living_street] {
+area|z16[highway=living_street] {
     color: #cccccc;
 }
 
-area,relation|z16[highway=residential],
-area,relation|z16[highway=unclassified],
-area,relation|z16[highway=service] {
+area|z16[highway=residential],
+area|z16[highway=unclassified],
+area|z16[highway=service] {
     color: white;
 }
 
-area,relation|z16[highway=pedestrian],
-area,relation|z16[highway=footway],
-area,relation|z16[highway=path] {
+area|z16[highway=pedestrian],
+area|z16[highway=footway],
+area|z16[highway=path] {
     color: #ededed;
 }
 
-area,relation|z16[highway=track] {
+area|z16[highway=track] {
     color: #dfcc66;
 }
 
-area,relation|z16[highway=platform] {
+area|z16[highway=platform] {
     color: #bbbbbb;
 }
 
 /*
-area,relation|z16[highway=bus_stop],
-area,relation|z16[highway=ford],
-area,relation|z16[highway=gate],
+area|z16[highway=bus_stop],
+area|z16[highway=ford],
+area|z16[highway=gate],
 area,relation|z17[highway=traffic_signals],
-area,relation|z16[highway=mini_roundabout] {
+area|z16[highway=mini_roundabout] {
     icon-image: eval("'highway_' + tag('highway')");
 }
 */

@@ -30,31 +30,31 @@ node|z16[man_made=lighthouse] {
 
 /* ways */
 /* TODO skip for now
-way,relation|z16[man_made=cutline] {
+way|z16[man_made=cutline] {
     color: #f2efe9;
     linecap: square;
     linejoin: round;
     width: 6;
 }
 
-way,relation|z16[man_made=breakwater],
-way,relation|z16[man_made=groyne] {
+way|z16[man_made=breakwater],
+way|z16[man_made=groyne] {
     color: #aaaaaa;
     width: 4;
 }
 
-way,relation|z16[man_made=pier] {
+way|z16[man_made=pier] {
     color: #f2efe9;
     width: 7;
 }
 
-way,relation|z16[man_made=embankment] {
+way|z16[man_made=embankment] {
     pattern-image: cliff;
 }
 */
 
 /* areas */
-area,relation|z16[man_made] {
+area|z16[man_made] {
     mesh-name: eval("'terrain_man_made_' + tag('man_made')");
     color: #f2efe9;
 /*
@@ -62,6 +62,6 @@ area,relation|z16[man_made] {
 */
 }
 
-area,relation|z16[man_made=bridge] {
+area|z16[man_made=bridge] {
     terrain-layer: bridge;
 }

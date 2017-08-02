@@ -19,26 +19,26 @@ node|z16[aeroway=gate] {
 /* Removed so far*/
 
 /* Areas */
-area,relation|z16[aeroway] {
+area|z16[aeroway] {
     mesh-name: eval("'terrain_aeroway_' + tag('aeroway')");
 }
 
-area,relation|z16[aeroway=apron] {
+area|z16[aeroway=apron] {
     color: #e9d1ff;
 }
 
-area,relation|z16[aeroway=helipad],
-area,relation|z16[aeroway=runway],
-area,relation|z16[aeroway=taxiway] {
+area|z16[aeroway=helipad],
+area|z16[aeroway=runway],
+area|z16[aeroway=taxiway] {
     color: #bbbbcc;
 }
 
-area,relation|z16[aeroway=terminal] {
+area|z16[aeroway=terminal] {
     color: #cc99ff;
 }
 
-area,relation|z16[aeroway=aerodrome],
-area,relation|z16[aeroway=airport] {
+area|z16[aeroway=aerodrome],
+area|z16[aeroway=airport] {
     color: #cccccc;
 /*
     icon-image: airport;
@@ -50,7 +50,7 @@ area,relation|z16[aeroway=airport] {
 }
 
 /*
-area,relation|z16[aeroway=helipad] {
+area|z16[aeroway=helipad] {
 /*
     icon-image: helipad;
     font-family: DejaVu Sans Bold;

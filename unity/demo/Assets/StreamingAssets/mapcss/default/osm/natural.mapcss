@@ -25,9 +25,9 @@ node|z16[natural=lake] {
 */
 
 node|z16[natural=tree],
-way,relation|z16[natural=tree_row],
-way,relation|z16[natural=cliff],
-way,relation|z16[natural=hedge] {
+way|z16[natural=tree_row],
+way|z16[natural=cliff],
+way|z16[natural=hedge] {
     builder: tree;
     tree-step: 10m;
     lsys: tree;
@@ -39,7 +39,7 @@ way,relation|z16[natural=hedge] {
 }
 
 /* Areas */
-area,relation|z16[natural] {
+area|z16[natural] {
     mesh-name: eval("'terrain_natural_' + tag('natural')");
 /*
     fill-image: eval("'natural_' + tag('natural')");
@@ -47,36 +47,36 @@ area,relation|z16[natural] {
 */
 }
 
-area,relation|z16[natural=field] {
+area|z16[natural=field] {
     color: #666600;
 }
 
-area,relation|z16[natural=wood] {
+area|z16[natural=wood] {
     color: #aed1a0;
 }
 
-area,relation|z16[natural=desert] {
+area|z16[natural=desert] {
     color: #e3b57a;
 }
 
-area,relation|z16[natural=sand] {
+area|z16[natural=sand] {
     color: #ffdf88;
 }
 
-area,relation|z16[natural=heath] {
+area|z16[natural=heath] {
     color: #d6d99f;
 }
 
-area,relation|z16[natural=glacier] {
+area|z16[natural=glacier] {
     color: #99ccff;
 }
 
-area,relation|z16[natural=lake],
-area,relation|z16[natural=water],
-area,relation|z16[natural=bay] {
+area|z16[natural=lake],
+area|z16[natural=water],
+area|z16[natural=bay] {
     terrain-layer: water-generic;
 }
 
-area,relation|z16[natural=land] {
+area|z16[natural=land] {
     color: #f2efe9;
 }
