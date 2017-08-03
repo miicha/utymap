@@ -57,8 +57,8 @@ All style properties are known by [MeshBuilder](core/src/builders/MeshBuilder.hp
 
 ``` CSS
 area|z9-16[kind=park] {
-	clip:true;
-    builders: terrain;
+	clip: true;
+    builder: terrain;
     mesh-name: terrain_park;
 	max-area: 0.25%;
 
@@ -74,7 +74,7 @@ area|z9-16[kind=park] {
 
 Declaration meaning:
 * [_Optional_] __clip__: should region be clipped by tile borders? Default is false.
-* [_Required_] __builders__: comma separated list of builders with _terrain_ included.
+* [_Required_] __builder__: builder name.
 * [_Optional_] __terrain__layer__: a name of terrain layer (see [Terrain Layers](#Terrain_Layers)). If it is defined, other properties are ignored.
 * [_Optional_] __mesh-name__: name of generated mesh. If it is not present than default name is used.
 * [_Required?_] __max-area__: triangulation setting for max triangle area relative to tile area.

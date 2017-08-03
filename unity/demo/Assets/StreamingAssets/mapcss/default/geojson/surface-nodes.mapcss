@@ -1,6 +1,6 @@
 /* from zoom 9 */
 node|z9-14[kind=locality][name] {
-    builders: label;
+    builder: label;
     type: flat;
     font-name: Arial;
     font-color: black;

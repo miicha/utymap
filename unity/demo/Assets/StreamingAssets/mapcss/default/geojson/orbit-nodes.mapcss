@@ -1,27 +1,27 @@
 node|z2[label_placement=true][kind=continent][name],
 node|z2[label_placement=true][kind=ocean][name] {
-    builders: label;
+    builder: label;
     font-name: Arial;
     font-size: 300;
     font-color: #813d7e;
 }
 
 node|z4[kind=country][name][population>5000000] {
-    builders: label;
+    builder: label;
     font-name: Arial;
     font-size: 48;
     font-color: black;
 }
 
 node|z5[kind=locality][name][country_capital=true] {
-    builders: label;
+    builder: label;
     font-name: Arial;
     font-size: 24;
     font-color: red;
 }
 
 node|z6[kind=locality][name] {
-    builders: label;
+    builder: label;
     font-name: Arial;
     font-size: 20;
     font-color: black;

@@ -1,5 +1,5 @@
 /* Import all styles. */
-/*@import url("index.geojson.mapcss");*/
+@import url("index.geojson.mapcss");
 @import url("index.osm.mapcss");
 
 /* Import lsystem grammars. */

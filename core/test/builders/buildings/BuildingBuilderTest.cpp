@@ -17,7 +17,7 @@ using namespace utymap::tests;
 
 namespace {
 const std::string stylesheet = "area,relation|z1[building=yes] { "
-    "builders: building;"
+    "builder: building;"
     "building: true;"
     "facade-color: gradient(blue);"
     "facade-type: flat;"

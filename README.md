@@ -117,21 +117,21 @@ This old demo is built using elevation data provided by mapzen:
 utymap supports styling via CSS-like language:
 
 ```CSS
-area,relation|z16[building],
-area,relation|z16[building:part] {
-    builders: building;
+area|z16[building],
+area|z16[building:part] {
+    builder: building;
     height: 12m;
     min-height: 0m;
     facade-color: gradient(#c0c0c0, #a9a9a9 50%, #808080);
     ...
 }
-area,relation|z16[roof:shape=skillion] {
+area|z16[roof:shape=skillion] {
     roof-type: skillion;
 }
-area,relation|z16[building:color] {
+area|z16[building:color] {
     roof-color: eval("tag('building:color')");
 }
-area,relation|z16[building:material=brick] {
+area|z16[building:material=brick] {
     facade-color: gradient(#0fff96, #0cc775 50%, #066139);
     facade-texture-type: brick;
 }

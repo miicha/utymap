@@ -19,10 +19,10 @@ namespace {
 const std::string stylesheet =
     "canvas|z1 { grid-cell-size: 1%; ele-noise-freq: 0.05; color-noise-freq: 0.1; color:gradient(red); max-area: 5%;"
         "road-ele-noise-freq: 0; road-color-noise-freq: 0; road-color:gradient(red); road-max-area: 0;}"
-        "area|z1[landuse=commercial] { builders:terrain; terrain-layer:road; }"
+        "area|z1[landuse=commercial] { builder: terrain; terrain-layer:road; }"
 
         "way|z1[highway][incline] { incline: eval(\"tag('incline')\"); }"
-        "way|z1[highway] { builders:terrain; terrain-layer:road; width: 0.0000001; }"
+        "way|z1[highway] { builder: terrain; terrain-layer:road; width: 0.0000001; }"
         "way|z1[layer<0] { level: eval(\"tag('layer')\"); }";
 
 struct Builders_Terrain_TerraBuilderFixture {

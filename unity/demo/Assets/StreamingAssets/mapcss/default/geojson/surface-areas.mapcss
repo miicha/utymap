@@ -1,14 +1,14 @@
 /* from zoom 9 */
 area,relation|z9-15[kind=earth] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     terrain-layer: earth;
 }
 
 area,relation|z9-15[kind=water],
 area,relation|z9-15[kind=wetland] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     terrain-layer: water;
 }
 
@@ -17,7 +17,7 @@ area,relation|z9-15[kind=park],
 /*area,relation|z9-15[kind=national_park],*/
 area,relation|z9-15[kind=urban_area] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     max-area: 0.25%;
     color-noise-freq: 0;
     ele-noise-freq: 0;
@@ -49,7 +49,7 @@ area,relation|z11-15[kind=grass],
 area,relation|z11-15[kind=park],
 area,relation|z11-15[kind=residential] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     max-area: 0.25%;
     color-noise-freq: 0;
     ele-noise-freq: 0;
@@ -57,7 +57,7 @@ area,relation|z11-15[kind=residential] {
 
 way,relation|z9-15[kind=riverbank] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     terrain-layer: water;
 }
 
@@ -103,7 +103,7 @@ area,relation|z11-15[kind=commercial] {
 /* from zoom 13 */
 area,relation|z13-14[kind=building]{
     clip: true;
-    builders: terrain;
+    builder: terrain;
     terrain-layer: building;
 }
 
@@ -112,7 +112,7 @@ area,relation|z15[kind=building]{
     clip: false;
     building: true;
     multipolygon: true;
-    builders: building;
+    builder: building;
 
     height: 20m;
     min-height: 0m;

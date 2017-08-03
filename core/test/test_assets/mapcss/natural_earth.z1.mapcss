@@ -26,7 +26,7 @@ way|z1[featurecla=River][scalerank=2],
 relation|z1[featurecla=River][scalerank=1],
 relation|z1[featurecla=River][scalerank=2] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     terrain-layer: water;
     width: 0.1%;
 }
@@ -36,14 +36,14 @@ relation|z1[featurecla=Lake][scalerank=0],
 area|z1[featurecla=Lake][scalerank=1],
 relation|z1[featurecla=Lake][scalerank=1] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     terrain-layer: water;
 }
 
 area|z1[featurecla=Country][scalerank=1],
 relation|z1[featurecla=Country][scalerank=1] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     max-area: 0.1%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
@@ -53,7 +53,7 @@ relation|z1[featurecla=Country][scalerank=1] {
 way|z1[featurecla=International boundary (verify)],
 relation|z1[featurecla=International boundary (verify)] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     terrain-layer: border;
     width: 0.02%;
 }
@@ -61,7 +61,7 @@ relation|z1[featurecla=International boundary (verify)] {
 area|z1[featurecla=Adm-0 scale ranks],
 relation|z1[featurecla=Adm-0 scale ranks]{
     clip:true;
-    builders: terrain;
+    builder: terrain;
     max-area: 0.05%;
     color-noise-freq: 0.1;
     ele-noise-freq: 0.05;
@@ -105,5 +105,5 @@ relation|z1[sr_geounit=Ukraine] {
 
 node|z1[featurecla=Populated place],
 node|z1[featurecla=Admin-0 capital] {
-     builders: place;
+     builder: place;
 }

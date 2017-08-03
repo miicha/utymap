@@ -1,13 +1,13 @@
 way,relation|z3-7[kind=country][kind_detail=2] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     terrain-layer: boundary-country;
     width: 0.3%;
 }
 
 way,relation|z6-8[kind=region][kind_detail=4] {
     clip:true;
-    builders: terrain;
+    builder: terrain;
     terrain-layer: boundary-region;
     width: 0.4%;
 }

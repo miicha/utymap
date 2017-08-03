@@ -1,12 +1,5 @@
 
-@import url("../default/default.detail-poi.mapcss");
-@import url("../default/default.detail-terrain.mapcss");
-@import url("../default/default.detail-roads.mapcss");
-@import url("../default/default.detail-water.mapcss");
-@import url("../default/default.detail-buildings.mapcss");
-@import url("../default/default.detail-misc.mapcss");
-
-@import url("customization.poi.mapcss");
+@import url("../default/index.osm.mapcss");
 @import url("customization.import.mapcss");
 
 @texture url("../default/default.detail-single.txt");
