@@ -12,9 +12,13 @@ namespace Assets.Scripts.Core.Plugins
     /// <summary> Builds Place of Interest as cube primitive with texture from Element. </summary>
     internal sealed class PlaceElementBuilder : IElementBuilder
     {
+        private const int TextureWidth = 1104;
+        private const int TextureHeight = 1169;
         private const string IconImageStyleKey = "icon-image";
         private const string IconSchemaFile = "config/icon.schema.txt";
         private static readonly Regex IconSchemaRegex = new Regex(@"([a-zA-z_]*?): (\d+)_(\d+)_(\d+)_(\d+)");
+        // "eval(\"'amenity_' + tag('amenity')\")"
+        private static readonly Regex EvalIconRegex = new Regex(@"eval\(""'([^']*)'[^']*'([^']*)'\)""\)");
 
         private readonly MaterialProvider _materialProvider;
         private Dictionary<string, Rect> _iconMapping;
@@ -101,18 +105,21 @@ namespace Assets.Scripts.Core.Plugins
 
         private Rect GetUvRect(Element element)
         {
-            var textureHeight = float.Parse(element.Styles["height"]);
-            var textureWidth = float.Parse(element.Styles["width"]);
+            if (!element.Styles.ContainsKey(IconImageStyleKey))
+                return new Rect();
 
-            var key = element.Styles[IconImageStyleKey];
-            // TODO handle this case with default icon?
+            var match = EvalIconRegex.Match(element.Styles[IconImageStyleKey]);
+            if (!match.Success || match.Groups.Count != 3)
+                return new Rect();
+
+            var key = match.Groups[1].Value + element.Tags[match.Groups[2].Value];
             if (!_iconMapping.ContainsKey(key))
                 return new Rect();
 
             var rect = _iconMapping[key];
 
-            var leftBottom = new Vector2(rect.x / textureWidth, rect.y / textureHeight);
-            var rightUpper = new Vector2((rect.x + rect.width) / textureWidth, (rect.y + rect.height) / textureHeight);
+            var leftBottom = new Vector2(rect.x / TextureWidth, rect.y / TextureHeight);
+            var rightUpper = new Vector2((rect.x + rect.width) / TextureWidth, (rect.y + rect.height) / TextureHeight);
 
             return new Rect(leftBottom.x, leftBottom.y, rightUpper.x - leftBottom.x, rightUpper.y - leftBottom.y);
         }

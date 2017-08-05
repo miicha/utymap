@@ -73,8 +73,6 @@ node|z16[railway],
 node|z16[waterway] {
     builder: place;
     material: info_icons;
-    width: 1104;
-    height: 1169;
     min-height: 16;
 }
 
