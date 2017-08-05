@@ -1,71 +1,35 @@
 
+/* Import mapcss from default theme */
 @import url("../default/index.osm.mapcss");
-@import url("customization.import.mapcss");
+@import url("../default/osm/access.mapcss");
+@import url("../default/osm/addr.mapcss");
+@import url("../default/osm/admin.mapcss");
+@import url("../default/osm/aerialway.mapcss");
+@import url("../default/osm/aeroway.mapcss");
+@import url("../default/osm/amenity.mapcss");
+@import url("../default/osm/barrier.mapcss");
+@import url("../default/osm/boundary.mapcss");
+@import url("../default/osm/building.mapcss");
+@import url("../default/osm/highway.mapcss");
+@import url("../default/osm/historic.mapcss");
+@import url("../default/osm/landuse.mapcss");
+@import url("../default/osm/leisure.mapcss");
+@import url("../default/osm/manmade.mapcss");
+@import url("../default/osm/military.mapcss");
+@import url("../default/osm/natural.mapcss");
+@import url("../default/osm/place.mapcss");
+@import url("../default/osm/power.mapcss");
+@import url("../default/osm/railway.mapcss");
+@import url("../default/osm/shop.mapcss");
+@import url("../default/osm/tourist.mapcss");
+@import url("../default/osm/waterway.mapcss");
 
-@texture url("../default/default.detail-single.txt");
-@texture url("../default/default.detail-atlas.txt");
+@import url("customization.import.mapcss");
+@import url("customization.overrides.mapcss");
+
+@texture url("../default/single.txt");
+@texture url("../default/atlas.txt");
 
 @lsystem url("../default/tree.lsys");
 @lsystem url("../default/conifer.lsys");
 @lsystem url("../default/lamp.lsys");
-
-/* Ignore all objects under surface. */
-node,area,way,relation|z16[layer<0] {
-    skip:true;
-}
-
-canvas|z16 {
-    grid-cell-size: 5%;
-
-    max-area: 0.1%;
-    color-noise-freq: 100000;
-    ele-noise-freq: 7500;
-    color: gradient(#dcdcdc 0%, #c0c0c0 10%, #a9a9a9 50%, #808080);
-    texture-index: 0;
-    texture-type: background;
-    texture-scale: 100;
-
-    bridge-mesh-name: terrain_bridges;
-    bridge-sort-order: 1003;
-    bridge-max-area: 5%;
-    bridge-color-noise-freq: 0.1;
-    bridge-ele-noise-freq: 0.05;
-    bridge-color: gradient(#636363);
-    bridge-height-offset:0.05m;
-    bridge-texture-index: 1;
-    bridge-texture-type: drive;
-    bridge-texture-scale: 200;
-
-    water-mesh-name: terrain_water;
-    water-sort-order: 1002;
-    water-max-area: 0.01%;
-    water-color-noise-freq: 100000;
-    water-ele-noise-freq: 100000;
-    water-color: gradient(#87cefa, #1e90ff);
-    water-height-offset:-1m;
-    water-texture-index: 1;
-    water-texture-type: water;
-    water-texture-scale: 100;
-
-    drive-mesh-name: terrain_drive;
-    drive-sort-order: 1001;
-    drive-max-area: 5%;
-    drive-color-noise-freq: 0.1;
-    drive-ele-noise-freq: 0;
-    drive-color: gradient(#4d4d4d);
-    drive-height-offset:-0.2m;
-    drive-texture-index: 1;
-    drive-texture-type: drive;
-    drive-texture-scale: 10;
-
-    pedestrian-mesh-name: terrain_pedestrian;
-    pedestrian-sort-order: 1000;
-    pedestrian-max-area: 5%;
-    pedestrian-color-noise-freq: 0.1;
-    pedestrian-ele-noise-freq: 0.05;
-    pedestrian-color: gradient(#636363);
-    pedestrian-height-offset:0.05m;
-    pedestrian-texture-index: 0;
-    pedestrian-texture-type: pedestrian;
-    pedestrian-texture-scale: 200;
-}

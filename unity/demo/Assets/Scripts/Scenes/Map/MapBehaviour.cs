@@ -59,7 +59,7 @@ namespace Assets.Scripts.Scenes.Map
             _compositionRoot = InitTask.Run((container, config) =>
             {
                 container
-                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/default.mapcss"))
+                    .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/index.mapcss"))
                     .Register(Component.For<MaterialProvider>().Use<MaterialProvider>())
                     .Register(Component.For<GameObjectBuilder>().Use<GameObjectBuilder>())
                     .Register(Component.For<IElementBuilder>().Use<LabelElementBuilder>().Named("label"));

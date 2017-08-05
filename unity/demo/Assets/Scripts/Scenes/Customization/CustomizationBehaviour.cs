@@ -38,6 +38,7 @@ namespace Assets.Scripts.Scenes.Customization
             _compositionRoot = InitTask.Run((container, config) =>
             {
                 container
+                    // NOTE use another mapcss style
                     .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/customization/customization.mapcss"))
                     .Register(Component.For<MaterialProvider>().Use<MaterialProvider>())
                     .Register(Component.For<GameObjectBuilder>().Use<GameObjectBuilder>())

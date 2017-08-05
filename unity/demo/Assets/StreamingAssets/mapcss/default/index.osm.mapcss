@@ -87,7 +87,7 @@ node|z16[waterway] {
 @import url("osm/boundary.mapcss");
 @import url("osm/building.mapcss");
 @import url("osm/highway.mapcss");
-/*@import url("osm/historic.mapcss");*/
+@import url("osm/historic.mapcss");
 @import url("osm/landuse.mapcss");
 @import url("osm/leisure.mapcss");
 @import url("osm/manmade.mapcss");
