@@ -204,6 +204,7 @@ std::shared_ptr<Element> clipRelation(ClipperLib::ClipperEx &clipper,
     : visitor.relation;
 
   element->id = relation.id;
+  element->tags = relation.tags;
 
   return element;
 }
