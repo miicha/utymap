@@ -1,69 +1,35 @@
-way|z9-15[kind=country][kind_detail=2] {
-    clip: true;
-    builder: terrain;
-    terrain-layer: boundary-country;
-    width: 0.5%;
-}
-
-way|z9-15[kind=region][kind_detail=4] {
-    clip: true;
-    builder: terrain;
-    terrain-layer: boundary-region;
-    width: 0.25%;
-}
-
-way|z9-15[kind=river] {
-    clip: true;
-    builder: terrain;
-    terrain-layer: water;
-    width: 1%;
-}
-
-way|z9-15[kind=major_road][kind_detail=primary],
-way|z9-15[kind=highway][kind_detail=motorway] {
+way,relation|z9-15[kind=major_road][kind_detail=primary],
+way,relation|z9-15[kind=highway][kind_detail=motorway] {
     clip: true;
     builder: terrain;
     terrain-layer: road-highway-primary;
     width: 0.4%;
 }
 
-way|z9-15[kind=train] {
-    clip: true;
-    builder: terrain;
-    terrain-layer: railway;
-    width: 0.4%;
-}
-
-way|z9-15[kind=highway],
-way|z9-15[kind=major_road] {
+way,relation|z9-15[kind=highway],
+way,relation|z9-15[kind=major_road],
+way,relation|z9-15[kind=major_road][kind_detail=secondary]  {
     clip: true;
     builder: terrain;
     terrain-layer: road-major-secondary;
     width: 0.3%;
 }
 
-way|z9-15[kind=major_road][kind_detail=secondary] {
-    clip: true;
-    builder: terrain;
-    terrain-layer: road-major-secondary;
-    width: 0.3%;
-}
-
-way|z9-15[kind=major_road][kind_detail=tertiary] {
+way,relation|z9-15[kind=major_road][kind_detail=tertiary] {
     clip: true;
     builder: terrain;
     terrain-layer: road-major-tertiary;
     width: 0.25%;
 }
 
-way|z9-15[kind=minor_road] {
+way,relation|z9-15[kind=minor_road] {
     clip: true;
     builder: terrain;
     terrain-layer: road-minor;
     width: 0.25%;
 }
 
-way|z15[kind=path][kind_detail=footway] {
+way,relation|z15[kind=path][kind_detail=footway] {
     clip: true;
     builder: terrain;
     terrain-layer: path-footway;
