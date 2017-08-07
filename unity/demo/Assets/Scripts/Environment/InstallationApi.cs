@@ -30,7 +30,6 @@ namespace Assets.Scripts.Environment
                 
                 trace.Info(TraceCategory, "copying assets..");
                 CopyFiles(GetMapCssFileNames(), trace);
-                CopyFiles(GetLsysFileNames(), trace);
 #endif
                 MarkAsInstalled();
                 trace.Info(TraceCategory, "assets are copied.");
@@ -49,36 +48,48 @@ namespace Assets.Scripts.Environment
         {
             return new List<string>()
             {
-                "mapcss",
-                "orbit.mapcss",
-                "orbit-nodes.mapcss",
-                "orbit-ways.mapcss",
-                "orbit-areas.mapcss",
+                "index.mapcss",
+                "index.geojson.mapcss",
+                "index.osm.mapcss",
 
-                "surface.mapcss",
-                "surface-nodes.mapcss",
-                "surface-ways.mapcss",
-                "surface-areas.mapcss",
+                "atlas.txt",
+                "single.txt",
 
-                "detail-atlas.txt",
-                "detail-single.txt",
-                "detail.mapcss",
-                "detail-buildings.mapcss",
-                "detail-misc.mapcss",
-                "detail-poi.mapcss",
-                "detail-roads.mapcss",
-                "detail-terrain.mapcss",
-                "detail-water.mapcss"
-            }.Select(f => "mapcss/default/default." + f);
-        }
-
-        private static IEnumerable<string> GetLsysFileNames()
-        {
-            return new List<string>()
-            {
                 "conifer.lsys",
                 "lamp.lsys",
-                "tree.lsys"
+                "tree.lsys",
+
+                "geojson/boundary.mapcss",
+                "geojson/building.mapcss",
+                "geojson/label.mapcss",
+                "geojson/railway.mapcss",
+                "geojson/road.mapcss",
+                "geojson/terrain.mapcss",
+                "geojson/water.mapcss",
+
+                "osm/access.mapcss",
+                "osm/addr.mapcss",
+                "osm/admin.mapcss",
+                "osm/aerialway.mapcss",
+                "osm/aeroway.mapcss",
+                "osm/amenity.mapcss",
+                "osm/barrier.mapcss",
+                "osm/boundary.mapcss",
+                "osm/building.mapcss",
+                "osm/highway.mapcss",
+                "osm/historic.mapcss",
+                "osm/landuse.mapcss",
+                "osm/leisure.mapcss",
+                "osm/manmade.mapcss",
+                "osm/military.mapcss",
+                "osm/natural.mapcss",
+                "osm/place.mapcss",
+                "osm/power.mapcss",
+                "osm/railway.mapcss",
+                "osm/shop.mapcss",
+                "osm/tourist.mapcss",
+                "osm/waterway.mapcss",
+
             }.Select(f => "mapcss/default/" + f);
         }
 
