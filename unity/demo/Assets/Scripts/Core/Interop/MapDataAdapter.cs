@@ -237,8 +237,8 @@ namespace Assets.Scripts.Core.Interop
                         : triangles.Skip(start).Take(end - start).Select(tri => tri - start).ToArray(),
                     unityColors.Skip(start).Take(end - start).ToArray(),
                     unityUvs.Skip(start).Take(end - start).ToArray(),
-                    unityUvs2.Skip(start).Take(end - start).ToArray(),
-                    unityUvs3.Skip(start).Take(end - start).ToArray());
+                    unityUvs2 != null ? unityUvs2.Skip(start).Take(end - start).ToArray() : null,
+                    unityUvs3 != null ? unityUvs3.Skip(start).Take(end - start).ToArray() : null);
                 NotifyObservers(new MapData(tile, new Union<Element, Mesh>(mesh)), observers);
             }
         }
