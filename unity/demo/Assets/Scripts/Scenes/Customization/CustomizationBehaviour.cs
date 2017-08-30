@@ -55,9 +55,9 @@ namespace Assets.Scripts.Scenes.Customization
             _compositionRoot.GetService<IMapDataLibrary>().DisableCache();
 
             // import data into memory
-            _mapDataStore.Add(
+            _mapDataStore.AddTo(
                     // define where geoindex is created (in memory, not persistent)
-                    MapDataStorageType.InMemory,
+                    MapDataStorages.TransientStorageKey,
                     // path to map data
                     MapDataPath,
                     // stylesheet is used to import only used data and skip unused
@@ -101,7 +101,7 @@ namespace Assets.Scripts.Scenes.Customization
                 .GetService<IMapDataEditor>()
                 .Add(
                     // type of storage
-                    MapDataStorageType.InMemory,
+                    MapDataStorages.TransientStorageKey,
                     // element to store
                     tree,
                     // LOD range where element is stored

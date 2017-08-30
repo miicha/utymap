@@ -48,7 +48,7 @@ namespace UtyMap.Unity.Tests.Data
                 new Dictionary<string, string>());
 
             // ACT
-            _mapDataEditor.Add(MapDataStorageType.InMemory, node, levelOfDetails);
+            _mapDataEditor.Add(TestHelper.TransientStorageKey, node, levelOfDetails);
 
             // ASSERT
             var result = _dataStore.GetResultSync(new Tile(quadKey, _stylesheet, _projection, ElevationDataType.Flat));

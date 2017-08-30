@@ -24,7 +24,7 @@ namespace UtyMap.Unity.Tests
             var stylesheet = new Stylesheet(TestHelper.DefaultMapCss);
 
             // 1. add map data to store
-            store.Add(MapDataStorageType.InMemory,
+            store.AddTo(TestHelper.TransientStorageKey,
                       // file with map data
                       TestHelper.BerlinXmlData,
                       // mapcss stylesheet to control what is loaded

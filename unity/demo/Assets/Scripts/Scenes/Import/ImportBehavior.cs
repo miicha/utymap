@@ -81,9 +81,9 @@ namespace Assets.Scripts.Scenes.Import
                 gameObject);
 
             // import data into memory
-            _mapDataStore.Add(
+            _mapDataStore.AddTo(
                 // define where geoindex is created (in memory, not persistent)
-                MapDataStorageType.InMemory,
+                MapDataStorages.TransientStorageKey,
                 // path to map data
                 String.Format(MapDataPathFormat, Scene == SceneType.Bird ? "json" : "xml"),
                 // stylesheet is used to import only used data and skip unused

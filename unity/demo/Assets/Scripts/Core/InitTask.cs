@@ -53,7 +53,7 @@ namespace Assets.Scripts.Core
         private static CompositionRoot BuildCompositionRoot(Action<IContainer, IConfigSection> action, ITrace trace)
         {
             // create entry point for library functionallity using default configuration overriding some properties
-            return new CompositionRoot(new Container(), ConfigBuilder.GetDefault().SetIndex("index/").Build())
+            var root = new CompositionRoot(new Container(), ConfigBuilder.GetDefault().SetIndex("index/").Build())
                 // override library's default services with demo specific implementations
                 .RegisterAction((container, config) =>
                 {
@@ -67,6 +67,15 @@ namespace Assets.Scripts.Core
                 .RegisterAction(action)
                 // setup object graph
                 .Setup();
+
+            // Register default data storages: one keeps data on disk, another one - in memory.
+            // You are not limited with these two: you can add more disk and/or memory storages.
+            // NOTE First registered storage will be used to save map data received from downloaded data
+            var mapDataStore = root.GetService<IMapDataStore>();
+            mapDataStore.Register(MapDataStorages.PersistentStorageKey, "index/");
+            mapDataStore.Register(MapDataStorages.TransientStorageKey);
+
+            return root;
         }
 
         /// <summary> Starts listening for mapdata from core library to convert it into unity game objects. </summary>

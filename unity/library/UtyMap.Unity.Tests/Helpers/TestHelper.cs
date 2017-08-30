@@ -25,6 +25,11 @@ namespace UtyMap.Unity.Tests.Helpers
         public const string MoscowJsonData = TestAssetsFolder + @"osm/moscow.osm.json";
         public const string DefaultMapCss = @"../../../../demo/Assets/StreamingAssets/mapcss/default/index.mapcss";
 
+        public const string TransientStorageKey = "primary";
+        public const string PersistentStorageKey = "secondary";
+
+        private const string PersistentStoragePath = @"../../../../demo/Assets/StreamingAssets/index/";
+
         #endregion
 
         public static CompositionRoot GetCompositionRoot(GeoCoordinate worldZeroPoint)
@@ -41,17 +46,24 @@ namespace UtyMap.Unity.Tests.Helpers
 
             // create default application configuration
             var config = ConfigBuilder.GetDefault()
-                .SetIndex("index/")
+                .SetIndex(PersistentStoragePath)
                 .Build();
 
             // initialize services
-            return new CompositionRoot(container, config)
+            var root = new CompositionRoot(container, config)
                 .RegisterAction((c, _) => c.Register(Component.For<ITrace>().Use<ConsoleTrace>()))
                 .RegisterAction((c, _) => c.Register(Component.For<IPathResolver>().Use<TestPathResolver>()))
                 .RegisterAction((c, _) => c.Register(Component.For<Stylesheet>().Use<Stylesheet>(DefaultMapCss)))
                 .RegisterAction((c, _) => c.Register(Component.For<IProjection>().Use<CartesianProjection>(worldZeroPoint)))
                 .RegisterAction(action)
                 .Setup();
+
+            // Register default data stores to simplify test setup. The order is important
+            var mapDataStore = root.GetService<IMapDataStore>();
+            mapDataStore.Register(TransientStorageKey);
+            mapDataStore.Register(PersistentStorageKey, PersistentStoragePath);
+
+            return root;
         }
 
         public static MapData GetResultSync(this IMapDataStore store, Tile tile, int waitTimeInSeconds = 10)

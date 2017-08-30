@@ -102,7 +102,6 @@
     <Compile Include="Data\MapDataStore.cs" />
     <Compile Include="Geocoding\IGeocoder.cs" />
     <Compile Include="Geocoding\NominatimGeocoder.cs" />
-    <Compile Include="Data\MapDataStorageType.cs" />
     <Compile Include="Data\Providers\AggregateMapDataProvider.cs" />
     <Compile Include="Data\MapDataProvider.cs" />
     <Compile Include="Data\Providers\Elevation\MapzenElevationDataProvider.cs" />

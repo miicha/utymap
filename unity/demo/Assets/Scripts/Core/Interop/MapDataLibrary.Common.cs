@@ -47,14 +47,10 @@ namespace Assets.Scripts.Core.Interop
                 if (!Directory.Exists(indexPath))
                     throw new DirectoryNotFoundException(String.Format("Cannot find {0}", indexPath));
 
-                if (_isConfigured)
-                    return;
+                if (_isConfigured) return;
 
                 configure(indexPath, OnErrorHandler);
-                // NOTE actually, it is possible to have multiple in-memory and persistent 
-                // storages at the same time.
-                registerInMemoryStore(InMemoryStoreKey);
-                registerPersistentStore(PersistentStoreKey, indexPath, OnCreateDirectory);
+
                 // NOTE Enable mesh caching mechanism for speed up tile loading.
                 enableMeshCache(1);
                 
@@ -80,38 +76,49 @@ namespace Assets.Scripts.Core.Interop
             return hasData(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail);
         }
 
+        public void Register(string storageKey)
+        {
+            registerInMemoryStore(storageKey);
+        }
+
         /// <inheritdoc />
-        public IObservable<int> Add(MapDataStorageType type, string path, Stylesheet stylesheet, Range<int> levelOfDetails)
+        public void Register(string storageKey, string indexPath)
+        {
+            registerPersistentStore(storageKey, _pathResolver.Resolve(indexPath), OnCreateDirectory);
+        }
+
+        /// <inheritdoc />
+        public IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, Range<int> levelOfDetails)
         {
             var dataPath = _pathResolver.Resolve(path);
             var stylePath = RegisterStylesheet(stylesheet);
-            _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, type.ToString());
+            _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, storageKey);
             lock (__lockObj)
             {
-                addToStoreInRange(GetStoreKey(type), stylePath, dataPath, levelOfDetails.Minimum,
+                addToStoreInRange(storageKey, stylePath, dataPath, levelOfDetails.Minimum,
                     levelOfDetails.Maximum, OnErrorHandler);
             }
             return Observable.Return<int>(100);
         }
 
         /// <inheritdoc />
-        public IObservable<int> Add(MapDataStorageType type, string path, Stylesheet stylesheet, QuadKey quadKey)
+        public IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, QuadKey quadKey)
         {
             var dataPath = _pathResolver.Resolve(path);
             var stylePath = RegisterStylesheet(stylesheet);
-            _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, type.ToString());
+            _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, storageKey);
             lock (__lockObj)
             {
-                addToStoreInQuadKey(GetStoreKey(type), stylePath, dataPath, quadKey.TileX, quadKey.TileY,
+                addToStoreInQuadKey(storageKey, stylePath, dataPath, quadKey.TileX, quadKey.TileY,
                     quadKey.LevelOfDetail, OnErrorHandler);
             }
             return Observable.Return<int>(100);
         }
 
         /// <inheritdoc />
-        public IObservable<int> Add(MapDataStorageType type, Element element, Stylesheet stylesheet, Range<int> levelOfDetails)
+        public IObservable<int> AddTo(string storageKey, Element element, Stylesheet stylesheet, Range<int> levelOfDetails)
         {
-            _trace.Debug(TraceCategory, "Add element to {0} storage", type.ToString());
+            _trace.Debug(TraceCategory, "Add element to {0} storage", storageKey);
             double[] coordinates = new double[element.Geometry.Length * 2];
             for (int i = 0; i < element.Geometry.Length; ++i)
             {
@@ -130,7 +137,7 @@ namespace Assets.Scripts.Core.Interop
             var stylePath = RegisterStylesheet(stylesheet);
             lock (__lockObj)
             {
-                addToStoreElement(GetStoreKey(type), stylePath, element.Id,
+                addToStoreElement(storageKey, stylePath, element.Id,
                     coordinates, coordinates.Length,
                     tags, tags.Length,
                     levelOfDetails.Minimum, levelOfDetails.Maximum, OnErrorHandler);
@@ -164,11 +171,6 @@ namespace Assets.Scripts.Core.Interop
                 cancelTokenHandle.AddrOfPinnedObject());
             cancelTokenHandle.Free();
             return Observable.Return(100);
-        }
-
-        private static string GetStoreKey(MapDataStorageType dataStorageType)
-        {
-            return dataStorageType == MapDataStorageType.InMemory ? InMemoryStoreKey : PersistentStoreKey;
         }
 
         private string RegisterStylesheet(Stylesheet stylesheet)

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UtyDepend;
 using UtyDepend.Config;
-using UtyMap.Unity.Data.Providers;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyRx;
 
@@ -11,21 +11,30 @@ namespace UtyMap.Unity.Data
     /// <summary> Defines behavior of class responsible of mapdata processing. </summary>
     public interface IMapDataStore : IObserver<Tile>, IObservable<MapData>, IObservable<Tile>
     {
-        /// <summary> Adds mapdata to the specific dataStorage. </summary>
-        /// <param name="dataStorage"> Storage type. </param>
+        /// <summary> Registers in-memory data storage with given key. </summary>
+        /// <param name="storageKey"> Storage key.</param>
+        void Register(string storageKey);
+
+        /// <summary> Registers persistent data storage with given key. </summary>
+        /// <param name="storageKey"> Storage key.</param>
+        /// <param name="indexPath"> Persistent index path. </param>
+        void Register(string storageKey, string indexPath);
+
+        /// <summary> Adds mapdata to the specific data storage. </summary>
+        /// <param name="storageKey"> Storage key. </param>
         /// <param name="dataPath"> Path to mapdata. </param>
         /// <param name="stylesheet"> Stylesheet which to use during import. </param>
         /// <param name="levelOfDetails"> Which level of details to use. </param>
         /// <returns> Returns progress status. </returns>
-        IObservable<int> Add(MapDataStorageType dataStorage, string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails);
+        IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails);
 
-        /// <summary> Adds mapdata to the specific dataStorage. </summary>
-        /// <param name="dataStorage"> Storage type. </param>
+        /// <summary> Adds mapdata to the specific data storage. </summary>
+        /// <param name="storageKey"> Storage key. </param>
         /// <param name="dataPath"> Path to mapdata. </param>
         /// <param name="stylesheet"> Stylesheet which to use during import. </param>
         /// <param name="quadKey"> QuadKey to add. </param>
         /// <returns> Returns progress status. </returns>
-        IObservable<int> Add(MapDataStorageType dataStorage, string dataPath, Stylesheet stylesheet, QuadKey quadKey);
+        IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, QuadKey quadKey);
     }
 
     /// <summary> Default implementation of map data store. </summary>
@@ -33,44 +42,59 @@ namespace UtyMap.Unity.Data
     {
         private readonly IMapDataProvider _mapDataProvider;
         private readonly IMapDataLibrary _mapDataLibrary;
-        private MapDataStorageType _mapDataStorageType;
 
+        private readonly List<string> _storageKeys = new List<string>();
         private readonly List<IObserver<MapData>> _dataObservers = new List<IObserver<MapData>>();
         private readonly List<IObserver<Tile>> _tileObservers = new List<IObserver<Tile>>();
 
         [Dependency]
         public MapDataStore(IMapDataProvider mapDataProvider, IMapDataLibrary mapDataLibrary)
         {
-            _mapDataProvider = mapDataProvider;
             _mapDataLibrary = mapDataLibrary;
+
+            _mapDataProvider = mapDataProvider;
             _mapDataProvider
                 .ObserveOn(Scheduler.ThreadPool)
                 .Subscribe(value =>
                 {
-                    // we have map data in store.
+                    // We have map data in store.
                     if (String.IsNullOrEmpty(value.Item2))
                         _mapDataLibrary.Get(value.Item1, _dataObservers);
                     else
-                        Add(_mapDataStorageType, value.Item2, value.Item1.Stylesheet, value.Item1.QuadKey)
-                            .Subscribe(progress => { }, 
-                                       () => _mapDataLibrary.Get(value.Item1, _dataObservers));
+                        // NOTE store data in the first registered store
+                        AddTo(_storageKeys.First(), value.Item2, value.Item1.Stylesheet, value.Item1.QuadKey)
+                            .Subscribe(progress => { }, () => _mapDataLibrary.Get(value.Item1, _dataObservers));
                 });
         }
 
         #region Interface implementations
 
         /// <inheritdoc />
-        public IObservable<int> Add(MapDataStorageType dataStorageType, string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails)
+        public void Register(string storageKey)
         {
-            return _mapDataLibrary.Add(dataStorageType, dataPath, stylesheet, levelOfDetails);
+            _storageKeys.Add(storageKey);
+            _mapDataLibrary.Register(storageKey);
         }
 
         /// <inheritdoc />
-        public IObservable<int> Add(MapDataStorageType dataStorageType, string dataPath, Stylesheet stylesheet, QuadKey quadKey)
+        public void Register(string storageKey, string indexPath)
+        {
+            _storageKeys.Add(storageKey);
+            _mapDataLibrary.Register(storageKey, indexPath);
+        }
+
+        /// <inheritdoc />
+        public IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails)
+        {
+            return _mapDataLibrary.AddTo(storageKey, dataPath, stylesheet, levelOfDetails);
+        }
+
+        /// <inheritdoc />
+        public IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, QuadKey quadKey)
         {
             return _mapDataLibrary.Exists(quadKey)
                 ? Observable.Return<int>(100)
-                : _mapDataLibrary.Add(dataStorageType, dataPath, stylesheet, quadKey);
+                : _mapDataLibrary.AddTo(storageKey, dataPath, stylesheet, quadKey);
         }
 
         /// <inheritdoc />
@@ -111,7 +135,6 @@ namespace UtyMap.Unity.Data
         public void Configure(IConfigSection configSection)
         {
             _mapDataLibrary.Configure(configSection.GetString("data/index"));
-            _mapDataStorageType = MapDataStorageType.Persistent;
         }
 
         /// <inheritdoc />

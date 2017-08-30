@@ -1,6 +1,5 @@
 ﻿using System;
 using UtyDepend;
-using UtyMap.Unity.Infrastructure.IO;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyRx;
 
@@ -10,13 +9,13 @@ namespace UtyMap.Unity.Data
     public interface IMapDataEditor
     {
         /// <summary> Adds element. </summary>
-        void Add(MapDataStorageType type, Element element, Range<int> levelOfDetails);
+        void Add(string storageKey, Element element, Range<int> levelOfDetails);
 
         /// <summary> Edits element. </summary>
-        void Edit(MapDataStorageType type, Element element, Range<int> levelOfDetails);
+        void Edit(string storageKey, Element element, Range<int> levelOfDetails);
 
         /// <summary> Marks element with given id. </summary>
-        void Delete(MapDataStorageType type, long elementId, Range<int> levelOfDetails);
+        void Delete(string storageKey, long elementId, Range<int> levelOfDetails);
     }
 
     /// <summary>
@@ -35,20 +34,20 @@ namespace UtyMap.Unity.Data
         }
 
         /// <inheritdoc />
-        public void Add(MapDataStorageType type, Element element, Range<int> levelOfDetails)
+        public void Add(string storageKey, Element element, Range<int> levelOfDetails)
         {
-            _mapDataLibrary.Add(type, element, _stylesheet, levelOfDetails)
+            _mapDataLibrary.AddTo(storageKey, element, _stylesheet, levelOfDetails)
                 .Wait();
         }
 
         /// <inheritdoc />
-        public void Edit(MapDataStorageType type, Element element, Range<int> levelOfDetails)
+        public void Edit(string storageKey, Element element, Range<int> levelOfDetails)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
-        public void Delete(MapDataStorageType type, long elementId, Range<int> levelOfDetails)
+        public void Delete(string storageKey, long elementId, Range<int> levelOfDetails)
         {
             throw new NotImplementedException();
         }

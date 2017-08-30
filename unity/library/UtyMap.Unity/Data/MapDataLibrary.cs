@@ -41,34 +41,43 @@ namespace UtyMap.Unity.Data
         /// <param name="observers"> Observers to notify. </param>
         IObservable<int> Get(Tile tile, IList<IObserver<MapData>> observers);
 
-        /// <summary>
-        ///     Adds map data to data storage only to specific quadkey.
-        ///     Supported formats: shapefile, osm xml, geo json, osm pbf.
-        /// </summary>
-        /// <param name="type"> Map data storage type. </param>
-        /// <param name="path"> Path to file. </param>
-        /// <param name="stylesheet"> Stylesheet path. </param>
-        /// <param name="levelOfDetails"> Level of details. </param>
-        IObservable<int> Add(MapDataStorageType type, string path, Stylesheet stylesheet, Range<int> levelOfDetails);
+        /// <summary> Registers in-memory data storage with given key. </summary>
+        /// <param name="storageKey"> Storage key.</param>
+        void Register(string storageKey);
+
+        /// <summary> Registers persistent data storage with given key. </summary>
+        /// <param name="storageKey"> Storage key.</param>
+        /// <param name="indexPath"> Persistent index path. </param>
+        void Register(string storageKey, string indexPath);
 
         /// <summary>
         ///     Adds map data to data storage only to specific quadkey.
         ///     Supported formats: shapefile, osm xml, geo json, osm pbf.
         /// </summary>
-        /// <param name="type"> Map data storage type. </param>
+        /// <param name="storageKey"> Map data storage key. </param>
+        /// <param name="path"> Path to file. </param>
+        /// <param name="stylesheet"> Stylesheet path. </param>
+        /// <param name="levelOfDetails"> Level of details. </param>
+        IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, Range<int> levelOfDetails);
+
+        /// <summary>
+        ///     Adds map data to data storage only to specific quadkey.
+        ///     Supported formats: shapefile, osm xml, geo json, osm pbf.
+        /// </summary>
+        /// <param name="storageKey"> Map data storage key. </param>
         /// <param name="path"> Path to file. </param>
         /// <param name="stylesheet"> Stylesheet path. </param>
         /// <param name="quadKey"> QuadKey. </param>
-        IObservable<int> Add(MapDataStorageType type, string path, Stylesheet stylesheet, QuadKey quadKey);
+        IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, QuadKey quadKey);
 
         /// <summary>
         ///     Adds element to data storage to specific level of details.
         /// </summary>
-        /// <param name="type"> Map data storage type. </param>
+        /// <param name="storageKey"> Map data storage key. </param>
         /// <param name="element"> Element to add. </param>
         /// <param name="stylesheet"> Stylesheet </param>
         /// <param name="levelOfDetails"> Level of detail range. </param>
-        IObservable<int> Add(MapDataStorageType type, Element element, Stylesheet stylesheet, Range<int> levelOfDetails);
+        IObservable<int> AddTo(string storageKey, Element element, Stylesheet stylesheet, Range<int> levelOfDetails);
 
         /// <summary>
         ///      Gets elevation for specific coordinate and quadKey.
@@ -83,9 +92,6 @@ namespace UtyMap.Unity.Data
     internal class MapDataLibrary : IMapDataLibrary
     {
         private const string TraceCategory = "library";
-        private const string InMemoryStoreKey = "InMemory";
-        private const string PersistentStoreKey = "Persistent";
-
         private readonly object __lockObj = new object();
         private readonly IPathResolver _pathResolver;
         private readonly ITrace _trace;
@@ -119,18 +125,12 @@ namespace UtyMap.Unity.Data
                 if (!Directory.Exists(indexPath))
                     throw new DirectoryNotFoundException(String.Format("Cannot find {0}", indexPath));
 
-                if (_isConfigured)
-                    return;
+                if (_isConfigured) return;
 
                 // create directory for downloaded raw map data.
                 CreateDirectory(Path.Combine(indexPath, "import"));
 
                 configure(indexPath, OnErrorHandler);
-                // NOTE actually, it is possible to have multiple in-memory and persistent 
-                // storages at the same time.
-                registerInMemoryStore(InMemoryStoreKey);
-                registerPersistentStore(PersistentStoreKey, indexPath, CreateDirectory);
-                
                 _isConfigured = true;
             }
         }
@@ -154,37 +154,49 @@ namespace UtyMap.Unity.Data
         }
 
         /// <inheritdoc />
-        public IObservable<int> Add(MapDataStorageType type, string path, Stylesheet stylesheet, Range<int> levelOfDetails)
+        public void Register(string storageKey)
+        {
+            registerInMemoryStore(storageKey);
+        }
+
+        /// <inheritdoc />
+        public void Register(string storageKey, string indexPath)
+        {
+            registerPersistentStore(storageKey, _pathResolver.Resolve(indexPath), CreateDirectory);
+        }
+
+        /// <inheritdoc />
+        public IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, Range<int> levelOfDetails)
         {
             var dataPath = _pathResolver.Resolve(path);
             var stylePath = RegisterStylesheet(stylesheet);
-            _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, type.ToString());
+            _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, storageKey);
             lock (__lockObj)
             {
-                addToStoreInRange(GetStoreKey(type), stylePath, dataPath, levelOfDetails.Minimum,
+                addToStoreInRange(storageKey, stylePath, dataPath, levelOfDetails.Minimum,
                     levelOfDetails.Maximum, OnErrorHandler);
             }
             return Observable.Return<int>(100);
         }
 
         /// <inheritdoc />
-        public IObservable<int> Add(MapDataStorageType type, string path, Stylesheet stylesheet, QuadKey quadKey)
+        public IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, QuadKey quadKey)
         {
             var dataPath = _pathResolver.Resolve(path);
             var stylePath = RegisterStylesheet(stylesheet);
-            _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, type.ToString());
+            _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, storageKey);
             lock (__lockObj)
             {
-                addToStoreInQuadKey(GetStoreKey(type), stylePath, dataPath, quadKey.TileX, quadKey.TileY,
+                addToStoreInQuadKey(storageKey, stylePath, dataPath, quadKey.TileX, quadKey.TileY,
                     quadKey.LevelOfDetail, OnErrorHandler);
             }
             return Observable.Return<int>(100);
         }
 
         /// <inheritdoc />
-        public IObservable<int> Add(MapDataStorageType type, Element element, Stylesheet stylesheet, Range<int> levelOfDetails)
+        public IObservable<int> AddTo(string storageKey, Element element, Stylesheet stylesheet, Range<int> levelOfDetails)
         {
-            _trace.Debug(TraceCategory, "Add element to {0} storage", type.ToString());
+            _trace.Debug(TraceCategory, "Add element to {0} storage", storageKey);
             double[] coordinates = new double[element.Geometry.Length * 2];
             for (int i = 0; i < element.Geometry.Length; ++i)
             {
@@ -204,7 +216,7 @@ namespace UtyMap.Unity.Data
 
             lock (__lockObj)
             {
-                addToStoreElement(GetStoreKey(type), stylePath, element.Id,
+                addToStoreElement(storageKey, stylePath, element.Id,
                     coordinates, coordinates.Length,
                     tags, tags.Length,
                     levelOfDetails.Minimum, levelOfDetails.Maximum, OnErrorHandler);
@@ -238,11 +250,6 @@ namespace UtyMap.Unity.Data
                 cancelTokenHandle.AddrOfPinnedObject());
             cancelTokenHandle.Free();
             return Observable.Return(100);
-        }
-
-        private static string GetStoreKey(MapDataStorageType dataStorageType)
-        {
-            return dataStorageType == MapDataStorageType.InMemory ? InMemoryStoreKey : PersistentStoreKey;
         }
 
         private static void CreateDirectory(string directory)
