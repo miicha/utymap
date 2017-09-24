@@ -19,6 +19,13 @@ class ElementStore {
 
   virtual ~ElementStore() = default;
 
+  /// Searches for elements matches given query, bounding box and LOD range
+  virtual void search(const std::string &query,
+                      const utymap::BoundingBox &bbox,
+                      const utymap::LodRange &range,
+                      utymap::entities::ElementVisitor &visitor,
+                      const utymap::CancellationToken &cancelToken) = 0;
+
   /// Searches for elements for given quadKey
   virtual void search(const utymap::QuadKey &quadKey,
                       utymap::entities::ElementVisitor &visitor,

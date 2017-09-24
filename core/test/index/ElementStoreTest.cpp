@@ -30,6 +30,12 @@ class TestElementStore : public ElementStore {
       function_(function) {
   }
 
+  void search(const std::string &query,
+              const utymap::BoundingBox &bbox,
+              const utymap::LodRange &range,
+              utymap::entities::ElementVisitor &visitor,
+              const utymap::CancellationToken &cancelToken)  override {}
+
   void search(const QuadKey &, ElementVisitor &, const CancellationToken &) override {}
 
   bool hasData(const QuadKey &) const override { return true; }

@@ -73,6 +73,14 @@ bool InMemoryElementStore::hasData(const utymap::QuadKey &quadKey) const {
   return pimpl_->hasData(quadKey);
 }
 
+void InMemoryElementStore::search(const std::string &query,
+                                  const utymap::BoundingBox &bbox,
+                                  const utymap::LodRange &range,
+                                  utymap::entities::ElementVisitor &visitor,
+                                  const utymap::CancellationToken &cancelToken) {
+    // TODO
+}
+
 void InMemoryElementStore::search(const utymap::QuadKey &quadKey,
                                   utymap::entities::ElementVisitor &visitor,
                                   const utymap::CancellationToken &cancelToken) {

@@ -53,6 +53,13 @@ class GeoStore final {
            const utymap::LodRange &range,
            const utymap::mapcss::StyleProvider &styleProvider);
 
+  /// Searches for elements matches given query, bounding box and LOD range
+  void search(const std::string &query,
+              const utymap::BoundingBox &bbox,
+              const utymap::LodRange &range,
+              utymap::entities::ElementVisitor &visitor,
+              const utymap::CancellationToken &cancelToken);
+
   /// Searches for elements inside quadkey.
   void search(const QuadKey &quadKey,
               const utymap::mapcss::StyleProvider &styleProvider,

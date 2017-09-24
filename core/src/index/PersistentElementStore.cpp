@@ -113,6 +113,14 @@ void PersistentElementStore::storeImpl(const Element &element, const QuadKey &qu
   pimpl_->store(element, quadKey);
 }
 
+void PersistentElementStore::search(const std::string &query,
+                                    const utymap::BoundingBox &bbox,
+                                    const utymap::LodRange &range,
+                                    utymap::entities::ElementVisitor &visitor,
+                                    const utymap::CancellationToken &cancelToken) {
+  // TODO
+}
+
 void PersistentElementStore::search(const QuadKey &quadKey,
                                     ElementVisitor &visitor,
                                     const utymap::CancellationToken &cancelToken) {
