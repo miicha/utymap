@@ -7,44 +7,57 @@
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 
+#include <ewah/ewah.h>
+#include <unordered_map>
+
 namespace utymap {
 namespace index {
 
-/// Provides the way to index strings in order to perform fast exact search
-class StringIndex final {
+/// Provides the way to index strings in order to perform fast exact search.
+class StringIndex {
  public:
-
-  /// Defines query to indexed data.
+  /// Defines query to indexed string data.
   struct Query {
-    /// Logical "and" terms
+    /// Logical "and" terms.
     std::vector<std::string> andTerms;
-    /// Logical "or" terms
+    /// Logical "or" terms.
     std::vector<std::string> orTerms;
-    /// Logical "not" terms
+    /// Logical "not" terms.
     std::vector<std::string> notTerms;
-    /// Bounding box constraint
-    utymap::BoundingBox &bbox;
-    /// LOD range constraint
-    utymap::LodRange &range;
+    /// Bounding box constraint.
+    utymap::BoundingBox boundingBox;
+    /// LOD range constraint.
+    utymap::LodRange range;
   };
 
-  StringIndex(const std::function<utymap::entities::Element&(std::uint32_t&)> &elementAccessor,
-              const utymap::index::StringTable &stringTable);
-
-  ~StringIndex();
+  explicit StringIndex(const utymap::index::StringTable &stringTable);
 
   /// Adds element into index
   void add(const utymap::entities::Element &element,
            const utymap::QuadKey &quadKey,
-           const std::uint32_t order);
+           std::uint32_t order);
 
-  /// Performs search for relevant data match query
+  /// Performs search for relevant data match query.
   void search(const Query &query,
               utymap::entities::ElementVisitor &visitor);
 
+ protected:
+  using Bitmap = std::unordered_map<std::uint32_t, EWAHBoolArray<>>;
+
+  /// Gets element by element store order id.
+  virtual utymap::entities::Element& getElement(std::uint32_t order) = 0;
+  /// Get bitmap for given quad key.
+  virtual Bitmap& getBitmap(const utymap::QuadKey& quadKey) = 0;
+
  private:
-  class StringIndexImpl;
-  std::unique_ptr<StringIndexImpl> pimpl_;
+  /// Gets tokens from element.
+  std::vector<std::uint32_t> tokenize(const utymap::entities::Element &element);
+  /// Stores tokens received from source into destination.
+  void tokenize(const std::vector<std::string> &source, std::vector<std::uint32_t> &destination);
+  /// Stores tokens received from source into destination.
+  void tokenize(const std::string &str, std::vector<std::uint32_t> &destination);
+
+  const StringTable& stringTable_;
 };
 
 }
