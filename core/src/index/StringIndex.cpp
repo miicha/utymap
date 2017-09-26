@@ -10,12 +10,22 @@ using namespace utymap::index;
 namespace {
   /// Defines symbols considered as token delimeters
   const boost::char_separator<char> separator(":;!@#$%^&*(){}[],.?`\\/\"\'");
-  /// Query with string ids instead of actual content.
-  struct TokenizedQuery {
-    std::vector<std::uint32_t> andTerms;
-    std::vector<std::uint32_t> orTerms;
-    std::vector<std::uint32_t> notTerms;
-  };
+  /// Applies logical AND
+  void applyLogicalAnd(const StringIndex::Ids &terms,
+                       const StringIndex::Bitmap &bitmap,
+                       StringIndex::Bitset &bitset) {
+    for (const auto term: terms) {
+      auto array = bitmap.find(term);
+      // no term defined for this quad key
+      if (array == bitmap.end()) return;
+
+      if (bitset.sizeInBits() == 0) {
+        bitset = array->second;
+        continue;
+      }
+      bitset = bitset.logicaland(array->second);
+    }
+  }
 }
 
 void StringIndex::add(const Element &element, const QuadKey &quadKey, std::uint32_t order) {
@@ -26,25 +36,29 @@ void StringIndex::add(const Element &element, const QuadKey &quadKey, std::uint3
 }
 
 void StringIndex::search(const StringIndex::Query &query, ElementVisitor &visitor) {
-  TokenizedQuery tokenizedQuery;
-  tokenize(query.andTerms, tokenizedQuery.andTerms);
-  tokenize(query.orTerms, tokenizedQuery.orTerms);
-  tokenize(query.notTerms, tokenizedQuery.notTerms);
+  Ids andTerms, orTerms, notTerms;
+  tokenize(query.andTerms, andTerms);
+  tokenize(query.orTerms, orTerms);
+  tokenize(query.notTerms, notTerms);
 
   for (int lod = query.range.start; lod <= query.range.end; ++lod) {
     utymap::utils::GeoUtils::visitTileRange(query.boundingBox, lod,
       [&](const QuadKey &quadKey, const BoundingBox&) {
+        // process elements for given quad key
         auto& bitmap = getBitmap(quadKey);
-
-        //for (auto i = bitmap.begin(); i != bitmap.end(); ++i) {
-         // getElement(i->first).accept(visitor);
-        //}
+        // apply query
+        Bitset bitset;
+        applyLogicalAnd(andTerms, bitmap, bitset);
+        // return matched elements to caller
+        for (auto i = bitset.begin(); i != bitset.end(); ++i) {
+          getElement(static_cast<std::uint32_t >(*i)).accept(visitor);
+        }
       });
   }
 }
 
 std::vector<std::uint32_t> StringIndex::tokenize(const Element &element) {
-  std::vector<std::uint32_t> tokens;
+  Ids tokens;
   tokens.reserve(element.tags.size() * 2 + 4);
   for (const auto &tag : element.tags) {
     tokenize(stringTable_.getString(tag.key), tokens);
@@ -54,14 +68,14 @@ std::vector<std::uint32_t> StringIndex::tokenize(const Element &element) {
 }
 
 void StringIndex::tokenize(const std::vector<std::string> &source,
-                           std::vector<std::uint32_t> &destination) {
+                           Ids &destination) {
   for (const auto &term : source) {
     tokenize(term, destination);
   }
 }
 
 void StringIndex::tokenize(const std::string &source,
-                           std::vector<std::uint32_t> &destination) {
+                           Ids &destination) {
   boost::tokenizer<boost::char_separator<char>> tokens(source, separator);
   for (const auto& token : tokens) {
     destination.push_back(stringTable_.getId(token));

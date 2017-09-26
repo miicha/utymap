@@ -48,10 +48,14 @@ namespace {
     void addToIndex(std::initializer_list<std::pair<const char *, const char *>> tags,
                        const QuadKey quadKey = QuadKey(1, 0, 0)) {
       auto node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0, tags);
-      index.addedElements.push_back(std::make_shared<Node>(node));
       index.add(node,
                 utymap::QuadKey(1, 0, 0),
                 static_cast<std::uint32_t>(index.addedElements.size()));
+      index.addedElements.push_back(std::make_shared<Node>(node));
+    }
+
+    std::string getString(std::uint32_t id) {
+      return dependencyProvider.getStringTable()->getString(id);
     }
 
     /// Adds visited node in special collection.
@@ -75,14 +79,16 @@ namespace {
 
 BOOST_FIXTURE_TEST_SUITE(Index_StringIndex, Index_StringIndexFixture)
 
-BOOST_AUTO_TEST_CASE(GivenElementWithTags_WhenItIsAdd_ThenQueryCanFindItByTagValue) {
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenOnlyOneIsReturned) {
   StringIndex::Query query = { { "street" }, {}, {}, bbox, lodRange };
+  addToIndex({ { "addr:country", "Deutschland" } });
   addToIndex({ { "addr:street", "Eichendorffstr." } });
   addToIndex({ { "addr:city", "Berlin" } });
   
   index.search(query, *this);
 
-  //BOOST_CHECK_EQUAL(this->visitedElements.size(), 1);
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 1);
+  BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:street");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

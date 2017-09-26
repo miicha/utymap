@@ -16,6 +16,10 @@ namespace index {
 /// Provides the way to index strings in order to perform fast exact search.
 class StringIndex {
  public:
+  using Bitset = EWAHBoolArray<std::uint32_t>;
+  using Bitmap = std::unordered_map<std::uint32_t, Bitset>;
+  using Ids = std::vector<std::uint32_t>;
+
   /// Defines query to indexed string data.
   struct Query {
     /// Logical "and" terms.
@@ -42,8 +46,6 @@ class StringIndex {
               utymap::entities::ElementVisitor &visitor);
 
  protected:
-  using Bitmap = std::unordered_map<std::uint32_t, EWAHBoolArray<>>;
-
   /// Gets element by element store order id.
   virtual utymap::entities::Element& getElement(std::uint32_t order) = 0;
   /// Get bitmap for given quad key.
@@ -53,9 +55,9 @@ class StringIndex {
   /// Gets tokens from element.
   std::vector<std::uint32_t> tokenize(const utymap::entities::Element &element);
   /// Stores tokens received from source into destination.
-  void tokenize(const std::vector<std::string> &source, std::vector<std::uint32_t> &destination);
+  void tokenize(const std::vector<std::string> &source, Ids &destination);
   /// Stores tokens received from source into destination.
-  void tokenize(const std::string &str, std::vector<std::uint32_t> &destination);
+  void tokenize(const std::string &str, Ids &destination);
 
   const StringTable& stringTable_;
 };
