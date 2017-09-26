@@ -15,6 +15,10 @@ endif()
 set(HEADER_FILES
         ${PROTO_HDRS}
         ${LIB_SOURCE}/clipper/clipper.hpp
+        ${LIB_SOURCE}/ewah/boolarray.h
+        ${LIB_SOURCE}/ewah/ewah.h
+        ${LIB_SOURCE}/ewah/ewahutil.h
+        ${LIB_SOURCE}/ewah/runninglengthword.h
         ${LIB_SOURCE}/hashing/MD5.h
         ${LIB_SOURCE}/hashing/MurmurHash3.h
         ${LIB_SOURCE}/triangle/triangle.h
@@ -91,6 +95,7 @@ set(HEADER_FILES
         index/InMemoryElementStore.hpp
         index/MeshStream.hpp
         index/PersistentElementStore.hpp
+        index/StringIndex.hpp
         index/StringTable.hpp
         lsys/Turtle3d.hpp
         lsys/LSystem.hpp
@@ -160,6 +165,7 @@ add_library(${LIBRARY_NAME}
         index/InMemoryElementStore.cpp
         index/MeshStream.cpp
         index/PersistentElementStore.cpp
+        index/StringIndex.cpp
         index/StringTable.cpp
         lsys/Turtle3d.cpp
         lsys/LSystemParser.cpp

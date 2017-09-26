@@ -65,6 +65,7 @@ add_executable(${TEST}
         index/ElementStoreTest.cpp
         index/InMemoryElementStoreTest.cpp
         index/PersistentElementStoreTest.cpp
+        index/StringIndexTest.cpp
         index/StringTableTest.cpp
         lsys/LSystemParserTest.cpp
         lsys/RulesTest.cpp
