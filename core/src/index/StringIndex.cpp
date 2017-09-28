@@ -1,6 +1,5 @@
 #include "StringIndex.hpp"
 #include "utils/CoreUtils.hpp"
-#include "utils/GeoUtils.hpp"
 
 #include<boost/tokenizer.hpp>
 
@@ -8,22 +7,22 @@ using namespace utymap::entities;
 using namespace utymap::index;
 
 namespace {
+  using Bitset = StringIndex::Bitset;
+  using Bitmap = StringIndex::Bitmap;
   /// Defines symbols considered as token delimeters
   const boost::char_separator<char> separator(":;!@#$%^&*(){}[],.?`\\/\"\'");
-  /// Applies logical AND
-  void applyLogicalAnd(const StringIndex::Ids &terms,
-                       const StringIndex::Bitmap &bitmap,
-                       StringIndex::Bitset &bitset) {
+
+  /// Applies logical operation
+  void applyOperation(const StringIndex::Ids &terms,
+                      const Bitmap &bitmap,
+                      Bitset &bitset,
+                      const std::function<void(Bitset)> &op) {
     for (const auto term: terms) {
       auto array = bitmap.find(term);
       // no term defined for this quad key
-      if (array == bitmap.end()) return;
-
-      if (bitset.sizeInBits() == 0) {
-        bitset = array->second;
-        continue;
-      }
-      bitset = bitset.logicaland(array->second);
+      if (array == bitmap.end())
+        return;
+      op(array->second);
     }
   }
 }
@@ -44,11 +43,21 @@ void StringIndex::search(const StringIndex::Query &query, ElementVisitor &visito
   for (int lod = query.range.start; lod <= query.range.end; ++lod) {
     utymap::utils::GeoUtils::visitTileRange(query.boundingBox, lod,
       [&](const QuadKey &quadKey, const BoundingBox&) {
-        // process elements for given quad key
         auto& bitmap = getBitmap(quadKey);
-        // apply query
         Bitset bitset;
-        applyLogicalAnd(andTerms, bitmap, bitset);
+
+        applyOperation(andTerms, bitmap, bitset, [&](const Bitset &b) {
+          if (bitset.sizeInBits() == 0) {
+            bitset = b;
+            return;
+          };
+          b.logicaland(b, bitset);
+        });
+        /*applyOperation(notTerms, bitmap, bitset, [&](const Bitset &b) {
+          auto xorBitset = b.logicalxor(bitset);
+          xorBitset.logicaland(xorBitset, bitset);
+        });*/
+
         // return matched elements to caller
         for (auto i = bitset.begin(); i != bitset.end(); ++i) {
           getElement(static_cast<std::uint32_t >(*i)).accept(visitor);

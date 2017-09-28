@@ -79,16 +79,61 @@ namespace {
 
 BOOST_FIXTURE_TEST_SUITE(Index_StringIndex, Index_StringIndexFixture)
 
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenEmptyQuery_ThenNoResultsReturned) {
+  StringIndex::Query query = { {}, {}, {}, bbox, lodRange };
+  addToIndex({ { "addr:country", "Deutschland" } });
+  addToIndex({ { "addr:street", "Eichendorffstr." } });
+  addToIndex({ { "addr:city", "Berlin" } });
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 0);
+}
+
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenOnlyOneIsReturned) {
   StringIndex::Query query = { { "street" }, {}, {}, bbox, lodRange };
   addToIndex({ { "addr:country", "Deutschland" } });
   addToIndex({ { "addr:street", "Eichendorffstr." } });
   addToIndex({ { "addr:city", "Berlin" } });
-  
+
   index.search(query, *this);
 
   BOOST_CHECK_EQUAL(this->visitedElements.size(), 1);
   BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:street");
 }
+
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoAND_ThenOneResultReturned) {
+  StringIndex::Query query = { { "addr", "Eichendorffstr" }, {}, {}, bbox, lodRange };
+  addToIndex({ { "addr:country", "Deutschland" } });
+  addToIndex({ { "addr:street", "Eichendorffstr." } });
+  addToIndex({ { "addr:city", "Berlin" } });
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 1);
+  BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:street");
+}
+
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenThreeResultsReturned) {
+  StringIndex::Query query = { { "addr" }, {}, {}, bbox, lodRange };
+  addToIndex({ { "addr:country", "Deutschland" } });
+  addToIndex({ { "addr:street", "Eichendorffstr." } });
+  addToIndex({ { "addr:city", "Berlin" } });
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 3);
+}
+
+/*BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNot_ThenNoResults) {
+  StringIndex::Query query = { {}, {}, {"country"}, bbox, lodRange };
+  addToIndex({ { "addr:country", "Deutschland" } });
+  addToIndex({ { "addr:street", "Eichendorffstr." } });
+  addToIndex({ { "addr:city", "Berlin" } });
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 0);
+}*/
 
 BOOST_AUTO_TEST_SUITE_END()
