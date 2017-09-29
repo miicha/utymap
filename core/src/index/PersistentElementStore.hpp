@@ -18,7 +18,9 @@ class PersistentElementStore final : public ElementStore {
 
   virtual ~PersistentElementStore();
 
-  void search(const std::string &query,
+  void search(const std::string &notTerms,
+              const std::string &andTerms,
+              const std::string &orTerms,
               const utymap::BoundingBox &bbox,
               const utymap::LodRange &range,
               utymap::entities::ElementVisitor &visitor,

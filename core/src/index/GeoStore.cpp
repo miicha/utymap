@@ -106,13 +106,15 @@ class GeoStore::GeoStoreImpl final {
     }
   }
 
-  void search(const std::string &query,
+  void search(const std::string &notTerms,
+              const std::string &andTerms,
+              const std::string &orTerms,
               const utymap::BoundingBox &bbox,
               const utymap::LodRange &range,
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
     for (const auto &pair : storeMap_) {
-      pair.second->search(query, bbox, range, visitor, cancelToken);
+      pair.second->search(notTerms, andTerms, orTerms, bbox, range, visitor, cancelToken);
     }
   }
 
@@ -205,12 +207,14 @@ void utymap::index::GeoStore::search(const QuadKey &quadKey,
   pimpl_->search(quadKey, styleProvider, visitor, cancelToken);
 }
 
-void utymap::index::GeoStore::search(const std::string &query,
+void utymap::index::GeoStore::search(const std::string &notTerms,
+                                     const std::string &andTerms,
+                                     const std::string &orTerms,
                                      const utymap::BoundingBox &bbox,
                                      const utymap::LodRange &range,
                                      ElementVisitor &visitor,
                                      const utymap::CancellationToken &cancelToken) {
-  pimpl_->search(query, bbox, range, visitor, cancelToken);
+  pimpl_->search(notTerms, andTerms, orTerms, bbox, range, visitor, cancelToken);
 }
 
 void utymap::index::GeoStore::search(const GeoCoordinate &coordinate,

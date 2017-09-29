@@ -47,7 +47,8 @@ class StringIndex {
 
  protected:
   /// Gets element by element store order id.
-  virtual utymap::entities::Element& getElement(std::uint32_t order) = 0;
+  virtual utymap::entities::Element& getElement(const utymap::QuadKey& quadKey,
+                                                std::uint32_t order) = 0;
   /// Get bitmap for given quad key.
   virtual Bitmap& getBitmap(const utymap::QuadKey& quadKey) = 0;
 

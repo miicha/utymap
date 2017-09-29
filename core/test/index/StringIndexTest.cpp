@@ -17,7 +17,8 @@ namespace {
     TestStringIndex(const StringTable &stringTable)
         : StringIndex(stringTable) {}
 
-    utymap::entities::Element& getElement(std::uint32_t order) {
+    utymap::entities::Element& getElement(const utymap::QuadKey& quadKey,
+                                          std::uint32_t order) {
       return *addedElements.at(order);
     }
 
