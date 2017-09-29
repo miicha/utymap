@@ -81,7 +81,7 @@ class InMemoryElementStore::InMemoryElementStoreImpl {
               const utymap::LodRange &range,
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
-    stringIndex_.search({ { notTerms }, { notTerms }, { orTerms }, bbox, range }, visitor);
+    stringIndex_.search({ { notTerms }, { andTerms }, { orTerms }, bbox, range }, visitor);
   }
 
   void search(const utymap::QuadKey &quadKey,

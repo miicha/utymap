@@ -24,18 +24,29 @@ struct Index_InMemoryElementStoreFixture {
       dependencyProvider(),
       elementStore(*dependencyProvider.getStringTable()) {
     LodRange range(1, 2);
-
     auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
 
     elementStore.store(ElementUtils::createElement<Way>(
-        *dependencyProvider.getStringTable(), 0,
-        {{"any", "true"}}, {{5, -5}, {5, -10}}), range, *styleProvider);
-    elementStore.store(ElementUtils::createElement<Area>(
-        *dependencyProvider.getStringTable(), 0,
-        {{"any", "true"}}, {{5, -5}, {5, -10}, {10, -10}}), range,*styleProvider);
+      *dependencyProvider.getStringTable(),
+      0,
+      {{"any", "true"}},
+      {{5, -5}, {5, -10}}),
+      range,
+      *styleProvider);
 
-    Node node = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 0,
-                                                  {{"any", "true"}});
+    elementStore.store(ElementUtils::createElement<Area>(
+      *dependencyProvider.getStringTable(),
+      0,
+      {{"any", "true"}, {"area", "yes"}},
+      {{5, -5}, {5, -10}, {10, -10}}),
+      range,
+      *styleProvider);
+
+    Node node = ElementUtils::createElement<Node>(
+      *dependencyProvider.getStringTable(),
+      0,
+      {{"any", "true"}});
+
     node.coordinate = {5, -5};
     elementStore.store(node, range, *styleProvider);
   }
@@ -72,6 +83,16 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_ThenAllSkipped) {
   elementStore.search(quadKey, counter, CancellationToken());
 
   BOOST_CHECK_EQUAL(counter.times, 0);
+}
+
+BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearchText_ThenOneFound) {
+  BoundingBox boundingBox(GeoCoordinate(-90, -180), GeoCoordinate(90, 180));
+  LodRange lodRange(1, 1);
+  ElementCounter counter;
+
+  elementStore.search({}, {"area"}, {}, boundingBox, lodRange, counter, CancellationToken());
+
+  BOOST_CHECK_EQUAL(counter.times, 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
