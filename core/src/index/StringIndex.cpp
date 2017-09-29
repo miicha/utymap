@@ -9,7 +9,7 @@ using namespace utymap::index;
 namespace {
   using Bitset = StringIndex::Bitset;
   using Bitmap = StringIndex::Bitmap;
-  /// Defines symbols considered as token delimeters
+  /// Defines symbols considered as token delimiters
   const boost::char_separator<char> separator(":;!@#$%^&*(){}[],.?`\\/\"\'");
 
   /// Applies logical operation
@@ -46,19 +46,22 @@ void StringIndex::search(const StringIndex::Query &query, ElementVisitor &visito
         auto& bitmap = getBitmap(quadKey);
         Bitset bitset;
 
+        applyOperation(orTerms, bitmap, bitset, [&](const Bitset &b) {
+          bitset = b.logicalor(bitset);
+        });
+
         applyOperation(andTerms, bitmap, bitset, [&](const Bitset &b) {
           if (bitset.sizeInBits() == 0) {
             bitset = b;
             return;
           };
-          b.logicaland(b, bitset);
+          bitset = b.logicaland(bitset);
         });
-        /*applyOperation(notTerms, bitmap, bitset, [&](const Bitset &b) {
-          auto xorBitset = b.logicalxor(bitset);
-          xorBitset.logicaland(xorBitset, bitset);
-        });*/
 
-        // return matched elements to caller
+        applyOperation(notTerms, bitmap, bitset, [&](const Bitset &b) {
+          bitset = b.logicalxor(bitset).logicaland(bitset);
+        });
+
         for (auto i = bitset.begin(); i != bitset.end(); ++i) {
           getElement(static_cast<std::uint32_t >(*i)).accept(visitor);
         }

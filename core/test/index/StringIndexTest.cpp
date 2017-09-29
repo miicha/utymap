@@ -5,8 +5,6 @@
 #include "test_utils/DependencyProvider.hpp"
 #include "test_utils/ElementUtils.hpp"
 
-#include <map>
-
 using namespace utymap;
 using namespace utymap::entities;
 using namespace utymap::index;
@@ -58,6 +56,12 @@ namespace {
       return dependencyProvider.getStringTable()->getString(id);
     }
 
+    void addThreeElements() {
+      addToIndex({ { "addr:country", "Deutschland" } });
+      addToIndex({ { "addr:street", "Eichendorffstr." } });
+      addToIndex({ { "addr:city", "Berlin" } });
+    }
+
     /// Adds visited node in special collection.
     void visitNode(const Node &node) override {
       visitedElements.push_back(std::make_shared<Node>(node));
@@ -79,22 +83,18 @@ namespace {
 
 BOOST_FIXTURE_TEST_SUITE(Index_StringIndex, Index_StringIndexFixture)
 
-BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenEmptyQuery_ThenNoResultsReturned) {
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenEmptyQuery_ThenNoResults) {
   StringIndex::Query query = { {}, {}, {}, bbox, lodRange };
-  addToIndex({ { "addr:country", "Deutschland" } });
-  addToIndex({ { "addr:street", "Eichendorffstr." } });
-  addToIndex({ { "addr:city", "Berlin" } });
+  addThreeElements();
 
   index.search(query, *this);
 
   BOOST_CHECK_EQUAL(this->visitedElements.size(), 0);
 }
 
-BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenOnlyOneIsReturned) {
-  StringIndex::Query query = { { "street" }, {}, {}, bbox, lodRange };
-  addToIndex({ { "addr:country", "Deutschland" } });
-  addToIndex({ { "addr:street", "Eichendorffstr." } });
-  addToIndex({ { "addr:city", "Berlin" } });
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenOneResult) {
+  StringIndex::Query query = { {}, { "street" }, {}, bbox, lodRange };
+  addThreeElements();
 
   index.search(query, *this);
 
@@ -102,11 +102,9 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenOnlyOneIsReturne
   BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:street");
 }
 
-BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoAND_ThenOneResultReturned) {
-  StringIndex::Query query = { { "addr", "Eichendorffstr" }, {}, {}, bbox, lodRange };
-  addToIndex({ { "addr:country", "Deutschland" } });
-  addToIndex({ { "addr:street", "Eichendorffstr." } });
-  addToIndex({ { "addr:city", "Berlin" } });
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoAND_ThenOneResult) {
+  StringIndex::Query query = { {}, { "addr", "Eichendorffstr" }, {}, bbox, lodRange };
+  addThreeElements();
 
   index.search(query, *this);
 
@@ -114,26 +112,94 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoAND_ThenOneResultReturne
   BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:street");
 }
 
-BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenThreeResultsReturned) {
-  StringIndex::Query query = { { "addr" }, {}, {}, bbox, lodRange };
-  addToIndex({ { "addr:country", "Deutschland" } });
-  addToIndex({ { "addr:street", "Eichendorffstr." } });
-  addToIndex({ { "addr:city", "Berlin" } });
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenThreeResults) {
+  StringIndex::Query query = { {}, { "addr" }, {}, bbox, lodRange };
+  addThreeElements();
 
   index.search(query, *this);
 
   BOOST_CHECK_EQUAL(this->visitedElements.size(), 3);
 }
 
-/*BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNot_ThenNoResults) {
-  StringIndex::Query query = { {}, {}, {"country"}, bbox, lodRange };
-  addToIndex({ { "addr:country", "Deutschland" } });
-  addToIndex({ { "addr:street", "Eichendorffstr." } });
-  addToIndex({ { "addr:city", "Berlin" } });
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNot_ThenNoResults) {
+  StringIndex::Query query = { {"country"}, {}, {}, bbox, lodRange };
+  addThreeElements();
 
   index.search(query, *this);
 
   BOOST_CHECK_EQUAL(this->visitedElements.size(), 0);
-}*/
+}
+
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenOneResult) {
+  StringIndex::Query query = { {"street"},{"addr"}, {}, bbox, lodRange };
+  addThreeElements();
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:country");
+  BOOST_CHECK_EQUAL(getString(this->visitedElements[1]->tags[0].key), "addr:city");
+}
+
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenNoResults) {
+  StringIndex::Query query = { {"Deutschland"}, {"country"}, {}, bbox, lodRange };
+  addThreeElements();
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 0);
+}
+
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOr_ThenHasOneResult) {
+  StringIndex::Query query = { {}, {}, {"country"}, bbox, lodRange };
+  addThreeElements();
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 1);
+  BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:country");
+}
+
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOr_ThenHasTwoResults) {
+  StringIndex::Query query = { {}, {}, {"country", "Berlin"}, bbox, lodRange };
+  addThreeElements();
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 2);
+  BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:country");
+  BOOST_CHECK_EQUAL(getString(this->visitedElements[1]->tags[0].key), "addr:city");
+}
+
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOrPlusNot_ThenHasOneResult) {
+  StringIndex::Query query = { {"Berlin"}, {}, {"Deutschland", "city"},  bbox, lodRange };
+  addThreeElements();
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 1);
+  BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:country");
+}
+
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithThreeOrPlusNotPlusAnd_ThenHasOneResult) {
+  StringIndex::Query query = { {"Berlin"}, {"street"}, {"Deutschland", "city", "Eichendorffstr"}, bbox, lodRange };
+  addThreeElements();
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 1);
+  BOOST_CHECK_EQUAL(getString(this->visitedElements[0]->tags[0].key), "addr:street");
+}
+
+BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithConflictingRules_ThenHasNoResult) {
+  StringIndex::Query query = { {"Deutschland", "Eichendorffstr"},
+                               {"street", "addr"},
+                               {"Deutschland", "Berlin", "Eichendorffstr"},
+                               bbox, lodRange };
+  addThreeElements();
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 0);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

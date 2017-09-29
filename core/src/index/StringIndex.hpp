@@ -22,12 +22,12 @@ class StringIndex {
 
   /// Defines query to indexed string data.
   struct Query {
-    /// Logical "and" terms.
-    std::vector<std::string> andTerms;
-    /// Logical "or" terms.
-    std::vector<std::string> orTerms;
-    /// Logical "not" terms.
+    /// Logical "not": result should not include any of these terms.
     std::vector<std::string> notTerms;
+    /// Logical "and": result has to include all of these terms.
+    std::vector<std::string> andTerms;
+    /// Logical "or": result might include any of these terms.
+    std::vector<std::string> orTerms;
     /// Bounding box constraint.
     utymap::BoundingBox boundingBox;
     /// LOD range constraint.
