@@ -1,5 +1,5 @@
 #include "entities/Node.hpp"
-#include "index/StringIndex.hpp"
+#include "index/BitmapIndex.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include "test_utils/DependencyProvider.hpp"
@@ -12,10 +12,9 @@ using namespace utymap::tests;
 
 namespace {
   /// Defines the simplest in memory string index implementation.
-  class TestStringIndex : public StringIndex {
+  class TestBitmapIndex : public BitmapIndex {
    public:
-    TestStringIndex(const StringTable &stringTable)
-        : StringIndex(stringTable) {}
+    TestBitmapIndex(const StringTable &stringTable) : BitmapIndex(stringTable) {}
 
     void notify(const utymap::QuadKey& quadKey,
                 const std::uint32_t order,
@@ -30,11 +29,11 @@ namespace {
     }
 
     std::vector<std::shared_ptr<Element>> addedElements;
-    std::map<QuadKey, StringIndex::Bitmap, QuadKey::Comparator> registry_;
+    std::map<QuadKey, BitmapIndex::Bitmap, QuadKey::Comparator> registry_;
   };
 
-  struct Index_StringIndexFixture : ElementVisitor {
-    Index_StringIndexFixture() :
+  struct Index_BitmapIndexFixture : ElementVisitor {
+    Index_BitmapIndexFixture() :
       dependencyProvider(),
       index(*dependencyProvider.getStringTable()),
       bbox(BoundingBox(GeoCoordinate(-90, -180), GeoCoordinate(90, 180))),
@@ -73,7 +72,7 @@ namespace {
     void visitRelation(const Relation &) override { }
 
     DependencyProvider dependencyProvider;
-    TestStringIndex index;
+    TestBitmapIndex index;
     BoundingBox bbox;
     LodRange lodRange;
 
@@ -81,10 +80,10 @@ namespace {
   };
 }
 
-BOOST_FIXTURE_TEST_SUITE(Index_StringIndex, Index_StringIndexFixture)
+BOOST_FIXTURE_TEST_SUITE(Index_BitmapIndex, Index_BitmapIndexFixture)
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenEmptyQuery_ThenNoResults) {
-  StringIndex::Query query = { {}, {}, {}, bbox, lodRange };
+  BitmapIndex::Query query = { {}, {}, {}, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -93,7 +92,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenEmptyQuery_ThenNoResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenOneResult) {
-  StringIndex::Query query = { {}, { "street" }, {}, bbox, lodRange };
+  BitmapIndex::Query query = { {}, { "street" }, {}, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -103,7 +102,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenOneResult) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoAND_ThenOneResult) {
-  StringIndex::Query query = { {}, { "addr", "Eichendorffstr" }, {}, bbox, lodRange };
+  BitmapIndex::Query query = { {}, { "addr", "Eichendorffstr" }, {}, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -113,7 +112,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoAND_ThenOneResult) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenThreeResults) {
-  StringIndex::Query query = { {}, { "addr" }, {}, bbox, lodRange };
+  BitmapIndex::Query query = { {}, { "addr" }, {}, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -122,7 +121,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenThreeResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNot_ThenNoResults) {
-  StringIndex::Query query = { {"country"}, {}, {}, bbox, lodRange };
+  BitmapIndex::Query query = { { "country" }, {}, {}, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -131,7 +130,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNot_ThenNoResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenOneResult) {
-  StringIndex::Query query = { {"street"},{"addr"}, {}, bbox, lodRange };
+  BitmapIndex::Query query = { {"street"},{"addr"}, {}, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -141,7 +140,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenOneResult) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenNoResults) {
-  StringIndex::Query query = { {"Deutschland"}, {"country"}, {}, bbox, lodRange };
+  BitmapIndex::Query query = { { "Deutschland" }, { "country" }, {}, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -150,7 +149,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenNoResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOr_ThenHasOneResult) {
-  StringIndex::Query query = { {}, {}, {"country"}, bbox, lodRange };
+  BitmapIndex::Query query = { {}, {}, { "country" }, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -160,7 +159,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOr_ThenHasOneResult) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOr_ThenHasTwoResults) {
-  StringIndex::Query query = { {}, {}, {"country", "Berlin"}, bbox, lodRange };
+  BitmapIndex::Query query = { {}, {}, { "country", "Berlin" }, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -171,7 +170,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOr_ThenHasTwoResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOrPlusNot_ThenHasOneResult) {
-  StringIndex::Query query = { {"Berlin"}, {}, {"Deutschland", "city"},  bbox, lodRange };
+  BitmapIndex::Query query = { { "Berlin" }, {}, { "Deutschland", "city" }, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -181,7 +180,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOrPlusNot_ThenHasOneResu
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithThreeOrPlusNotPlusAnd_ThenHasOneResult) {
-  StringIndex::Query query = { {"Berlin"}, {"street"}, {"Deutschland", "city", "Eichendorffstr"}, bbox, lodRange };
+  BitmapIndex::Query query = { { "Berlin" }, { "street" }, { "Deutschland", "city", "Eichendorffstr" }, bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -191,7 +190,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithThreeOrPlusNotPlusAnd_ThenH
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithConflictingRules_ThenHasNoResult) {
-  StringIndex::Query query = { {"Deutschland", "Eichendorffstr"},
+  BitmapIndex::Query query = { { "Deutschland", "Eichendorffstr" },
                                {"street", "addr"},
                                {"Deutschland", "Berlin", "Eichendorffstr"},
                                bbox, lodRange };

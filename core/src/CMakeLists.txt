@@ -88,6 +88,7 @@ set(HEADER_FILES
         heightmap/FlatElevationProvider.hpp
         heightmap/GridElevationProvider.hpp
         heightmap/SrtmElevationProvider.hpp
+        index/BitmapIndex.hpp
         index/BitmapStream.hpp
         index/ElementGeometryClipper.hpp
         index/ElementStore.hpp
@@ -96,7 +97,6 @@ set(HEADER_FILES
         index/InMemoryElementStore.hpp
         index/MeshStream.hpp
         index/PersistentElementStore.hpp
-        index/StringIndex.hpp
         index/StringTable.hpp
         lsys/Turtle3d.hpp
         lsys/LSystem.hpp
@@ -159,6 +159,7 @@ add_library(${LIBRARY_NAME}
         formats/osm/MultipolygonProcessor.cpp
         formats/osm/OsmDataVisitor.cpp
         formats/osm/xml/OsmXmlParser.cpp
+        index/BitmapIndex.cpp
         index/BitmapStream.cpp
         index/ElementGeometryClipper.cpp
         index/ElementStore.cpp
@@ -167,7 +168,6 @@ add_library(${LIBRARY_NAME}
         index/InMemoryElementStore.cpp
         index/MeshStream.cpp
         index/PersistentElementStore.cpp
-        index/StringIndex.cpp
         index/StringTable.cpp
         lsys/Turtle3d.cpp
         lsys/LSystemParser.cpp

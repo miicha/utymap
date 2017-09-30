@@ -62,11 +62,11 @@ add_executable(${TEST}
         formats/osm/xml/OsmXmlParserTest.cpp
         heightmap/GridElevationProviderTest.cpp
         heightmap/SrtmElevationProviderTest.cpp
+        index/BitmapIndexTest.cpp
         index/BitmapStreamTest.cpp
         index/ElementStoreTest.cpp
         index/InMemoryElementStoreTest.cpp
         index/PersistentElementStoreTest.cpp
-        index/StringIndexTest.cpp
         index/StringTableTest.cpp
         lsys/LSystemParserTest.cpp
         lsys/RulesTest.cpp

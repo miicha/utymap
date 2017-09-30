@@ -29,8 +29,8 @@ namespace {
 BOOST_FIXTURE_TEST_SUITE(Index_BitmapStream, IndexIndex_BitmapStreamFixture)
 
 BOOST_AUTO_TEST_CASE(GivenBitmapWithOneRow_WhenSaved_ThenCanBeReadBack) {
-  StringIndex::Bitmap bitmap;
-  StringIndex::Bitmap result;
+  BitmapIndex::Bitmap bitmap;
+  BitmapIndex::Bitmap result;
   bitmap[0].set(3);
   bitmap[0].set(7);
 
@@ -44,8 +44,8 @@ BOOST_AUTO_TEST_CASE(GivenBitmapWithOneRow_WhenSaved_ThenCanBeReadBack) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenBitmapWithTwoRows_WhenSaved_ThenCanBeReadBack) {
-  StringIndex::Bitmap bitmap;
-  StringIndex::Bitmap result;
+  BitmapIndex::Bitmap bitmap;
+  BitmapIndex::Bitmap result;
   bitmap[0].set(3);
   bitmap[0].set(7);
   bitmap[3].set(1);

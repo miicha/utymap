@@ -3,7 +3,7 @@
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
 #include "index/InMemoryElementStore.hpp"
-#include "index/StringIndex.hpp"
+#include "index/BitmapIndex.hpp"
 
 using namespace utymap;
 using namespace utymap::index;
@@ -13,7 +13,7 @@ using namespace utymap::mapcss;
 namespace {
 using Elements = std::vector<std::shared_ptr<Element>>;
 using ElementMap = std::map<QuadKey, Elements, QuadKey::Comparator>;
-using Bitmaps = std::map<QuadKey, StringIndex::Bitmap, QuadKey::Comparator>;
+using Bitmaps = std::map<QuadKey, BitmapIndex::Bitmap, QuadKey::Comparator>;
 
 class ElementMapVisitor : public ElementVisitor {
  public:
@@ -40,11 +40,11 @@ class ElementMapVisitor : public ElementVisitor {
   Elements &elements_;
 };
 
-class InMemoryStringIndex : public StringIndex {
+class InMemoryStringIndex : public BitmapIndex {
  public:
   InMemoryStringIndex(const StringTable &stringTable,
                       const ElementMap &elementsMap) :
-      StringIndex(stringTable),
+      BitmapIndex(stringTable),
       elementsMap_(elementsMap),
       bitmaps_() {}
 
@@ -76,7 +76,7 @@ class InMemoryElementStore::InMemoryElementStoreImpl {
       elementsMap_(),
       stringIndex_(stringTable, elementsMap_) {}
 
-  void search(const StringIndex::Query query,
+  void search(const BitmapIndex::Query query,
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
     stringIndex_.search(query, visitor);
@@ -144,8 +144,8 @@ void InMemoryElementStore::search(const std::string &notTerms,
                                   const utymap::LodRange &range,
                                   ElementVisitor &visitor,
                                   const utymap::CancellationToken &cancelToken) {
-  pimpl_->search({ { notTerms }, { andTerms }, { orTerms }, bbox, range },
-                 visitor, cancelToken);
+  BitmapIndex::Query query = { { notTerms }, { andTerms }, { orTerms }, bbox, range };
+  pimpl_->search(query, visitor, cancelToken);
 }
 
 void InMemoryElementStore::search(const utymap::QuadKey &quadKey,

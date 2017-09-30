@@ -2,9 +2,9 @@
 
 using namespace utymap::index;
 
-void BitmapStream::read(std::istream &in, StringIndex::Bitmap &bitmap) {
+void BitmapStream::read(std::istream &in, BitmapIndex::Bitmap &bitmap) {
   std::uint32_t key;
-  StringIndex::Bitset bitset;
+  BitmapIndex::Bitset bitset;
   in.seekg(0, std::ios::beg);
   while (true) {
     if (!(in >> key)) break;
@@ -13,7 +13,7 @@ void BitmapStream::read(std::istream &in, StringIndex::Bitmap &bitmap) {
   }
 }
 
-void BitmapStream::write(std::ostream &out, const StringIndex::Bitmap &bitmap) {
+void BitmapStream::write(std::ostream &out, const BitmapIndex::Bitmap &bitmap) {
   for (const auto kv : bitmap) {
     out << kv.first;
     kv.second.write(out);

@@ -1,7 +1,7 @@
 #include "index/BitmapStream.hpp"
 #include "index/ElementStream.hpp"
 #include "index/PersistentElementStore.hpp"
-#include "index/StringIndex.hpp"
+#include "index/BitmapIndex.hpp"
 #include "utils/LruCache.hpp"
 
 #include <fstream>
@@ -21,7 +21,7 @@ const std::string bitmapFileExtension = ".bmp";
 
 struct BitmapData {
   const std::string path;
-  StringIndex::Bitmap data;
+  BitmapIndex::Bitmap data;
 
   BitmapData(const std::string &bitmapPath) :
     path(bitmapPath) {}
@@ -77,11 +77,11 @@ private:
 using Cache = utymap::utils::LruCache<QuadKey, QuadKeyData, QuadKey::Comparator>;
 
 // TODO improve thread safety!
-class PersistentElementStore::PersistentElementStoreImpl: StringIndex {
+class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
  public:
   PersistentElementStoreImpl(const std::string &dataPath,
                              const StringTable &stringTable):
-    StringIndex(stringTable),
+    BitmapIndex(stringTable),
     dataPath_(dataPath),
     lock_(),
     cache_(12) {}
@@ -107,10 +107,10 @@ class PersistentElementStore::PersistentElementStoreImpl: StringIndex {
     BitmapStream::write(bitmapFile, quadKeyData.getBitmap().data);
   }
 
-  void search(const StringIndex::Query query,
+  void search(const BitmapIndex::Query query,
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
-    StringIndex::search(query, visitor);
+    BitmapIndex::search(query, visitor);
   }
 
   void search(const QuadKey &quadKey,
@@ -217,7 +217,7 @@ void PersistentElementStore::search(const std::string &notTerms,
                                     const utymap::LodRange &range,
                                     utymap::entities::ElementVisitor &visitor,
                                     const utymap::CancellationToken &cancelToken) {
-  StringIndex::Query query = { { notTerms }, { andTerms }, { orTerms }, bbox, range };
+  BitmapIndex::Query query = { { notTerms }, { andTerms }, { orTerms }, bbox, range };
   pimpl_->search(query, visitor, cancelToken);
 }
 

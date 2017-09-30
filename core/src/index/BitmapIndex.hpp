@@ -1,5 +1,5 @@
-#ifndef INDEX_STRINGINDEX_HPP_DEFINED
-#define INDEX_STRINGINDEX_HPP_DEFINED
+#ifndef INDEX_BITMAPINDEX_HPP_DEFINED
+#define INDEX_BITMAPINDEX_HPP_DEFINED
 
 #include "BoundingBox.hpp"
 #include "LodRange.hpp"
@@ -14,7 +14,7 @@ namespace utymap {
 namespace index {
 
 /// Provides the way to index strings in order to perform fast exact search.
-class StringIndex {
+class BitmapIndex {
  public:
   using Bitset = EWAHBoolArray<std::uint32_t>;
   using Bitmap = std::unordered_map<std::uint32_t, Bitset>;
@@ -34,9 +34,9 @@ class StringIndex {
     utymap::LodRange range;
   };
 
-  explicit StringIndex(const utymap::index::StringTable &stringTable);
+  explicit BitmapIndex(const utymap::index::StringTable &stringTable);
 
-  virtual ~StringIndex() = default;
+  virtual ~BitmapIndex() = default;
 
   /// Adds element into index
   void add(const utymap::entities::Element &element,
@@ -71,4 +71,4 @@ class StringIndex {
 }
 }
 
-#endif // INDEX_STRINGINDEX_HPP_DEFINED
+#endif // INDEX_BITMAPINDEX_HPP_DEFINED

@@ -9,7 +9,6 @@
 #include "test_utils/ElementUtils.hpp"
 
 #include <boost/filesystem/operations.hpp>
-#include "index/StringIndex.hpp"
 
 using namespace utymap;
 using namespace utymap::entities;
