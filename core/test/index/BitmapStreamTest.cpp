@@ -3,6 +3,8 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <fstream>
+
 using namespace utymap::index;
 
 namespace {
