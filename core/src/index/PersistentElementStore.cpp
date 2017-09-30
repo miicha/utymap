@@ -35,21 +35,26 @@ struct BitmapData {
 struct QuadKeyData {
   std::unique_ptr<std::fstream> dataFile;
   std::unique_ptr<std::fstream> indexFile;
-  std::unique_ptr<BitmapData> bitmapData;
 
   QuadKeyData(const std::string &dataPath,
               const std::string &indexPath,
               const std::string &bitmapPath) :
       dataFile(utymap::utils::make_unique<std::fstream>()),
       indexFile(utymap::utils::make_unique<std::fstream>()),
-      bitmapData(utymap::utils::make_unique<BitmapData>(bitmapPath)) {
+      bitmapData_(utymap::utils::make_unique<BitmapData>(bitmapPath)) {
     using std::ios;
     dataFile->open(dataPath, ios::in | ios::out | ios::binary | ios::app | ios::ate);
     indexFile->open(indexPath, ios::in | ios::out | ios::binary | ios::app | ios::ate);
+  }
 
-    std::fstream bitmapFile;
-    bitmapFile.open(bitmapData->path, ios::in | ios::binary);
-    BitmapStream::read(bitmapFile, bitmapData->data);
+  BitmapData& getBitmap() const {
+    if (bitmapData_->data.empty()) {
+      // TODO not thread safe!
+      std::fstream bitmapFile;
+      bitmapFile.open(bitmapData_->path, std::ios::in | std::ios::binary);
+      BitmapStream::read(bitmapFile, bitmapData_->data);
+    }
+    return *bitmapData_;
   }
 
   QuadKeyData(const QuadKeyData &) = delete;
@@ -58,12 +63,14 @@ struct QuadKeyData {
   QuadKeyData(QuadKeyData &&other) :
       dataFile(std::move(other.dataFile)),
       indexFile(std::move(other.indexFile)),
-      bitmapData(std::move(other.bitmapData)) {}
+      bitmapData_(std::move(other.bitmapData_)) {}
 
   ~QuadKeyData() {
     if (dataFile!=nullptr && dataFile->good()) dataFile->close();
     if (indexFile!=nullptr && indexFile->good()) indexFile->close();
   }
+private:
+  std::unique_ptr<BitmapData> bitmapData_;
 };
 }
 
@@ -96,8 +103,8 @@ class PersistentElementStore::PersistentElementStoreImpl: StringIndex {
     // write element search data
     add(element, quadKey, static_cast<std::uint32_t>(order));
     // TODO we always clean/write the whole file here.
-    std::fstream bitmapFile(quadKeyData.bitmapData->path, std::ios::out | std::ios::binary | std::ios::trunc);
-    BitmapStream::write(bitmapFile, quadKeyData.bitmapData->data);
+    std::fstream bitmapFile(quadKeyData.getBitmap().path, std::ios::out | std::ios::binary | std::ios::trunc);
+    BitmapStream::write(bitmapFile, quadKeyData.getBitmap().data);
   }
 
   void search(const StringIndex::Query query,
@@ -148,7 +155,7 @@ class PersistentElementStore::PersistentElementStoreImpl: StringIndex {
   }
 
   Bitmap& getBitmap(const utymap::QuadKey& quadKey) override {
-    return getQuadKeyData(quadKey).bitmapData->data;
+    return getQuadKeyData(quadKey).getBitmap().data;
   }
 
  private:
