@@ -7,11 +7,12 @@
 namespace utymap {
 namespace index {
 
+/// Provides the way to store in stream and restore from it back.
 class BitmapStream final {
- public:
+  public:
   /// Reads bitmap from stream.
   static void read(std::istream &in,
-                   StringIndex::Bitmap &bitmap);
+                    StringIndex::Bitmap &bitmap);
 
   /// Writes bitmap to stream.
   static void write(std::ostream &out,
