@@ -39,9 +39,8 @@ class ElementMapVisitor : public ElementVisitor {
  private:
   Elements &elements_;
 };
-}
 
-class InMemoryStringIndex: public StringIndex {
+class InMemoryStringIndex : public StringIndex {
  public:
   InMemoryStringIndex(const StringTable &stringTable,
                       const ElementMap &elementsMap) :
@@ -50,22 +49,25 @@ class InMemoryStringIndex: public StringIndex {
       bitmaps_() {}
 
  protected:
-  Element& getElement(const utymap::QuadKey& quadKey, std::uint32_t order) override {
+  void notify(const utymap::QuadKey& quadKey,
+              const std::uint32_t order,
+              ElementVisitor &visitor) override {
     auto elements = elementsMap_.find(quadKey);
-    if (elements == elementsMap_.end())
+    if (elements==elementsMap_.end())
       throw std::domain_error("Cannot find element in memory while searching text!");
 
-    return *elements->second.at(order);
+    elements->second.at(order)->accept(visitor);
   }
 
-  Bitmap& getBitmap(const utymap::QuadKey& quadKey) override {
+  Bitmap &getBitmap(const utymap::QuadKey &quadKey) override {
     return bitmaps_[quadKey];
   }
 
-private:
+ private:
   const ElementMap &elementsMap_;
   Bitmaps bitmaps_;
 };
+}
 
 class InMemoryElementStore::InMemoryElementStoreImpl {
  public:
@@ -74,14 +76,10 @@ class InMemoryElementStore::InMemoryElementStoreImpl {
       elementsMap_(),
       stringIndex_(stringTable, elementsMap_) {}
 
-  void search(const std::string &notTerms,
-              const std::string &andTerms,
-              const std::string &orTerms,
-              const utymap::BoundingBox &bbox,
-              const utymap::LodRange &range,
+  void search(const StringIndex::Query query,
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
-    stringIndex_.search({ { notTerms }, { andTerms }, { orTerms }, bbox, range }, visitor);
+    stringIndex_.search(query, visitor);
   }
 
   void search(const utymap::QuadKey &quadKey,
@@ -146,7 +144,8 @@ void InMemoryElementStore::search(const std::string &notTerms,
                                   const utymap::LodRange &range,
                                   ElementVisitor &visitor,
                                   const utymap::CancellationToken &cancelToken) {
-  pimpl_->search(notTerms, andTerms, orTerms, bbox, range, visitor, cancelToken);
+  pimpl_->search({ { notTerms }, { andTerms }, { orTerms }, bbox, range },
+                 visitor, cancelToken);
 }
 
 void InMemoryElementStore::search(const utymap::QuadKey &quadKey,

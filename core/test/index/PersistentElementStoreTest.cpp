@@ -9,6 +9,7 @@
 #include "test_utils/ElementUtils.hpp"
 
 #include <boost/filesystem/operations.hpp>
+#include "index/StringIndex.hpp"
 
 using namespace utymap;
 using namespace utymap::entities;
@@ -28,6 +29,7 @@ struct Index_PersistentElementStoreFixture {
   }
 
   ~Index_PersistentElementStoreFixture() {
+    elementStore.flush();
     boost::filesystem::path dir(TestZoomDirectory);
     for (boost::filesystem::directory_iterator dirEnd, it(dir); it!=dirEnd; ++it) {
       boost::filesystem::remove_all(it->path());
@@ -112,8 +114,10 @@ BOOST_AUTO_TEST_CASE(GivenWay_WhenStoreAndSearch_ThenItIsStoredAndReadBack) {
   LodRange range(1, 2);
   QuadKey quadKey(1, 0, 0);
   auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
-  Way way =
-      ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(), 7, {{"any", "true"}}, {{1, -1}, {5, -5}});
+  Way way = ElementUtils::createElement<Way>(*dependencyProvider.getStringTable(),
+                                              7,
+                                              {{"any", "true"}},
+                                              {{1, -1}, {5, -5}});
   ElementCounter counter;
 
   elementStore.store(way, range, *styleProvider);
@@ -183,6 +187,26 @@ BOOST_AUTO_TEST_CASE(GivenTwoAreas_WhenStoreAndSearchOnce_ThenTheyStoredTwiceAnd
 
   BOOST_CHECK_EQUAL(counter.times, 2);
   assertWayOrArea(area2, *std::dynamic_pointer_cast<Area>(counter.element));
+}
+
+BOOST_AUTO_TEST_CASE(GivenNodes_WhenSearchText_ThenOneFound) {
+  LodRange range(1, 1);
+  BoundingBox bbox(GeoCoordinate(-90, -180), GeoCoordinate(90, 180));
+  auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
+  Node node1 = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 1, { { "any", "one" } });
+  Node node2 = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 2, { { "any", "two" } });
+  Node node3 = ElementUtils::createElement<Node>(*dependencyProvider.getStringTable(), 3, { { "any", "three" } });
+  node1.coordinate = { 5, -5 };
+  node2.coordinate = { 5, -5 };
+  node3.coordinate = { 5, -5 };
+  ElementCounter counter;
+  elementStore.store(node1, range, *styleProvider);
+  elementStore.store(node2, range, *styleProvider);
+  elementStore.store(node3, range, *styleProvider);
+
+  elementStore.search({}, {"two"}, {"any"}, bbox, range, counter, CancellationToken());
+
+  assertNode(node2, *std::dynamic_pointer_cast<Node>(counter.element));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

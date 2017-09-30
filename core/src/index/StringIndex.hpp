@@ -36,6 +36,8 @@ class StringIndex {
 
   explicit StringIndex(const utymap::index::StringTable &stringTable);
 
+  virtual ~StringIndex() = default;
+
   /// Adds element into index
   void add(const utymap::entities::Element &element,
            const utymap::QuadKey &quadKey,
@@ -46,9 +48,12 @@ class StringIndex {
               utymap::entities::ElementVisitor &visitor);
 
  protected:
-  /// Gets element by element store order id.
-  virtual utymap::entities::Element& getElement(const utymap::QuadKey& quadKey,
-                                                std::uint32_t order) = 0;
+  /// Notifies that element with given store order id
+  /// should be visited with visitor.
+  virtual void notify(const utymap::QuadKey& quadKey,
+                      const std::uint32_t order,
+                      utymap::entities::ElementVisitor &visitor) = 0;
+
   /// Get bitmap for given quad key.
   virtual Bitmap& getBitmap(const utymap::QuadKey& quadKey) = 0;
 

@@ -32,6 +32,9 @@ class PersistentElementStore final : public ElementStore {
 
   bool hasData(const utymap::QuadKey &quadKey) const override;
 
+  /// Flushes cached internally data.
+  void flush();
+
  protected:
   void storeImpl(const utymap::entities::Element &element, const utymap::QuadKey &quadKey) override;
 

@@ -17,10 +17,9 @@ namespace {
     TestStringIndex(const StringTable &stringTable)
         : StringIndex(stringTable) {}
 
-    utymap::entities::Element& getElement(const utymap::QuadKey& quadKey,
-                                          std::uint32_t order) {
-      return *addedElements.at(order);
-    }
+    void notify(const utymap::QuadKey& quadKey,
+                const std::uint32_t order,
+                ElementVisitor &visitor) override { }
 
     Bitmap& getBitmap(const utymap::QuadKey& quadKey) {
       auto bitmap = registry_.find(quadKey);

@@ -63,7 +63,7 @@ void StringIndex::search(const StringIndex::Query &query, ElementVisitor &visito
         });
 
         for (auto i = bitset.begin(); i != bitset.end(); ++i) {
-          getElement(quadKey, static_cast<std::uint32_t >(*i)).accept(visitor);
+          notify(quadKey, static_cast<std::uint32_t >(*i), visitor);
         }
       });
   }

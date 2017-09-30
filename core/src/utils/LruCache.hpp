@@ -35,7 +35,7 @@ class LruCache final {
     }
   }
 
-  Value &get(const Key &key) {
+  const Value &get(const Key &key) {
     auto it = itemsMap_.find(key);
     if (it==itemsMap_.end())
       throw std::range_error("There is no such key in cache.");
