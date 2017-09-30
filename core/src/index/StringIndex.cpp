@@ -27,7 +27,7 @@ namespace {
   }
 }
 
-void StringIndex::add(const Element &element, const QuadKey &quadKey, std::uint32_t order) {
+void StringIndex::add(const Element &element, const utymap::QuadKey &quadKey, const std::uint32_t order) {
   auto& bitmap = getBitmap(quadKey);
   for (const auto &token : tokenize(element)) {
     bitmap[token].set(order);

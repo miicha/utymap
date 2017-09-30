@@ -39,7 +39,7 @@ class StringIndex {
   /// Adds element into index
   void add(const utymap::entities::Element &element,
            const utymap::QuadKey &quadKey,
-           std::uint32_t order);
+           const std::uint32_t order);
 
   /// Performs search for relevant data match query.
   void search(const Query &query,
