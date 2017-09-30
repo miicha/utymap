@@ -88,6 +88,7 @@ set(HEADER_FILES
         heightmap/FlatElevationProvider.hpp
         heightmap/GridElevationProvider.hpp
         heightmap/SrtmElevationProvider.hpp
+        index/BitmapStream.hpp
         index/ElementGeometryClipper.hpp
         index/ElementStore.hpp
         index/ElementStream.hpp
@@ -158,6 +159,7 @@ add_library(${LIBRARY_NAME}
         formats/osm/MultipolygonProcessor.cpp
         formats/osm/OsmDataVisitor.cpp
         formats/osm/xml/OsmXmlParser.cpp
+        index/BitmapStream.cpp
         index/ElementGeometryClipper.cpp
         index/ElementStore.cpp
         index/ElementStream.cpp
