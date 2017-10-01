@@ -139,11 +139,11 @@ void EXPORT_API addToStoreElement(const char *key,           // store key
   }
 }
 
-// Searches for elements matching query.
+/// Searches for elements matching query.
 void EXPORT_API searchElements(int tag,                                  // request tag
-                               const char **notTerms, int notTermsSize,  // NOT terms
-                               const char **andTerms, int andTermsSize,  // AND terms
-                               const char **orTerms, int orTermsSize,    // OR terms
+                               const char *notTerms,                     // NOT terms
+                               const char *andTerms,                     // AND terms
+                               const char *orTerms,                      // OR terms
                                double minLatitude,                       // Bounding box params
                                double minLongitude,
                                double maxLatitude,
@@ -155,19 +155,17 @@ void EXPORT_API searchElements(int tag,                                  // requ
                                utymap::CancellationToken *cancellationToken) {
   applicationPtr->searchElements(
     tag,
-    std::vector<std::string>(notTerms, notTerms + notTermsSize),
-    std::vector<std::string>(andTerms, andTerms + andTermsSize),
-    std::vector<std::string>(orTerms, orTerms + orTermsSize),
+    notTerms, andTerms, orTerms,
     utymap::BoundingBox(utymap::GeoCoordinate(minLatitude, minLongitude),
                         utymap::GeoCoordinate(maxLatitude, maxLongitude)),
     utymap::LodRange(startLod, endLod),
     elementCallback, errorCallback, cancellationToken);
 }
 
-/// Loads quadkey.
+/// Loads quad key.
 void EXPORT_API loadQuadKey(int tag,                                 // request tag
                             const char *styleFile,                   // style file
-                            int tileX, int tileY, int levelOfDetail, // quadkey info
+                            int tileX, int tileY, int levelOfDetail, // quad key info
                             int eleDataType,                         // elevation data type
                             OnMeshBuilt *meshCallback,               // mesh callback
                             OnElementLoaded *elementCallback,        // element callback

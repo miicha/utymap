@@ -23,11 +23,11 @@ class BitmapIndex {
   /// Defines query to indexed string data.
   struct Query {
     /// Logical "not": result should not include any of these terms.
-    std::vector<std::string> notTerms;
+    std::string notTerms;
     /// Logical "and": result has to include all of these terms.
-    std::vector<std::string> andTerms;
+    std::string andTerms;
     /// Logical "or": result might include any of these terms.
-    std::vector<std::string> orTerms;
+    std::string orTerms;
     /// Bounding box constraint.
     utymap::BoundingBox boundingBox;
     /// LOD range constraint.
@@ -60,8 +60,7 @@ class BitmapIndex {
  private:
   /// Gets tokens from element.
   std::vector<std::uint32_t> tokenize(const utymap::entities::Element &element);
-  /// Stores tokens received from source into destination.
-  void tokenize(const std::vector<std::string> &source, Ids &destination);
+
   /// Stores tokens received from source into destination.
   void tokenize(const std::string &str, Ids &destination);
 

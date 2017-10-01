@@ -92,7 +92,7 @@ namespace {
 BOOST_FIXTURE_TEST_SUITE(Index_BitmapIndex, Index_BitmapIndexFixture)
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenEmptyQuery_ThenNoResults) {
-  BitmapIndex::Query query = { {}, {}, {}, bbox, lodRange };
+  BitmapIndex::Query query = { "", "", "", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenEmptyQuery_ThenNoResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenOneResult) {
-  BitmapIndex::Query query = { {}, { "street" }, {}, bbox, lodRange };
+  BitmapIndex::Query query = { "", "street", "", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenOneResult) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoAND_ThenOneResult) {
-  BitmapIndex::Query query = { {}, { "addr", "Eichendorffstr" }, {}, bbox, lodRange };
+  BitmapIndex::Query query = { "", "addr Eichendorffstr", "", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoAND_ThenOneResult) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenThreeResults) {
-  BitmapIndex::Query query = { {}, { "addr" }, {}, bbox, lodRange };
+  BitmapIndex::Query query = { "", "addr", "", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOneAND_ThenThreeResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNot_ThenNoResults) {
-  BitmapIndex::Query query = { { "country" }, {}, {}, bbox, lodRange };
+  BitmapIndex::Query query = { "country", "", "", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNot_ThenNoResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenOneResult) {
-  BitmapIndex::Query query = { {"street"},{"addr"}, {}, bbox, lodRange };
+  BitmapIndex::Query query = { "street", "addr", "", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenOneResult) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenNoResults) {
-  BitmapIndex::Query query = { { "Deutschland" }, { "country" }, {}, bbox, lodRange };
+  BitmapIndex::Query query = { "Deutschland", "country", "", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithNotAnd_ThenNoResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOr_ThenHasOneResult) {
-  BitmapIndex::Query query = { {}, {}, { "country" }, bbox, lodRange };
+  BitmapIndex::Query query = { "", "", "country", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithOr_ThenHasOneResult) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOr_ThenHasTwoResults) {
-  BitmapIndex::Query query = { {}, {}, { "country", "Berlin" }, bbox, lodRange };
+  BitmapIndex::Query query = { "", "", "country Berlin", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOr_ThenHasTwoResults) {
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOrPlusNot_ThenHasOneResult) {
-  BitmapIndex::Query query = { { "Berlin" }, {}, { "Deutschland", "city" }, bbox, lodRange };
+  BitmapIndex::Query query = { "Berlin" , "", "Deutschland city", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithTwoOrPlusNot_ThenHasOneResu
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithThreeOrPlusNotPlusAnd_ThenHasOneResult) {
-  BitmapIndex::Query query = { { "Berlin" }, { "street" }, { "Deutschland", "city", "Eichendorffstr" }, bbox, lodRange };
+  BitmapIndex::Query query = { "Berlin", "street", "Deutschland city Eichendorffstr", bbox, lodRange };
   addThreeElements();
 
   index.search(query, *this);
@@ -199,9 +199,9 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithThreeOrPlusNotPlusAnd_ThenH
 }
 
 BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithConflictingRules_ThenHasNoResult) {
-  BitmapIndex::Query query = { { "Deutschland", "Eichendorffstr" },
-                               {"street", "addr"},
-                               {"Deutschland", "Berlin", "Eichendorffstr"},
+  BitmapIndex::Query query = { "Deutschland Eichendorffstr",
+                               "street addr",
+                               "Deutschland Berlin Eichendorffstr",
                                bbox, lodRange };
   addThreeElements();
 

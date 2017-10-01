@@ -10,7 +10,7 @@ namespace {
   using Bitset = BitmapIndex::Bitset;
   using Bitmap = BitmapIndex::Bitmap;
   /// Defines symbols considered as token delimiters
-  const boost::char_separator<char> separator(":;!@#$%^&*(){}[],.?`\\/\"\'");
+  const boost::char_separator<char> separator(" :;!@#$%^&*(){}[],.?`\\/\"\'");
 
   /// Applies logical operation
   void applyOperation(const BitmapIndex::Ids &terms,
@@ -77,13 +77,6 @@ std::vector<std::uint32_t> BitmapIndex::tokenize(const Element &element) {
     tokenize(stringTable_.getString(tag.value), tokens);
   }
   return tokens;
-}
-
-void BitmapIndex::tokenize(const std::vector<std::string> &source,
-                           Ids &destination) {
-  for (const auto &term : source) {
-    tokenize(term, destination);
-  }
 }
 
 void BitmapIndex::tokenize(const std::string &source,

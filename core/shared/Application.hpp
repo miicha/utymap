@@ -125,9 +125,9 @@ class Application {
 
   /// Searches elements matching given text query. Styles and real elevation are not included.
   void searchElements(int tag,
-                      const std::vector<std::string> &notTerms,
-                      const std::vector<std::string> &andTerms,
-                      const std::vector<std::string> &orTerms,
+                      const std::string &notTerms,
+                      const std::string &andTerms,
+                      const std::string &orTerms,
                       const utymap::BoundingBox &bbox,
                       const utymap::LodRange &range,
                       OnElementLoaded *elementCallback,

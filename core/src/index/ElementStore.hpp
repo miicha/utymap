@@ -20,9 +20,9 @@ class ElementStore {
   virtual ~ElementStore() = default;
 
   /// Searches for elements matches given query, bounding box and LOD range
-  virtual void search(const std::vector<std::string> &notTerms,
-                      const std::vector<std::string> &andTerms,
-                      const std::vector<std::string> &orTerms,
+  virtual void search(const std::string &notTerms,
+                      const std::string &andTerms,
+                      const std::string &orTerms,
                       const utymap::BoundingBox &bbox,
                       const utymap::LodRange &range,
                       utymap::entities::ElementVisitor &visitor,

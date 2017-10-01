@@ -118,17 +118,14 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenSpecificQuadKeyIsLoaded_ThenHasDataReturn
 BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeyIsLoaded_ThenSearchFindsElement) {
   utymap::QuadKey quadkey(16, 35205, 21489);
   utymap::BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadkey);
-  std::vector<char*> notTerms = {};
-  std::vector<char*> andTerms = {"Berliner", "Mauer", "tram", "stop"};
-  std::vector<char*> orTerms = {};
   isCalled = false;
   utymap::CancellationToken cancelToken;
   ::addToStoreInQuadKey(InMemoryStoreKey, TEST_MAPCSS_DEFAULT, TEST_XML_FILE, quadkey.tileX, quadkey.tileY, quadkey.levelOfDetail, callback);
 
   ::searchElements(0,
-    const_cast<const char **>(notTerms.data()), notTerms.size(),
-    const_cast<const char **>(andTerms.data()), andTerms.size(),
-    const_cast<const char **>(orTerms.data()), orTerms.size(),
+    "",
+    "Berliner Mauer tram stop",
+    "",
     bbox.minPoint.latitude, bbox.minPoint.longitude, bbox.maxPoint.latitude, bbox.maxPoint.longitude,
     quadkey.levelOfDetail, quadkey.levelOfDetail,
     [&](int tag, uint64_t id, const char **tags, int size, const double *vertices,
