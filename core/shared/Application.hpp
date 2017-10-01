@@ -123,6 +123,23 @@ class Application {
     return geoStore_.hasData(quadKey);
   }
 
+  /// Searches elements matching given text query. Styles and real elevation are not included.
+  void searchElements(int tag,
+                      const std::vector<std::string> &notTerms,
+                      const std::vector<std::string> &andTerms,
+                      const std::vector<std::string> &orTerms,
+                      const utymap::BoundingBox &bbox,
+                      const utymap::LodRange &range,
+                      OnElementLoaded *elementCallback,
+                      OnError *errorCallback,
+                      utymap::CancellationToken *cancelToken) {
+    ExportElementVisitor elementVisitor(tag, stringTable_, elementCallback);
+    safeExecute([&]() {
+      geoStore_.search(notTerms, andTerms, orTerms,
+                       bbox, range, elementVisitor, *cancelToken);
+    }, errorCallback);
+  }
+
   /// Loads given quadKey.
   void loadQuadKey(int tag,
                    const char *styleFile,

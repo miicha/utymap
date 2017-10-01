@@ -139,6 +139,31 @@ void EXPORT_API addToStoreElement(const char *key,           // store key
   }
 }
 
+// Searches for elements matching query.
+void EXPORT_API searchElements(int tag,                                  // request tag
+                               const char **notTerms, int notTermsSize,  // NOT terms
+                               const char **andTerms, int andTermsSize,  // AND terms
+                               const char **orTerms, int orTermsSize,    // OR terms
+                               double minLatitude,                       // Bounding box params
+                               double minLongitude,
+                               double maxLatitude,
+                               double maxLongitude,
+                               int startLod,                             // LOD params
+                               int endLod,
+                               OnElementLoaded *elementCallback,         // element callback
+                               OnError *errorCallback,                   // error callback
+                               utymap::CancellationToken *cancellationToken) {
+  applicationPtr->searchElements(
+    tag,
+    std::vector<std::string>(notTerms, notTerms + notTermsSize),
+    std::vector<std::string>(andTerms, andTerms + andTermsSize),
+    std::vector<std::string>(orTerms, orTerms + orTermsSize),
+    utymap::BoundingBox(utymap::GeoCoordinate(minLatitude, minLongitude),
+                        utymap::GeoCoordinate(maxLatitude, maxLongitude)),
+    utymap::LodRange(startLod, endLod),
+    elementCallback, errorCallback, cancellationToken);
+}
+
 /// Loads quadkey.
 void EXPORT_API loadQuadKey(int tag,                                 // request tag
                             const char *styleFile,                   // style file

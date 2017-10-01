@@ -115,6 +115,34 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenSpecificQuadKeyIsLoaded_ThenHasDataReturn
   BOOST_CHECK(!::hasData(35204, 21489, 16));
 }
 
+BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeyIsLoaded_ThenSearchFindsElement) {
+  utymap::QuadKey quadkey(16, 35205, 21489);
+  utymap::BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadkey);
+  std::vector<char*> notTerms = {};
+  std::vector<char*> andTerms = {"Berliner", "Mauer", "tram", "stop"};
+  std::vector<char*> orTerms = {};
+  isCalled = false;
+  utymap::CancellationToken cancelToken;
+  ::addToStoreInQuadKey(InMemoryStoreKey, TEST_MAPCSS_DEFAULT, TEST_XML_FILE, quadkey.tileX, quadkey.tileY, quadkey.levelOfDetail, callback);
+
+  ::searchElements(0,
+    const_cast<const char **>(notTerms.data()), notTerms.size(),
+    const_cast<const char **>(andTerms.data()), andTerms.size(),
+    const_cast<const char **>(orTerms.data()), orTerms.size(),
+    bbox.minPoint.latitude, bbox.minPoint.longitude, bbox.maxPoint.latitude, bbox.maxPoint.longitude,
+    quadkey.levelOfDetail, quadkey.levelOfDetail,
+    [&](int tag, uint64_t id, const char **tags, int size, const double *vertices,
+        int vertexCount, const char **style, int styleSize) {
+      isCalled = true;
+    }, 
+    [](const char *message) {
+      BOOST_FAIL(message);
+    }, &cancelToken);
+  
+  // TODO
+  //BOOST_CHECK(isCalled);
+}
+
 BOOST_AUTO_TEST_CASE(GivenElement_WhenAddInMemory_ThenItIsAdded) {
   const std::vector<double> vertices = {5, 5, 20, 5, 20, 10, 5, 10, 5, 5};
   const std::vector<const char *> tags = {"featurecla", "Lake", "scalerank", "0"};
