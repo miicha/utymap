@@ -14,11 +14,18 @@ namespace {
   /// Defines the simplest in memory string index implementation.
   class TestBitmapIndex : public BitmapIndex {
    public:
-    TestBitmapIndex(const StringTable &stringTable) : BitmapIndex(stringTable) {}
+    TestBitmapIndex(const StringTable &stringTable,
+                    ElementVisitor &visitor) :
+        BitmapIndex(stringTable),
+        addedElements(),
+        visitor_(visitor),
+        registry_() {}
 
     void notify(const utymap::QuadKey& quadKey,
                 const std::uint32_t order,
-                ElementVisitor &visitor) override { }
+                ElementVisitor &visitor) override {
+      addedElements.at(order)->accept(visitor_);
+    }
 
     Bitmap& getBitmap(const utymap::QuadKey& quadKey) {
       auto bitmap = registry_.find(quadKey);
@@ -29,13 +36,15 @@ namespace {
     }
 
     std::vector<std::shared_ptr<Element>> addedElements;
+   private:
+    ElementVisitor &visitor_;
     std::map<QuadKey, BitmapIndex::Bitmap, QuadKey::Comparator> registry_;
   };
 
   struct Index_BitmapIndexFixture : ElementVisitor {
     Index_BitmapIndexFixture() :
       dependencyProvider(),
-      index(*dependencyProvider.getStringTable()),
+      index(*dependencyProvider.getStringTable(), *this),
       bbox(BoundingBox(GeoCoordinate(-90, -180), GeoCoordinate(90, 180))),
       lodRange(1, 1),
       visitedElements() {
