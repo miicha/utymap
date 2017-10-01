@@ -123,21 +123,19 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeyIsLoaded_ThenSearchFindsElement) {
   ::addToStoreInQuadKey(InMemoryStoreKey, TEST_MAPCSS_DEFAULT, TEST_XML_FILE, quadkey.tileX, quadkey.tileY, quadkey.levelOfDetail, callback);
 
   ::searchElements(0,
-    "",
-    "Berliner Mauer tram stop",
-    "",
+    "", "Nordbahnhof tram stop", "",
     bbox.minPoint.latitude, bbox.minPoint.longitude, bbox.maxPoint.latitude, bbox.maxPoint.longitude,
     quadkey.levelOfDetail, quadkey.levelOfDetail,
-    [&](int tag, uint64_t id, const char **tags, int size, const double *vertices,
+    [](int tag, uint64_t id, const char **tags, int size, const double *vertices,
         int vertexCount, const char **style, int styleSize) {
       isCalled = true;
-    }, 
+      BOOST_CHECK_EQUAL(id, 2866993675);
+    },
     [](const char *message) {
       BOOST_FAIL(message);
     }, &cancelToken);
   
-  // TODO
-  //BOOST_CHECK(isCalled);
+  BOOST_CHECK(isCalled);
 }
 
 BOOST_AUTO_TEST_CASE(GivenElement_WhenAddInMemory_ThenItIsAdded) {

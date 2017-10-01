@@ -10,7 +10,7 @@ namespace {
   using Bitset = BitmapIndex::Bitset;
   using Bitmap = BitmapIndex::Bitmap;
   /// Defines symbols considered as token delimiters
-  const boost::char_separator<char> separator(" :;!@#$%^&*(){}[],.?`\\/\"\'");
+  const boost::char_separator<char> separator(" _:;!@#$%^&*(){}[],.?`\\/\"\'");
 
   /// Applies logical operation
   void applyOperation(const BitmapIndex::Ids &terms,
