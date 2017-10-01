@@ -100,18 +100,28 @@ namespace UtyMap.Unity.Data
         }
 
         /// <inheritdoc />
-        public virtual void OnCompleted()
+        void IObserver<MapQuery>.OnCompleted()
         {
             _dataObservers.ForEach(o => o.OnCompleted());
-            _tileObservers.ForEach(o => o.OnCompleted());
         }
 
         /// <inheritdoc />
-        public virtual void OnError(Exception error)
+        void IObserver<MapQuery>.OnError(Exception error)
         {
             _dataObservers.ForEach(o => o.OnError(error));
-            _tileObservers.ForEach(o => o.OnError(error));
         }
+
+         /// <inheritdoc />
+         void IObserver<Tile>.OnCompleted()
+         {
+             _tileObservers.ForEach(o => o.OnCompleted());
+         }
+
+         /// <inheritdoc />
+         void IObserver<Tile>.OnError(Exception error)
+         {
+             _tileObservers.ForEach(o => o.OnError(error));
+         }
 
         /// <summary> Triggers loading data for given tile. </summary>
         public void OnNext(Tile tile)
