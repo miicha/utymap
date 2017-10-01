@@ -137,14 +137,14 @@ bool InMemoryElementStore::hasData(const utymap::QuadKey &quadKey) const {
   return pimpl_->hasData(quadKey);
 }
 
-void InMemoryElementStore::search(const std::string &notTerms,
-                                  const std::string &andTerms,
-                                  const std::string &orTerms,
+void InMemoryElementStore::search(const std::vector<std::string> &notTerms,
+                                  const std::vector<std::string> &andTerms,
+                                  const std::vector<std::string> &orTerms,
                                   const utymap::BoundingBox &bbox,
                                   const utymap::LodRange &range,
                                   ElementVisitor &visitor,
                                   const utymap::CancellationToken &cancelToken) {
-  BitmapIndex::Query query = { { notTerms }, { andTerms }, { orTerms }, bbox, range };
+  BitmapIndex::Query query = { notTerms, andTerms, orTerms, bbox, range };
   pimpl_->search(query, visitor, cancelToken);
 }
 

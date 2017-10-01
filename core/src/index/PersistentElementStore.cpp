@@ -208,14 +208,14 @@ void PersistentElementStore::storeImpl(const Element &element,
   pimpl_->store(element, quadKey);
 }
 
-void PersistentElementStore::search(const std::string &notTerms,
-                                    const std::string &andTerms,
-                                    const std::string &orTerms,
+void PersistentElementStore::search(const std::vector<std::string> &notTerms,
+                                    const std::vector<std::string> &andTerms,
+                                    const std::vector<std::string> &orTerms,
                                     const utymap::BoundingBox &bbox,
                                     const utymap::LodRange &range,
                                     utymap::entities::ElementVisitor &visitor,
                                     const utymap::CancellationToken &cancelToken) {
-  BitmapIndex::Query query = { { notTerms }, { andTerms }, { orTerms }, bbox, range };
+  BitmapIndex::Query query = { notTerms, andTerms, orTerms, bbox, range };
   pimpl_->search(query, visitor, cancelToken);
 }
 

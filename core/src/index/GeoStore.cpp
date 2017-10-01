@@ -106,9 +106,9 @@ class GeoStore::GeoStoreImpl final {
     }
   }
 
-  void search(const std::string &notTerms,
-              const std::string &andTerms,
-              const std::string &orTerms,
+  void search(const std::vector<std::string> &notTerms,
+              const std::vector<std::string> &andTerms,
+              const std::vector<std::string> &orTerms,
               const utymap::BoundingBox &bbox,
               const utymap::LodRange &range,
               ElementVisitor &visitor,
@@ -199,9 +199,9 @@ void utymap::index::GeoStore::search(const QuadKey &quadKey,
   pimpl_->search(quadKey, styleProvider, visitor, cancelToken);
 }
 
-void utymap::index::GeoStore::search(const std::string &notTerms,
-                                     const std::string &andTerms,
-                                     const std::string &orTerms,
+void utymap::index::GeoStore::search(const std::vector<std::string> &notTerms,
+                                     const std::vector<std::string> &andTerms,
+                                     const std::vector<std::string> &orTerms,
                                      const utymap::BoundingBox &bbox,
                                      const utymap::LodRange &range,
                                      ElementVisitor &visitor,
