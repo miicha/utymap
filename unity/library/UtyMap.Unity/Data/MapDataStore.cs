@@ -9,7 +9,8 @@ using UtyRx;
 namespace UtyMap.Unity.Data
 {
     /// <summary> Defines behavior of class responsible of mapdata processing. </summary>
-    public interface IMapDataStore : IObserver<Tile>, IObservable<MapData>, IObservable<Tile>
+    public interface IMapDataStore : IObserver<Tile>, IObserver<MapQuery>,
+        IObservable<MapData>, IObservable<Tile>, IObservable<Element>
     {
         /// <summary> Registers in-memory data storage with given key. </summary>
         /// <param name="storageKey"> Storage key.</param>
@@ -46,6 +47,7 @@ namespace UtyMap.Unity.Data
         private readonly List<string> _storageKeys = new List<string>();
         private readonly List<IObserver<MapData>> _dataObservers = new List<IObserver<MapData>>();
         private readonly List<IObserver<Tile>> _tileObservers = new List<IObserver<Tile>>();
+        private readonly List<IObserver<Element>> _elementObservers = new List<IObserver<Element>>();
 
         [Dependency]
         public MapDataStore(IMapDataProvider mapDataProvider, IMapDataLibrary mapDataLibrary)
@@ -111,10 +113,16 @@ namespace UtyMap.Unity.Data
             _tileObservers.ForEach(o => o.OnError(error));
         }
 
-        /// <inheritdoc />
+        /// <summary> Triggers loading data for given tile. </summary>
         public void OnNext(Tile tile)
         {
             _mapDataProvider.OnNext(tile);
+        }
+
+        /// <summary> Triggers search of elements matching query query. </summary>
+        public void OnNext(MapQuery value)
+        {
+            _mapDataLibrary.Get(value, _elementObservers);
         }
 
         /// <summary> Subscribes on mesh/element data loaded events. </summary>
@@ -128,6 +136,13 @@ namespace UtyMap.Unity.Data
         public IDisposable Subscribe(IObserver<Tile> observer)
         {
             _tileObservers.Add(observer);
+            return Disposable.Empty;
+        }
+
+        /// <summary> Subscribes on element search event. </summary>
+        public IDisposable Subscribe(IObserver<Element> observer)
+        {
+            _elementObservers.Add(observer);
             return Disposable.Empty;
         }
 

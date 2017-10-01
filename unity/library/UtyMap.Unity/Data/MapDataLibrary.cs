@@ -41,6 +41,11 @@ namespace UtyMap.Unity.Data
         /// <param name="observers"> Observers to notify. </param>
         IObservable<int> Get(Tile tile, IList<IObserver<MapData>> observers);
 
+        /// <summary> Gets elements matching given query </summary>
+        /// <param name="query"> Search query. </param>
+        /// <param name="observers"> Observers to notify. </param>
+        IObservable<int> Get(MapQuery query, IList<IObserver<Element>> observers);
+
         /// <summary> Registers in-memory data storage with given key. </summary>
         /// <param name="storageKey"> Storage key.</param>
         void Register(string storageKey);
@@ -111,6 +116,13 @@ namespace UtyMap.Unity.Data
         {
             var tileHandler = new TileHandler(tile, observers);
             return Get(tile, tile.GetHashCode(), tileHandler.OnMeshBuiltHandler, tileHandler.OnElementLoadedHandler, OnErrorHandler);
+        }
+
+        /// <inheritdoc />
+        public IObservable<int> Get(MapQuery query, IList<IObserver<Element>> observers)
+        {
+            var queryHandler = new QueryHandler(observers);
+            return Get(query, 0, queryHandler.OnElementLoadedHandler, OnErrorHandler);
         }
 
         /// <inheritdoc />
@@ -252,6 +264,22 @@ namespace UtyMap.Unity.Data
             return Observable.Return(100);
         }
 
+        private IObservable<int> Get(MapQuery query, int tag, OnElementLoaded elementLoadedHandler, OnError errorHandler)
+        {
+            _trace.Debug(TraceCategory, "Get elements..");
+
+            var token = new Tile.CancellationToken();
+            var cancelTokenHandle = GCHandle.Alloc(token, GCHandleType.Pinned);
+            searchElements(tag, query.NotTerms, query.AndTerms, query.OrTerms,
+                query.BoundingBox.MinPoint.Latitude, query.BoundingBox.MinPoint.Longitude,
+                query.BoundingBox.MaxPoint.Latitude, query.BoundingBox.MaxPoint.Longitude,
+                query.LodRange.Minimum, query.LodRange.Maximum, elementLoadedHandler, errorHandler,
+                cancelTokenHandle.AddrOfPinnedObject());
+            cancelTokenHandle.Free();
+
+            return Observable.Return(100);
+        }
+
         private static void CreateDirectory(string directory)
         {
             Directory.CreateDirectory(directory);
@@ -313,44 +341,15 @@ namespace UtyMap.Unity.Data
                 int[] triangles, int triangleCount, int[] colors, int colorCount,
                 double[] uvs, int uvCount, int[] uvMap, int uvMapCount)
             {
-                var worldPoints = new Vector3[vertices.Length / 3];
-                for (int i = 0; i < vertices.Length; i += 3)
-                    worldPoints[i / 3] = _tile.Projection
-                        .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
-
-                var unityColors = new Color[colorCount];
-                for (int i = 0; i < colorCount; ++i)
-                    unityColors[i] = ColorUtils.FromInt(colors[i]);
-
-                var unityUvs = new Vector2[triangleCount];
-                var unityUvs2 = new Vector2[triangleCount];
-                var unityUvs3 = new Vector2[triangleCount];
-
-                Mesh mesh = new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
+                Mesh mesh = GetMesh(_tile, name, vertices, triangles, colors);
                 NotifyObservers(new MapData(_tile, new Union<Element, Mesh>(mesh)));
             }
 
             public void OnElementLoadedHandler(int tag, long id, string[] tags, int tagCount,
                 double[] vertices, int vertexCount, string[] styles, int styleCount)
             {
-                var geometry = new GeoCoordinate[vertexCount / 3];
-                var heights = new double[vertexCount / 3];
-                for (int i = 0; i < vertexCount; i += 3)
-                {
-                    geometry[i / 3] = new GeoCoordinate(vertices[i + 1], vertices[i]);
-                    heights[i / 3] = vertices[i + 2];
-                }
-
-                Element element = new Element(id, geometry, heights, ReadDict(tags), ReadDict(styles));
+                Element element = GetElement(id, tags, vertices, styles);
                 NotifyObservers(new MapData(_tile, new Union<Element, Mesh>(element)));
-            }
-
-            private static Dictionary<string, string> ReadDict(string[] data)
-            {
-                var map = new Dictionary<string, string>(data.Length / 2);
-                for (int i = 0; i < data.Length; i += 2)
-                    map.Add(data[i], data[i + 1]);
-                return map;
             }
 
             private void NotifyObservers(MapData mapData)
@@ -360,9 +359,73 @@ namespace UtyMap.Unity.Data
             }
         }
 
+        private class QueryHandler
+        {
+            private readonly IList<IObserver<Element>> _observers;
+
+            public QueryHandler(IList<IObserver<Element>> observers)
+            {
+                _observers = observers;
+            }
+
+            public void OnElementLoadedHandler(int tag, long id, string[] tags, int tagCount,
+                double[] vertices, int vertexCount, string[] styles, int styleCount)
+            {
+                Element element = GetElement(id, tags, vertices, styles);
+                foreach (var observer in _observers)
+                    observer.OnNext(element);
+            }
+        }
+
         private static void OnErrorHandler(string message)
         {
             throw new InvalidOperationException(message);
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private static Dictionary<string, string> ReadDict(string[] data)
+        {
+            var map = new Dictionary<string, string>(data.Length / 2);
+            for (int i = 0; i < data.Length; i += 2)
+                map.Add(data[i], data[i + 1]);
+            return map;
+        }
+
+        private static Mesh GetMesh(Tile tile, string name, double[] vertices, int[] triangles,  int[] colors)
+        {
+            var worldPoints = new Vector3[vertices.Length / 3];
+            for (int i = 0; i < vertices.Length; i += 3)
+                worldPoints[i / 3] = tile.Projection
+                    .Project(new GeoCoordinate(vertices[i + 1], vertices[i]), vertices[i + 2]);
+
+            var colorCount = colors.Length;
+            var unityColors = new Color[colorCount];
+            for (int i = 0; i < colorCount; ++i)
+                unityColors[i] = ColorUtils.FromInt(colors[i]);
+
+            var triangleCount = triangles.Length;
+            var unityUvs = new Vector2[triangleCount];
+            var unityUvs2 = new Vector2[triangleCount];
+            var unityUvs3 = new Vector2[triangleCount];
+
+            return new Mesh(name, 0, worldPoints, triangles, unityColors, unityUvs, unityUvs2, unityUvs3);
+        }
+
+        private static Element GetElement(long id, string[] tags, double[] vertices, string[] styles)
+        {
+            var vertexCount = vertices.Length;
+            var geometry = new GeoCoordinate[vertexCount / 3];
+            var heights = new double[vertexCount / 3];
+            for (int i = 0; i < vertexCount; i += 3)
+            {
+                geometry[i / 3] = new GeoCoordinate(vertices[i + 1], vertices[i]);
+                heights[i / 3] = vertices[i + 2];
+            }
+
+            return new Element(id, geometry, heights, ReadDict(tags), ReadDict(styles));
         }
 
         #endregion
@@ -403,6 +466,12 @@ namespace UtyMap.Unity.Data
         [DllImport("UtyMap.Shared")]
         private static extern void loadQuadKey(int tag, string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,
             OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
+
+        [DllImport("UtyMap.Shared")]
+        private static extern void searchElements(int tag, string notTerms, string andTerms, string orTerms,
+            double minLatitude, double minLngitude, double maxLatitude, double maxLngitude,
+            int startLod, int endLod,
+            OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
 
         [DllImport("UtyMap.Shared")]
         private static extern void cleanup();

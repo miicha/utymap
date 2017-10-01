@@ -71,6 +71,7 @@
     <Compile Include="IProjection.cs" />
     <Compile Include="Element.cs" />
     <Compile Include="MapData.cs" />
+    <Compile Include="MapQuery.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="QuadKey.cs" />
     <Compile Include="Stylesheet.cs" />
