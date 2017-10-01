@@ -129,14 +129,6 @@ class GeoStore::GeoStoreImpl final {
     }
   }
 
-  void search(const GeoCoordinate &coordinate,
-              double radius,
-              const StyleProvider &styleProvider,
-              ElementVisitor &visitor,
-              const CancellationToken &cancelToken) const {
-    throw std::domain_error("Not implemented.");
-  }
-
   bool hasData(const QuadKey &quadKey) {
     for (const auto &pair : storeMap_) {
       if (pair.second->hasData(quadKey))
@@ -215,14 +207,6 @@ void utymap::index::GeoStore::search(const std::string &notTerms,
                                      ElementVisitor &visitor,
                                      const utymap::CancellationToken &cancelToken) {
   pimpl_->search(notTerms, andTerms, orTerms, bbox, range, visitor, cancelToken);
-}
-
-void utymap::index::GeoStore::search(const GeoCoordinate &coordinate,
-                                     double radius,
-                                     const StyleProvider &styleProvider,
-                                     ElementVisitor &visitor,
-                                     const utymap::CancellationToken &cancelToken) {
-  pimpl_->search(coordinate, radius, styleProvider, visitor, cancelToken);
 }
 
 bool utymap::index::GeoStore::hasData(const QuadKey &quadKey) const {

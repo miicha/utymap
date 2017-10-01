@@ -68,13 +68,6 @@ class GeoStore final {
               utymap::entities::ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken);
 
-  /// Searches for elements inside circle with given parameters.
-  void search(const GeoCoordinate &coordinate,
-              double radius,
-              const utymap::mapcss::StyleProvider &styleProvider,
-              utymap::entities::ElementVisitor &visitor,
-              const utymap::CancellationToken &cancelToken);
-
   /// Checks whether there is data for given quadkey.
   bool hasData(const QuadKey &quadKey) const;
 
