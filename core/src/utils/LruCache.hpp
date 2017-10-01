@@ -4,21 +4,23 @@
 #include <stdexcept>
 #include <list>
 #include <map>
+#include <memory>
 
 namespace utymap {
 namespace utils {
 
+/// Implements least recently used cache.
 template<typename Key, typename Value, typename Comparator = std::less<Key>>
 class LruCache final {
-  typedef typename std::pair<Key, Value> KeyValuePair;
+  typedef typename std::pair<Key, std::shared_ptr<Value>> KeyValuePair;
   typedef typename std::list<KeyValuePair>::iterator ListIterator;
  public:
 
-  LruCache(size_t maxSize) : maxSize_(maxSize) {
-  }
+  LruCache(size_t maxSize = 8) :
+      maxSize_(maxSize) {}
 
   void put(const Key &key, Value &&value) {
-    itemsList_.push_front(KeyValuePair(key, std::move(value)));
+    itemsList_.push_front(KeyValuePair(key, std::make_shared<Value>(std::move(value))));
 
     auto it = itemsMap_.find(key);
     if (it!=itemsMap_.end()) {
@@ -35,7 +37,7 @@ class LruCache final {
     }
   }
 
-  const Value &get(const Key &key) {
+  std::shared_ptr<Value> get(const Key &key) {
     auto it = itemsMap_.find(key);
     if (it==itemsMap_.end())
       throw std::range_error("There is no such key in cache.");

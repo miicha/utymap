@@ -88,23 +88,23 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
 
   void store(const Element &element, const QuadKey &quadKey) {
     const auto &quadKeyData = getQuadKeyData(quadKey);
-    auto offset = static_cast<std::uint32_t>(quadKeyData.dataFile->tellg());
-    auto order = quadKeyData.indexFile->tellg() / sizeof(element.id);
+    auto offset = static_cast<std::uint32_t>(quadKeyData->dataFile->tellg());
+    auto order = quadKeyData->indexFile->tellg() / sizeof(element.id);
 
     // write element index
-    quadKeyData.indexFile->seekg(0, std::ios::end);
-    quadKeyData.indexFile->write(reinterpret_cast<const char *>(&element.id), sizeof(element.id));
-    quadKeyData.indexFile->write(reinterpret_cast<const char *>(&offset), sizeof(offset));
+    quadKeyData->indexFile->seekg(0, std::ios::end);
+    quadKeyData->indexFile->write(reinterpret_cast<const char *>(&element.id), sizeof(element.id));
+    quadKeyData->indexFile->write(reinterpret_cast<const char *>(&offset), sizeof(offset));
 
     // write element data
-    quadKeyData.dataFile->seekg(0, std::ios::end);
-    ElementStream::write(*quadKeyData.dataFile, element);
+    quadKeyData->dataFile->seekg(0, std::ios::end);
+    ElementStream::write(*quadKeyData->dataFile, element);
 
     // write element search data
     add(element, quadKey, static_cast<std::uint32_t>(order));
     // TODO we always clean/write the whole file here.
-    std::fstream bitmapFile(quadKeyData.getBitmap().path, std::ios::out | std::ios::binary | std::ios::trunc);
-    BitmapStream::write(bitmapFile, quadKeyData.getBitmap().data);
+    std::fstream bitmapFile(quadKeyData->getBitmap().path, std::ios::out | std::ios::binary | std::ios::trunc);
+    BitmapStream::write(bitmapFile, quadKeyData->getBitmap().data);
   }
 
   void search(const BitmapIndex::Query query,
@@ -117,17 +117,17 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
     const auto &quadKeyData = getQuadKeyData(quadKey);
-    auto count = static_cast<std::uint32_t>(quadKeyData.indexFile->tellg() /
+    auto count = static_cast<std::uint32_t>(quadKeyData->indexFile->tellg() /
         (sizeof(std::uint64_t) + sizeof(std::uint32_t)));
 
-    quadKeyData.indexFile->seekg(0, std::ios::beg);
+    quadKeyData->indexFile->seekg(0, std::ios::beg);
     for (std::uint32_t i = 0; i < count; ++i) {
       if (cancelToken.isCancelled()) break;
 
-      auto entry = readIndexEntry(quadKeyData);
-      quadKeyData.dataFile->seekg(std::get<1>(entry), std::ios::beg);
+      auto entry = readIndexEntry(*quadKeyData);
+      quadKeyData->dataFile->seekg(std::get<1>(entry), std::ios::beg);
 
-      ElementStream::read(*quadKeyData.dataFile, std::get<0>(entry ))->accept(visitor);
+      ElementStream::read(*quadKeyData->dataFile, std::get<0>(entry ))->accept(visitor);
     }
   }
 
@@ -144,25 +144,23 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
   void notify(const utymap::QuadKey& quadKey,
               const std::uint32_t order,
               ElementVisitor &visitor) override {
-    const auto &quadKeyData = getQuadKeyData(quadKey);
+    auto quadKeyData = getQuadKeyData(quadKey);
     auto offset = order * (sizeof(std::uint64_t) + sizeof(std::uint32_t));
 
-    quadKeyData.indexFile->seekg(offset, std::ios::beg);
-    auto entry = readIndexEntry(quadKeyData);
-    quadKeyData.dataFile->seekg(std::get<1>(entry), std::ios::beg);
+    quadKeyData->indexFile->seekg(offset, std::ios::beg);
+    auto entry = readIndexEntry(*quadKeyData);
+    quadKeyData->dataFile->seekg(std::get<1>(entry), std::ios::beg);
 
-    ElementStream::read(*quadKeyData.dataFile, std::get<0>(entry))->accept(visitor);
+    ElementStream::read(*quadKeyData->dataFile, std::get<0>(entry))->accept(visitor);
   }
 
   Bitmap& getBitmap(const utymap::QuadKey& quadKey) override {
-    return getQuadKeyData(quadKey).getBitmap().data;
+    return getQuadKeyData(quadKey)->getBitmap().data;
   }
 
  private:
   /// Gets quad key data.
-  const QuadKeyData& getQuadKeyData(const QuadKey& quadKey) {
-    // TODO this is not 100% thread safe as we return reference to data
-    // object it points can be destroyed right after.
+  std::shared_ptr<QuadKeyData> getQuadKeyData(const QuadKey& quadKey) {
     std::lock_guard<std::mutex> lock(lock_);
 
     if (cache_.exists(quadKey))

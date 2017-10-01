@@ -79,6 +79,7 @@ add_executable(${TEST}
         utils/GeometryUtilsTest.cpp
         utils/GeoUtilsTest.cpp
         utils/GradientUtilsTest.cpp
+        utils/LruCacheTest.cpp
         utils/NoiseUtilsTest.cpp
         ${HEADER_FILES}
         )
