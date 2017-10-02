@@ -15,14 +15,16 @@ namespace {
   /// Applies logical operation
   void applyOperation(const BitmapIndex::Ids &terms,
                       const Bitmap &bitmap,
-                      Bitset &bitset,
-                      const std::function<void(Bitset)> &op) {
+                      const std::function<void(Bitset)> &op,
+                      const std::function<bool()> &noOp) {
     for (const auto term: terms) {
       auto array = bitmap.find(term);
       // no term defined for this quad key
-      if (array == bitmap.end())
-        return;
-      op(array->second);
+      if (array == bitmap.end()) {
+        if (!noOp()) return;
+      }
+      else
+        op(array->second);
     }
   }
 }
@@ -46,21 +48,24 @@ void BitmapIndex::search(const BitmapIndex::Query &query, ElementVisitor &visito
         auto& bitmap = getBitmap(quadKey);
         Bitset bitset;
 
-        applyOperation(orTerms, bitmap, bitset, [&](const Bitset &b) {
+        applyOperation(orTerms, bitmap, [&](const Bitset &b) {
           bitset = b.logicalor(bitset);
-        });
+        }, [](){ return true; });
 
-        applyOperation(andTerms, bitmap, bitset, [&](const Bitset &b) {
+        applyOperation(andTerms, bitmap, [&](const Bitset &b) {
           if (bitset.sizeInBits() == 0) {
             bitset = b;
             return;
-          };
+          }
           bitset = b.logicaland(bitset);
+        }, [&]() {
+          bitset.reset();
+          return false;
         });
 
-        applyOperation(notTerms, bitmap, bitset, [&](const Bitset &b) {
+        applyOperation(notTerms, bitmap, [&](const Bitset &b) {
           bitset = b.logicalxor(bitset).logicaland(bitset);
-        });
+        }, [](){ return true; });
 
         for (auto i = bitset.begin(); i != bitset.end(); ++i) {
           notify(quadKey, static_cast<std::uint32_t >(*i), visitor);

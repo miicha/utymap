@@ -210,4 +210,13 @@ BOOST_AUTO_TEST_CASE(GivenThreeElements_WhenQueryWithConflictingRules_ThenHasNoR
   BOOST_CHECK_EQUAL(this->visitedElements.size(), 0);
 }
 
+BOOST_AUTO_TEST_CASE(GivenElement_WhenQueryWithPartiallyValidAndRule_ThenHasNoResult) {
+  BitmapIndex::Query query = { "", "Kremlin Senate", "", bbox, lodRange };
+  addToIndex({ { "name:en", "Kremlin Clock" } });
+
+  index.search(query, *this);
+
+  BOOST_CHECK_EQUAL(this->visitedElements.size(), 0);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
