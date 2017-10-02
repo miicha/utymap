@@ -48,7 +48,8 @@ struct ExportElementVisitor : public utymap::entities::ElementVisitor {
   }
 
   void visitRelation(const utymap::entities::Relation &relation) override {
-    // TODO not supported yet.
+    // TODO return geometry
+    visitElement(relation, Coordinates { { 0, 0 } });
   }
  private:
 

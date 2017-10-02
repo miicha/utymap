@@ -120,10 +120,10 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeyIsLoaded_ThenSearchFindsElement) {
   utymap::BoundingBox bbox = utymap::utils::GeoUtils::quadKeyToBoundingBox(quadkey);
   isCalled = false;
   utymap::CancellationToken cancelToken;
-  ::addToStoreInQuadKey(InMemoryStoreKey, TEST_MAPCSS_DEFAULT, TEST_XML_FILE, quadkey.tileX, quadkey.tileY, quadkey.levelOfDetail, callback);
+  ::addToStoreInQuadKey(InMemoryStoreKey, TEST_MAPCSS_DEFAULT, TEST_XML_FILE,
+    quadkey.tileX, quadkey.tileY, quadkey.levelOfDetail, callback);
 
-  ::searchElements(0,
-    "", "Nordbahnhof tram stop", "",
+  ::searchElements(0, "", "Nordbahnhof tram stop", "",
     bbox.minPoint.latitude, bbox.minPoint.longitude, bbox.maxPoint.latitude, bbox.maxPoint.longitude,
     quadkey.levelOfDetail, quadkey.levelOfDetail,
     [](int tag, uint64_t id, const char **tags, int size, const double *vertices,
@@ -135,6 +135,26 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeyIsLoaded_ThenSearchFindsElement) {
       BOOST_FAIL(message);
     }, &cancelToken);
   
+  BOOST_CHECK(isCalled);
+}
+
+BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeyIsLoaded_ThenSearchFindsRelation) {
+  int lod = 14;
+  isCalled = false;
+  utymap::CancellationToken cancelToken;
+  ::addToStoreInRange(InMemoryStoreKey, TEST_MAPCSS_DEFAULT, TEST_JSON_FILE, lod, lod, callback);
+
+  ::searchElements(0, "", "Kremlin Square", "",
+    55.7466, 37.6077, 55.7571, 37.6292, lod, lod,
+    [](int tag, uint64_t id, const char **tags, int size, const double *vertices,
+      int vertexCount, const char **style, int styleSize) {
+    isCalled = true;
+    BOOST_CHECK_EQUAL(id, 1360699);
+  },
+    [](const char *message) {
+    BOOST_FAIL(message);
+  }, &cancelToken);
+
   BOOST_CHECK(isCalled);
 }
 
