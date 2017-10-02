@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using UtyMap.Unity.Infrastructure.Config;
 using UtyMap.Unity.Infrastructure.Diagnostic;
@@ -98,6 +99,23 @@ namespace UtyMap.Unity.Tests.Helpers
 
             manualResetEvent.WaitOne(TimeSpan.FromSeconds(5));
             return result;
+        }
+
+        public static Element GetResultSync(this IMapDataStore store, MapQuery query, int waitTimeInSeconds = 10)
+        {
+            Element element = null;
+            var manualResetEvent = new ManualResetEvent(false);
+            store
+                .ObserveOn<Element>(Scheduler.CurrentThread)
+                .SubscribeOn(Scheduler.CurrentThread)
+                .Subscribe(_ => manualResetEvent.Set());
+            store
+                .ObserveOn<Element>(Scheduler.CurrentThread)
+                .SubscribeOn(Scheduler.CurrentThread)
+                .Subscribe(r => element = r);
+            store.OnNext(query);
+            manualResetEvent.WaitOne(TimeSpan.FromSeconds(waitTimeInSeconds));
+            return element;
         }
     }
 }

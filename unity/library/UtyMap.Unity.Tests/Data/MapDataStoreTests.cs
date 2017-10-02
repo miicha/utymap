@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Tests.Helpers;
@@ -59,6 +60,24 @@ namespace UtyMap.Unity.Tests.Data
 
             // ACT & ASSERT
             TestQuadKeys(centerQuadKey, count, lod);
+        }
+
+        [Test(Description = "This test searches for elements matching given query.")]
+        public void CanSearchForElementsWithText()
+        {
+            // ARRANGE
+            int lod = 14;
+            SetupMapData(TestHelper.MoscowJsonData, lod);
+            MapQuery query = new MapQuery(
+                String.Empty, "Grand Kremlin Square", String.Empty,
+                new BoundingBox(new GeoCoordinate(55.7466, 37.6077), new GeoCoordinate(55.7571, 37.6292)),
+                new Range<int>(lod, lod));
+
+            // ACT
+            var element = _mapDataStore.GetResultSync(query);
+
+            // ASSERT
+            Assert.AreEqual(1360699, element.Id);
         }
 
         #region Private members

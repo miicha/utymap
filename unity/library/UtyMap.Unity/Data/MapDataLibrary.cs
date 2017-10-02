@@ -388,8 +388,9 @@ namespace UtyMap.Unity.Data
 
         private static Dictionary<string, string> ReadDict(string[] data)
         {
-            var map = new Dictionary<string, string>(data.Length / 2);
-            for (int i = 0; i < data.Length; i += 2)
+            var length = data == null ? 0 : data.Length;
+            var map = new Dictionary<string, string>(length / 2);
+            for (int i = 0; i < length; i += 2)
                 map.Add(data[i], data[i + 1]);
             return map;
         }
