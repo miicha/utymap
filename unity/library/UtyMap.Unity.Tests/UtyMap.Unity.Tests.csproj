@@ -63,7 +63,7 @@
     <Compile Include="Animations\CompositeAnimationTests.cs" />
     <Compile Include="Animations\FakeTransformAnimation.cs" />
     <Compile Include="Animations\TransformAnimationTests.cs" />
-    <Compile Include="Data\TileLoadingTests.cs" />
+    <Compile Include="Data\MapDataStoreTests.cs" />
     <Compile Include="Data\MapDataEditorTests.cs" />
     <Compile Include="Infrastructure\Diagnostic\DefaultTraceTests.cs" />
     <Compile Include="Infrastructure\Primitives\RangeTreeTests.cs" />

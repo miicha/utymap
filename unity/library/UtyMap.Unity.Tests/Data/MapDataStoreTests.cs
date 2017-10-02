@@ -8,7 +8,7 @@ using UtyRx;
 namespace UtyMap.Unity.Tests.Data
 {
     [TestFixture(Category = TestHelper.IntegrationTestCategory)]
-    public class TileLoadingTests
+    public class MapDataStoreTests
     {
         private readonly GeoCoordinate _worldZeroPoint = TestHelper.WorldZeroPoint;
         private CompositionRoot _compositionRoot;
