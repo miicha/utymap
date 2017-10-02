@@ -23,6 +23,13 @@ namespace Assets.Scripts.Core.Interop
                 tileHandler.OnElementLoadedHandler, OnErrorHandler);
         }
 
+        /// <inheritdoc />
+        public IObservable<int> Get(MapQuery query, IList<IObserver<Element>> observers)
+        {
+            var queryHandler = new QueryHandler(observers);
+            return Get(query, 0, queryHandler.OnElementLoadedHandler, OnErrorHandler);
+        }
+
         #region Delegates
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -85,6 +92,24 @@ namespace Assets.Scripts.Core.Interop
                 double[] vertices, int vertexCount, string[] styles, int styleCount)
             {
                 MapDataAdapter.AdaptElement(_tile, _materialProvider, _observers, _trace, id, vertices, tags, styles);
+            }
+        }
+
+        private class QueryHandler
+        {
+            private readonly IList<IObserver<Element>> _observers;
+
+            public QueryHandler(IList<IObserver<Element>> observers)
+            {
+                _observers = observers;
+            }
+
+            public void OnElementLoadedHandler(int tag, long id, string[] tags, int tagCount,
+                double[] vertices, int vertexCount, string[] styles, int styleCount)
+            {
+                Element element = MapDataAdapter.AdaptElement(id, tags, vertices, styles);
+                foreach (var observer in _observers)
+                    observer.OnNext(element);
             }
         }
      

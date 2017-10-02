@@ -173,6 +173,20 @@ namespace Assets.Scripts.Core.Interop
             return Observable.Return(100);
         }
 
+        private IObservable<int> Get(MapQuery query, int tag, OnElementLoaded elementLoadedHandler, OnError errorHandler)
+        {
+            _trace.Debug(TraceCategory, "Get elements..");
+            var token = new Tile.CancellationToken();
+            var cancelTokenHandle = GCHandle.Alloc(token, GCHandleType.Pinned);
+            searchElements(tag, query.NotTerms, query.AndTerms, query.OrTerms,
+                query.BoundingBox.MinPoint.Latitude, query.BoundingBox.MinPoint.Longitude,
+                query.BoundingBox.MaxPoint.Latitude, query.BoundingBox.MaxPoint.Longitude,
+                query.LodRange.Minimum, query.LodRange.Maximum, elementLoadedHandler, errorHandler,
+                cancelTokenHandle.AddrOfPinnedObject());
+            cancelTokenHandle.Free();
+            return Observable.Return(100);
+        }
+
         private string RegisterStylesheet(Stylesheet stylesheet)
         {
             var stylePath = _pathResolver.Resolve(stylesheet.Path);
@@ -224,6 +238,12 @@ namespace Assets.Scripts.Core.Interop
         [DllImport("UtyMap.Shared")]
         private static extern void loadQuadKey(int tag, string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,
             OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
+
+        [DllImport("UtyMap.Shared")]
+        private static extern void searchElements(int tag, string notTerms, string andTerms, string orTerms,
+            double minLatitude, double minLngitude, double maxLatitude, double maxLngitude,
+            int startLod, int endLod,
+            OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
 
         [DllImport("UtyMap.Shared")]
         private static extern void cleanup();

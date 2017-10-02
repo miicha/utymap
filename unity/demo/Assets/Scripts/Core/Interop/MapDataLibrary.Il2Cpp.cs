@@ -13,10 +13,13 @@ namespace Assets.Scripts.Core.Interop
     partial class MapDataLibrary
     {
 #if ENABLE_IL2CPP
-        private static IList<IObserver<MapData>> _observers;
+        private static IList<IObserver<MapData>> _tileObservers;
+        private static IList<IObserver<Element>> _queryObservers;
         private static MaterialProvider _sMaterialProvider;
 
         private static readonly SafeDictionary<int, Tile> Tiles = new SafeDictionary<int, Tile>();
+        private static readonly SafeDictionary<int, MapQuery> Queries = new SafeDictionary<int, MapQuery>();
+
         private static ITrace _trace;
 
         /// <inheritdoc />
@@ -27,7 +30,7 @@ namespace Assets.Scripts.Core.Interop
             {
                 lock (this)
                 {
-                    _observers = observers;
+                    _tileObservers = observers;
                     _sMaterialProvider = _materialProvider;
                 }
             }
@@ -36,6 +39,21 @@ namespace Assets.Scripts.Core.Interop
             Tiles.TryAdd(tag, tile);
             var observable = Get(tile, tag, OnMeshBuiltHandler, OnElementLoadedHandler, OnErrorHandler);
             Tiles.TryRemove(tag);
+            return observable;
+        }
+
+        /// <inheritdoc />
+        public IObservable<int> Get(MapQuery query, IList<IObserver<Element>> observers)
+        {
+            lock (this)
+            {
+                _queryObservers = observers;
+            }
+
+            var tag = query.GetHashCode();
+            Queries.TryAdd(tag, query);
+            var observable = Get(query, 0, OnElementFoundHandler, OnErrorHandler);
+            Queries.TryRemove(tag);
             return observable;
         }
 
@@ -79,7 +97,7 @@ namespace Assets.Scripts.Core.Interop
             var colors = MarshalUtils.ReadInts(colorPtr, colorCount);
             var uvs = MarshalUtils.ReadDoubles(uvPtr, uvCount);
             var uvMap = MarshalUtils.ReadInts(uvMapPtr, uvMapCount);
-            MapDataAdapter.AdaptMesh(tile, _sMaterialProvider, _observers, _trace, name, vertices, triangles, colors, uvs, uvMap);
+            MapDataAdapter.AdaptMesh(tile, _sMaterialProvider, _tileObservers, _trace, name, vertices, triangles, colors, uvs, uvMap);
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnError))]
@@ -95,7 +113,21 @@ namespace Assets.Scripts.Core.Interop
             var tags = MarshalUtils.ReadStrings(tagPtr, tagCount);
             var styles = MarshalUtils.ReadStrings(stylePtr, styleCount);
 
-            MapDataAdapter.AdaptElement(tile, _sMaterialProvider, _observers, _trace, id, vertices, tags, styles);
+            MapDataAdapter.AdaptElement(tile, _sMaterialProvider, _tileObservers, _trace, id, vertices, tags, styles);
+        }
+
+        [AOT.MonoPInvokeCallback(typeof(OnError))]
+        private static void OnElementFoundHandler(int tag, long id, IntPtr tagPtr, int tagCount,
+            IntPtr vertexPtr, int vertexCount, IntPtr stylePtr, int styleCount)
+        {
+            // NOTE see note above
+            var vertices = MarshalUtils.ReadDoubles(vertexPtr, vertexCount);
+            var tags = MarshalUtils.ReadStrings(tagPtr, tagCount);
+            var styles = MarshalUtils.ReadStrings(stylePtr, styleCount);
+
+            Element element = MapDataAdapter.AdaptElement(id, tags, vertices, styles);
+            foreach (var observer in _queryObservers)
+                observer.OnNext(element);
         }
 
         [AOT.MonoPInvokeCallback(typeof(OnError))]

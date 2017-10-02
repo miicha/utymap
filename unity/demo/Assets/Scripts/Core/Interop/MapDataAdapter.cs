@@ -47,11 +47,18 @@ namespace Assets.Scripts.Core.Interop
                     textureIndex, unityUvs, unityUvs2, unityUvs3);
         }
 
-        /// <summary> Adapts element data received from utymap. </summary>
+        /// <summary> Adapts element data received in raw form. </summary>
         public static void AdaptElement(Tile tile, MaterialProvider materialProvider, IList<IObserver<MapData>> observers, ITrace trace, 
             long id, double[] vertices, string[] tags, string[] styles)
         {
-            int vertexCount = vertices.Length;
+            Element element = AdaptElement(id, tags, vertices, styles);
+            NotifyObservers(new MapData(tile, new Union<Element, Mesh>(element)), observers);
+        }
+
+        /// <summary> Adapts element received in raw form. </summary>
+        public static Element AdaptElement(long id, string[] tags, double[] vertices, string[] styles)
+        {
+            var vertexCount = vertices.Length;
             var geometry = new GeoCoordinate[vertexCount / 3];
             var heights = new double[vertexCount / 3];
             for (int i = 0; i < vertexCount; i += 3)
@@ -60,8 +67,7 @@ namespace Assets.Scripts.Core.Interop
                 heights[i / 3] = vertices[i + 2];
             }
 
-            Element element = new Element(id, geometry, heights, ReadDict(tags), ReadDict(styles));
-            NotifyObservers(new MapData(tile, new Union<Element, Mesh>(element)), observers);
+            return new Element(id, geometry, heights, ReadDict(tags), ReadDict(styles));
         }
 
         #region Private members
