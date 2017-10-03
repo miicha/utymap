@@ -45,6 +45,8 @@ void BitmapIndex::search(const BitmapIndex::Query &query, ElementVisitor &visito
   for (int lod = query.range.start; lod <= query.range.end; ++lod) {
     utymap::utils::GeoUtils::visitTileRange(query.boundingBox, lod,
       [&](const QuadKey &quadKey, const BoundingBox&) {
+        if (!hasData(quadKey)) return;
+
         auto& bitmap = getBitmap(quadKey);
         Bitset bitset;
 

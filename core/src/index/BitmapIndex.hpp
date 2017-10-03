@@ -57,6 +57,9 @@ class BitmapIndex {
   /// Get bitmap for given quad key.
   virtual Bitmap& getBitmap(const utymap::QuadKey& quadKey) = 0;
 
+  /// Checks whether data exist for given quad key.
+  virtual bool hasData(const utymap::QuadKey& quadKey) const = 0;
+
  private:
   /// Gets tokens from element.
   std::vector<std::uint32_t> tokenize(const utymap::entities::Element &element);

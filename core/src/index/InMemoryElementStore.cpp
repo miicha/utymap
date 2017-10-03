@@ -63,6 +63,10 @@ class InMemoryStringIndex : public BitmapIndex {
     return bitmaps_[quadKey];
   }
 
+  bool hasData(const utymap::QuadKey &quadKey) const override {
+    return elementsMap_.find(quadKey) != elementsMap_.end();
+  }
+
  private:
   const ElementMap &elementsMap_;
   Bitmaps bitmaps_;

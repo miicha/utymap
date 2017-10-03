@@ -131,7 +131,7 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
     }
   }
 
-  bool hasData(const QuadKey &quadKey) const {
+  bool hasData(const QuadKey &quadKey) const override {
     std::ifstream file(getFilePath(quadKey, DataFileExtension));
     return file.good();
   }
