@@ -61,7 +61,9 @@ namespace UtyMap.Unity.Data
                 {
                     // We have map data in store.
                     if (String.IsNullOrEmpty(value.Item2))
-                        _mapDataLibrary.Get(value.Item1, _dataObservers);
+                        _mapDataLibrary
+                            .Get(value.Item1, _dataObservers)
+                            .Subscribe(_ => _tileObservers.ForEach(t => t.OnNext(value.Item1)));
                     else
                         // NOTE store data in the first registered store
                         AddTo(_storageKeys.First(), value.Item2, value.Item1.Stylesheet, value.Item1.QuadKey)
