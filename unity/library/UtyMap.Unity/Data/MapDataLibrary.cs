@@ -255,29 +255,42 @@ namespace UtyMap.Unity.Data
             _trace.Debug(TraceCategory, "Get tile {0}", tile.ToString());
             var stylePath = RegisterStylesheet(tile.Stylesheet);
             var quadKey = tile.QuadKey;
-            var cancelTokenHandle = GCHandle.Alloc(tile.CancelationToken, GCHandleType.Pinned);
-            loadQuadKey(tag, stylePath,
+            WithCancelToken(tile.CancelationToken, (cancelTokenHandle) => loadQuadKey(tag, stylePath,
                 quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, (int)tile.ElevationType,
                 meshBuiltHandler, elementLoadedHandler, errorHandler,
-                cancelTokenHandle.AddrOfPinnedObject());
-            cancelTokenHandle.Free();
+                cancelTokenHandle.AddrOfPinnedObject())
+            );
             return Observable.Return(100);
         }
 
         private IObservable<int> Get(MapQuery query, int tag, OnElementLoaded elementLoadedHandler, OnError errorHandler)
         {
-            _trace.Debug(TraceCategory, "Get elements..");
-
-            var token = new CancellationToken();
-            var cancelTokenHandle = GCHandle.Alloc(token, GCHandleType.Pinned);
-            searchElements(tag, query.NotTerms, query.AndTerms, query.OrTerms,
-                query.BoundingBox.MinPoint.Latitude, query.BoundingBox.MinPoint.Longitude,
-                query.BoundingBox.MaxPoint.Latitude, query.BoundingBox.MaxPoint.Longitude,
-                query.LodRange.Minimum, query.LodRange.Maximum, elementLoadedHandler, errorHandler,
-                cancelTokenHandle.AddrOfPinnedObject());
-            cancelTokenHandle.Free();
-
+            _trace.Debug(TraceCategory, "Search elements");
+            WithCancelToken(new CancellationToken(), (cancelTokenHandle) =>
+                searchElements(tag, query.NotTerms, query.AndTerms, query.OrTerms,
+                    query.BoundingBox.MinPoint.Latitude, query.BoundingBox.MinPoint.Longitude,
+                    query.BoundingBox.MaxPoint.Latitude, query.BoundingBox.MaxPoint.Longitude,
+                    query.LodRange.Minimum, query.LodRange.Maximum, elementLoadedHandler, errorHandler,
+                    cancelTokenHandle.AddrOfPinnedObject())
+            );
             return Observable.Return(100);
+        }
+
+        private void WithCancelToken(CancellationToken token, Action<GCHandle> action)
+        {
+            var cancelTokenHandle = GCHandle.Alloc(token, GCHandleType.Pinned);
+            try
+            {
+                action(cancelTokenHandle);
+            }
+            catch (Exception ex)
+            {
+                _trace.Error(TraceCategory, ex, "Cannot execute.");
+            }
+            finally
+            {
+                cancelTokenHandle.Free();
+            }
         }
 
         private static void CreateDirectory(string directory)
