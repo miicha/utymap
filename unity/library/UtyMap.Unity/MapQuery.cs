@@ -3,7 +3,7 @@
 namespace UtyMap.Unity
 {
     /// <summary> Defines query to map data. </summary>
-    public struct MapQuery
+    public class MapQuery
     {
         /// <summary> Logical "not": result should not include any of these terms. </summary>
         public readonly string NotTerms;
@@ -20,6 +20,9 @@ namespace UtyMap.Unity
         /// <summary> LOD range constraint. </summary>
         public readonly Range<int> LodRange;
 
+        /// <summary> Used to cancel query in native code. </summary>
+        public readonly CancellationToken CancelToken;
+
         public MapQuery(string notTerms, string andTerms, string orTerms,
             BoundingBox boundingBox, Range<int> lodRange)
         {
@@ -28,6 +31,8 @@ namespace UtyMap.Unity
             OrTerms = orTerms;
             BoundingBox = boundingBox;
             LodRange = lodRange;
+
+            CancelToken = new CancellationToken();
         }
     }
 }

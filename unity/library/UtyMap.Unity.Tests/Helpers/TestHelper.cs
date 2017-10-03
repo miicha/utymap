@@ -108,11 +108,11 @@ namespace UtyMap.Unity.Tests.Helpers
             store
                 .ObserveOn<Element>(Scheduler.CurrentThread)
                 .SubscribeOn(Scheduler.CurrentThread)
-                .Subscribe(_ => manualResetEvent.Set());
-            store
-                .ObserveOn<Element>(Scheduler.CurrentThread)
-                .SubscribeOn(Scheduler.CurrentThread)
-                .Subscribe(r => element = r);
+                .Subscribe(r =>
+                {
+                    element = r;
+                    manualResetEvent.Set();
+                });
             store.OnNext(query);
             manualResetEvent.WaitOne(TimeSpan.FromSeconds(waitTimeInSeconds));
             return element;

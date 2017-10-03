@@ -268,7 +268,7 @@ namespace UtyMap.Unity.Data
         {
             _trace.Debug(TraceCategory, "Get elements..");
 
-            var token = new Tile.CancellationToken();
+            var token = new CancellationToken();
             var cancelTokenHandle = GCHandle.Alloc(token, GCHandleType.Pinned);
             searchElements(tag, query.NotTerms, query.AndTerms, query.OrTerms,
                 query.BoundingBox.MinPoint.Latitude, query.BoundingBox.MinPoint.Longitude,
@@ -470,7 +470,7 @@ namespace UtyMap.Unity.Data
 
         [DllImport("UtyMap.Shared")]
         private static extern void searchElements(int tag, string notTerms, string andTerms, string orTerms,
-            double minLatitude, double minLngitude, double maxLatitude, double maxLngitude,
+            double minLatitude, double minLogitude, double maxLatitude, double maxLogitude,
             int startLod, int endLod,
             OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
 

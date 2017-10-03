@@ -62,6 +62,7 @@
     <Compile Include="Animations\Time\DeaccelerateInterpolator.cs" />
     <Compile Include="Animations\Time\ITimeInterpolator.cs" />
     <Compile Include="Animations\Time\LinearInterpolator.cs" />
+    <Compile Include="CancellationToken.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Data\MapDataLibrary.cs" />

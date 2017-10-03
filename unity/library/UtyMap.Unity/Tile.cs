@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Infrastructure.Primitives;
@@ -10,18 +9,6 @@ namespace UtyMap.Unity
     /// <summary> Represents map tile. </summary>
     public sealed class Tile : IDisposable
     {
-        /// <summary> Cancellation token is used to cancel processing in native code. </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        public class CancellationToken
-        {
-            internal int IsCancelled;
-
-            internal void SetCancelled(bool isCancelled)
-            {
-                IsCancelled = (byte) (isCancelled ? 1 : 0);
-            }
-        }
-
         /// <summary> Stores element ids loaded in this tile. </summary>
         private readonly SafeHashSet<long> _localIds = new SafeHashSet<long>();
 
