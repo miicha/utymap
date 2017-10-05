@@ -1,7 +1,9 @@
 #include "index/BitmapStream.hpp"
 #include "index/ElementStream.hpp"
-#include "index/PersistentElementStore.hpp"
 #include "index/BitmapIndex.hpp"
+#include "index/ElementGeometryVisitor.hpp"
+#include "index/ElementVisitorFilter.hpp"
+#include "index/PersistentElementStore.hpp"
 #include "utils/LruCache.hpp"
 
 #include <fstream>
@@ -110,7 +112,10 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
   void search(const BitmapIndex::Query query,
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
-    BitmapIndex::search(query, visitor);
+    ElementVisitorFilter filter(visitor, [&](const Element &element) {
+      return ElementGeometryVisitor::intersects(element, query.boundingBox);
+    });
+    BitmapIndex::search(query, filter);
   }
 
   void search(const QuadKey &quadKey,

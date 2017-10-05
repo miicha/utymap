@@ -2,6 +2,8 @@
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
 #include "entities/Relation.hpp"
+#include "index/ElementGeometryVisitor.hpp"
+#include "index/ElementVisitorFilter.hpp"
 #include "index/InMemoryElementStore.hpp"
 #include "index/BitmapIndex.hpp"
 
@@ -83,7 +85,10 @@ class InMemoryElementStore::InMemoryElementStoreImpl {
   void search(const BitmapIndex::Query query,
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
-    stringIndex_.search(query, visitor);
+    ElementVisitorFilter filter(visitor, [&](const Element &element) {
+      return ElementGeometryVisitor::intersects(element, query.boundingBox);
+    });
+    stringIndex_.search(query, filter);
   }
 
   void search(const utymap::QuadKey &quadKey,

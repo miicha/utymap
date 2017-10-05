@@ -95,4 +95,14 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearchText_ThenOneFound) {
   BOOST_CHECK_EQUAL(counter.times, 1);
 }
 
+BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearchOutside_ThenNoResults) {
+  BoundingBox boundingBox(GeoCoordinate(20, -180), GeoCoordinate(90, 180));
+  LodRange lodRange(1, 1);
+  ElementCounter counter;
+
+  elementStore.search({}, {"any"}, {}, boundingBox, lodRange, counter, CancellationToken());
+
+  BOOST_CHECK_EQUAL(counter.times, 0);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

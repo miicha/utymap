@@ -94,6 +94,7 @@ set(HEADER_FILES
         index/ElementGeometryVisitor.hpp
         index/ElementStore.hpp
         index/ElementStream.hpp
+        index/ElementVisitorFilter.hpp
         index/GeoStore.hpp
         index/InMemoryElementStore.hpp
         index/MeshStream.hpp
