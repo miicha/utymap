@@ -91,6 +91,7 @@ set(HEADER_FILES
         index/BitmapIndex.hpp
         index/BitmapStream.hpp
         index/ElementGeometryClipper.hpp
+        index/ElementGeometryVisitor.hpp
         index/ElementStore.hpp
         index/ElementStream.hpp
         index/GeoStore.hpp

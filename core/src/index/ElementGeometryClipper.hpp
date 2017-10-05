@@ -1,5 +1,5 @@
-#ifndef INDEX_ELEMENTGEOMETRYVISITOR_HPP_DEFINED
-#define INDEX_ELEMENTGEOMETRYVISITOR_HPP_DEFINED
+#ifndef INDEX_ELEMENTGEOMETRYCLIPPER_HPP_DEFINED
+#define INDEX_ELEMENTGEOMETRYCLIPPER_HPP_DEFINED
 
 #include "clipper/clipper.hpp"
 #include "BoundingBox.hpp"
@@ -43,4 +43,4 @@ class ElementGeometryClipper final : private utymap::entities::ElementVisitor {
 }
 }
 
-#endif //INDEX_ELEMENTGEOMETRYVISITOR_HPP_DEFINED
+#endif //INDEX_ELEMENTGEOMETRYCLIPPER_HPP_DEFINED

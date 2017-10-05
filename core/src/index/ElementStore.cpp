@@ -7,6 +7,7 @@
 #include "entities/Relation.hpp"
 #include "formats/FormatTypes.hpp"
 #include "index/ElementGeometryClipper.hpp"
+#include "index/ElementGeometryVisitor.hpp"
 #include "index/ElementStore.hpp"
 #include <mapcss/StyleConsts.hpp>
 
@@ -16,31 +17,7 @@ using namespace utymap::formats;
 using namespace utymap::mapcss;
 
 namespace {
-const std::string TrueValue = "true";
-
-/// Creates bounding box of given element.
-class BoundingBoxVisitor : public ElementVisitor {
- public:
-  BoundingBox boundingBox;
-
-  void visitNode(const Node &node) override {
-    boundingBox.expand(node.coordinate);
-  }
-
-  void visitWay(const Way &way) override {
-    boundingBox.expand(way.coordinates.cbegin(), way.coordinates.cend());
-  }
-
-  void visitArea(const Area &area) override {
-    boundingBox.expand(area.coordinates.cbegin(), area.coordinates.cend());
-  }
-
-  void visitRelation(const Relation &relation) override {
-    for (const auto &element: relation.elements) {
-      element->accept(*this);
-    }
-  }
-};
+ const std::string TrueValue = "true";
 }
 
 namespace utymap {
@@ -85,7 +62,7 @@ bool ElementStore::store(const Element &element,
                          const LodRange &range,
                          const StyleProvider &styleProvider,
                          const Visitor &visitor) {
-  BoundingBoxVisitor bboxVisitor;
+  ElementGeometryVisitor bboxVisitor;
   using namespace std::placeholders;
   ElementGeometryClipper geometryClipper(std::bind(&ElementStore::storeImpl, this, _1, _2));
   bool wasStored = false;
