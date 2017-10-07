@@ -46,7 +46,7 @@ public:
   /// Enables or disables mesh caching.
   void enableMeshCache(int enabled) {
     for (const auto &entry : meshCaches_) {
-      if (enabled) entry.second->enable();
+      if (enabled > 0) entry.second->enable();
       else entry.second->disable();
     }
   }

@@ -75,6 +75,9 @@ namespace Assets.Scripts.Core
             mapDataStore.Register(MapDataStorages.PersistentStorageKey, @"index/data");
             mapDataStore.Register(MapDataStorages.TransientStorageKey);
 
+            // Enable mesh caching.
+            root.GetService<IMapDataLibrary>().EnableCache();
+
             return root;
         }
 

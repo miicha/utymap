@@ -86,7 +86,7 @@ class MeshCache::MeshCacheImpl {
   /// Gets path to cache file on disk.
   std::string getFilePath(const BuilderContext &context) const {
     std::stringstream ss;
-    ss << dataPath_ << "cache/" << context.styleProvider.getTag()
+    ss << dataPath_ << "/cache/" << context.styleProvider.getTag()
        << "/" << context.quadKey.levelOfDetail << "/"
        << GeoUtils::quadKeyToString(context.quadKey) << extension_;
     return ss.str();
