@@ -1,7 +1,6 @@
 #ifndef SEARCH_HPP_DEFINED
 #define SEARCH_HPP_DEFINED
 
-#include "builders/QuadKeyBuilder.hpp"
 #include "entities/Node.hpp"
 #include "entities/Way.hpp"
 #include "entities/Area.hpp"
@@ -12,8 +11,7 @@
 class Search {
 public:
   explicit Search(Context& context) :
-    context_(context),
-    quadKeyBuilder_(context.geoStore, context.stringTable) {}
+    context_(context) {}
 
   /// Gets data represented by elements matching given text query.
   /// Note, that styles and real elevation height are not included.
@@ -54,7 +52,7 @@ public:
       auto &styleProvider = context_.getStyleProvider(styleFile);
       auto &eleProvider = context_.getElevationProvider(quadKey, eleProviderType);
       ExportElementVisitor elementVisitor(tag, quadKey, context_.stringTable, styleProvider, eleProvider, elementCallback);
-      quadKeyBuilder_.build(
+      context_.quadKeyBuilder.build(
         quadKey, styleProvider, eleProvider,
         [&meshCallback, tag](const utymap::math::Mesh &mesh) {
         // NOTE do not notify if mesh is empty.
@@ -84,7 +82,6 @@ public:
 
 private:
   Context &context_;
-  utymap::builders::QuadKeyBuilder quadKeyBuilder_;
 
   /// Exports elements to external code using element callback.
   struct ExportElementVisitor : public utymap::entities::ElementVisitor {

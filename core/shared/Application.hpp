@@ -43,7 +43,6 @@ class Application {
   }
 
  private:
-
   /// Gets registered style provider by its style path.
   const utymap::mapcss::StyleProvider &getStyleProvider(const std::string &stylePath) {
     auto pair = styleProviders_.find(stylePath);

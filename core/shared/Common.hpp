@@ -1,11 +1,13 @@
 #ifndef COMMON_H_DEFINED
 #define COMMON_H_DEFINED
 
+#include "builders/QuadKeyBuilder.hpp"
+#include "heightmap/ElevationProvider.hpp"
+#include "index/GeoStore.hpp"
+
 #include <cstdint>
 #include <exception>
 #include <functional>
-#include "index/GeoStore.hpp"
-#include "heightmap/ElevationProvider.hpp"
 
 /// Callback which is called when directory should be created.
 /// NOTE with C++11, directory cannot be created with header only libs.
@@ -46,14 +48,14 @@ struct Context {
     indexPath(indexPath),
     stringTable(stringTable),
     geoStore(geoStore),
+    quadKeyBuilder(geoStore, stringTable),
     getStyleProvider(styleProviderGetter),
-    getElevationProvider(elevationProviderGetter)
-  {
-  }
+    getElevationProvider(elevationProviderGetter) { }
 
   const std::string indexPath;
   utymap::index::StringTable &stringTable;
   utymap::index::GeoStore &geoStore;
+  utymap::builders::QuadKeyBuilder quadKeyBuilder;
   StyleProviderGetter getStyleProvider;
   ElevationProviderGetter getElevationProvider;
 };
