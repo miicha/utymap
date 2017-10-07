@@ -142,7 +142,7 @@ namespace UtyMap.Unity.Data
                 // create directory for downloaded raw map data.
                 CreateDirectory(Path.Combine(indexPath, "import"));
 
-                configure(indexPath, OnErrorHandler);
+                connect(indexPath, OnErrorHandler);
                 _isConfigured = true;
             }
         }
@@ -185,7 +185,7 @@ namespace UtyMap.Unity.Data
             _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, storageKey);
             lock (__lockObj)
             {
-                addToStoreInRange(storageKey, stylePath, dataPath, levelOfDetails.Minimum,
+                addDataInRange(storageKey, stylePath, dataPath, levelOfDetails.Minimum,
                     levelOfDetails.Maximum, OnErrorHandler);
             }
             return Observable.Return<int>(100);
@@ -199,7 +199,7 @@ namespace UtyMap.Unity.Data
             _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, storageKey);
             lock (__lockObj)
             {
-                addToStoreInQuadKey(storageKey, stylePath, dataPath, quadKey.TileX, quadKey.TileY,
+                addDataInQuadKey(storageKey, stylePath, dataPath, quadKey.TileX, quadKey.TileY,
                     quadKey.LevelOfDetail, OnErrorHandler);
             }
             return Observable.Return<int>(100);
@@ -228,7 +228,7 @@ namespace UtyMap.Unity.Data
 
             lock (__lockObj)
             {
-                addToStoreElement(storageKey, stylePath, element.Id,
+                addDataInElement(storageKey, stylePath, element.Id,
                     coordinates, coordinates.Length,
                     tags, tags.Length,
                     levelOfDetails.Minimum, levelOfDetails.Maximum, OnErrorHandler);
@@ -239,7 +239,7 @@ namespace UtyMap.Unity.Data
         /// <inheritdoc />
         public double GetElevation(ElevationDataType elevationDataType, QuadKey quadKey, GeoCoordinate coordinate)
         {
-            return getElevation(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
+            return getElevationByQuadKey(quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
                 (int)elevationDataType, coordinate.Latitude, coordinate.Longitude);
         }
 
@@ -255,7 +255,7 @@ namespace UtyMap.Unity.Data
             _trace.Debug(TraceCategory, "Get tile {0}", tile.ToString());
             var stylePath = RegisterStylesheet(tile.Stylesheet);
             var quadKey = tile.QuadKey;
-            WithCancelToken(tile.CancelationToken, (cancelTokenHandle) => loadQuadKey(tag, stylePath,
+            WithCancelToken(tile.CancelationToken, (cancelTokenHandle) => getDataByQuadKey(tag, stylePath,
                 quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, (int)tile.ElevationType,
                 meshBuiltHandler, elementLoadedHandler, errorHandler,
                 cancelTokenHandle.AddrOfPinnedObject())
@@ -267,7 +267,7 @@ namespace UtyMap.Unity.Data
         {
             _trace.Debug(TraceCategory, "Search elements");
             WithCancelToken(new CancellationToken(), (cancelTokenHandle) =>
-                searchElements(tag, query.NotTerms, query.AndTerms, query.OrTerms,
+                getDataByText(tag, query.NotTerms, query.AndTerms, query.OrTerms,
                     query.BoundingBox.MinPoint.Latitude, query.BoundingBox.MinPoint.Longitude,
                     query.BoundingBox.MaxPoint.Latitude, query.BoundingBox.MaxPoint.Longitude,
                     query.LodRange.Minimum, query.LodRange.Maximum, elementLoadedHandler, errorHandler,
@@ -446,8 +446,17 @@ namespace UtyMap.Unity.Data
 
         #region PInvoke import
 
+        #region Lifecycle API
+
         [DllImport("UtyMap.Shared")]
-        private static extern void configure(string stringPath, OnError errorHandler);
+        private static extern void connect(string stringPath, OnError errorHandler);
+
+        [DllImport("UtyMap.Shared")]
+        private static extern void disconnect();
+
+        #endregion
+
+        #region Configuration API
 
         [DllImport("UtyMap.Shared")]
         private static extern void enableMeshCache(int enabled);
@@ -461,34 +470,41 @@ namespace UtyMap.Unity.Data
         [DllImport("UtyMap.Shared")]
         private static extern void registerPersistentStore(string key, string path, OnNewDirectory directoryHandler);
 
-        [DllImport("UtyMap.Shared")]
-        private static extern void addToStoreInRange(string key, string stylePath, string path, int startLod, int endLod, OnError errorHandler);
+        #endregion
+
+        #region Storage API
 
         [DllImport("UtyMap.Shared")]
-        private static extern void addToStoreInQuadKey(string key, string stylePath, string path, int tileX, int tileY, int lod, OnError errorHandler);
+        private static extern void addDataInRange(string key, string stylePath, string path, int startLod, int endLod, OnError errorHandler);
 
         [DllImport("UtyMap.Shared")]
-        private static extern void addToStoreElement(string key, string stylePath, long id, double[] vertices, int vertexLength,
+        private static extern void addDataInQuadKey(string key, string stylePath, string path, int tileX, int tileY, int lod, OnError errorHandler);
+
+        [DllImport("UtyMap.Shared")]
+        private static extern void addDataInElement(string key, string stylePath, long id, double[] vertices, int vertexLength,
             string[] tags, int tagLength, int startLod, int endLod, OnError errorHandler);
 
         [DllImport("UtyMap.Shared")]
         private static extern bool hasData(int tileX, int tileY, int levelOfDetails);
 
-        [DllImport("UtyMap.Shared")]
-        private static extern double getElevation(int tileX, int tileY, int levelOfDetails, int eleDataType, double latitude, double longitude);
+        #endregion
+
+        #region Search API
 
         [DllImport("UtyMap.Shared")]
-        private static extern void loadQuadKey(int tag, string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,
+        private static extern void getDataByQuadKey(int tag, string stylePath, int tileX, int tileY, int levelOfDetails, int eleDataType,
             OnMeshBuilt meshBuiltHandler, OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
 
         [DllImport("UtyMap.Shared")]
-        private static extern void searchElements(int tag, string notTerms, string andTerms, string orTerms,
+        private static extern void getDataByText(int tag, string notTerms, string andTerms, string orTerms,
             double minLatitude, double minLogitude, double maxLatitude, double maxLogitude,
             int startLod, int endLod,
             OnElementLoaded elementLoadedHandler, OnError errorHandler, IntPtr cancelToken);
 
         [DllImport("UtyMap.Shared")]
-        private static extern void cleanup();
+        private static extern double getElevationByQuadKey(int tileX, int tileY, int levelOfDetails, int eleDataType, double latitude, double longitude);
+
+        #endregion
 
         #endregion
     }
