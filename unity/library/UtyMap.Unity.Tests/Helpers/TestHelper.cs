@@ -29,7 +29,7 @@ namespace UtyMap.Unity.Tests.Helpers
         public const string TransientStorageKey = "primary";
         public const string PersistentStorageKey = "secondary";
 
-        private const string PersistentStoragePath = @"../../../../demo/Assets/StreamingAssets/index/";
+        private const string IndexPath = @"../../../../demo/Assets/StreamingAssets/index";
 
         #endregion
 
@@ -47,7 +47,7 @@ namespace UtyMap.Unity.Tests.Helpers
 
             // create default application configuration
             var config = ConfigBuilder.GetDefault()
-                .SetIndex(PersistentStoragePath)
+                .SetIndex(IndexPath)
                 .Build();
 
             // initialize services
@@ -62,7 +62,7 @@ namespace UtyMap.Unity.Tests.Helpers
             // Register default data stores to simplify test setup. The order is important
             var mapDataStore = root.GetService<IMapDataStore>();
             mapDataStore.Register(TransientStorageKey);
-            mapDataStore.Register(PersistentStorageKey, PersistentStoragePath);
+            mapDataStore.Register(PersistentStorageKey, IndexPath + "/data");
 
             return root;
         }

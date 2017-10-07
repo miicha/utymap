@@ -36,7 +36,7 @@ class GridElevationProvider final : public ElevationProvider {
 
  public:
   GridElevationProvider(const std::string& indexPath) :
-      dataPath_(indexPath + "data/") {
+      dataPath_(indexPath + "/data/") {
   }
 
   /// Gets elevation for given geocoordinate.

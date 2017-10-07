@@ -53,7 +53,7 @@ namespace Assets.Scripts.Core
         private static CompositionRoot BuildCompositionRoot(Action<IContainer, IConfigSection> action, ITrace trace)
         {
             // create entry point for library functionallity using default configuration overriding some properties
-            var root = new CompositionRoot(new Container(), ConfigBuilder.GetDefault().SetIndex("index/").Build())
+            var root = new CompositionRoot(new Container(), ConfigBuilder.GetDefault().SetIndex("index").Build())
                 // override library's default services with demo specific implementations
                 .RegisterAction((container, config) =>
                 {
@@ -72,7 +72,7 @@ namespace Assets.Scripts.Core
             // You are not limited with these two: you can add more disk and/or memory storages.
             // NOTE First registered storage will be used to save map data received from downloaded data
             var mapDataStore = root.GetService<IMapDataStore>();
-            mapDataStore.Register(MapDataStorages.PersistentStorageKey, "index/");
+            mapDataStore.Register(MapDataStorages.PersistentStorageKey, @"index/data");
             mapDataStore.Register(MapDataStorages.TransientStorageKey);
 
             return root;

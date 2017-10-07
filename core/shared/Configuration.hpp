@@ -12,7 +12,6 @@
 class Configuration {
   const int MinLevelOfDetail = 1;
   const int MaxLevelOfDetail = 16;
-  const std::string CachePathPrefix = "cache/";
 public:
 
   explicit Configuration(Context& context)
@@ -21,7 +20,7 @@ public:
   /// Registers stylesheet.
   void registerStylesheet(const char *path, OnNewDirectory *directoryCallback) const {
     auto &styleProvider = context_.getStyleProvider(path);
-    std::string root = context_.indexPath + CachePathPrefix + styleProvider.getTag() + '/';
+    std::string root = context_.indexPath + "/cache/" + styleProvider.getTag() + '/';
     createDataDirs(root, directoryCallback);
   }
 
@@ -50,7 +49,7 @@ private:
   /// Creates map data directories in given root directory.
   void createDataDirs(const std::string &root, OnNewDirectory *directoryCallback) const {
     for (int i = MinLevelOfDetail; i <= MaxLevelOfDetail; ++i) {
-      auto lodDir = root + utymap::utils::toString(i);
+      auto lodDir = root + "/" + utymap::utils::toString(i);
       directoryCallback(lodDir.c_str());
     }
   }

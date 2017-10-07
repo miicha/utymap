@@ -46,7 +46,7 @@ class SrtmElevationProvider final : public ElevationProvider {
  public:
 
   SrtmElevationProvider(const std::string& indexPath, int maxCacheSize = 4) :
-      dataPath_(indexPath + "data/"), maxCacheSize_(maxCacheSize) {
+      dataPath_(indexPath + "/data/"), maxCacheSize_(maxCacheSize) {
   }
 
   double getElevation(const utymap::QuadKey &quadKey, const utymap::GeoCoordinate &coordinate) const override {

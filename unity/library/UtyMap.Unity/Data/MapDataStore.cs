@@ -18,8 +18,8 @@ namespace UtyMap.Unity.Data
 
         /// <summary> Registers persistent data storage with given key. </summary>
         /// <param name="storageKey"> Storage key.</param>
-        /// <param name="indexPath"> Persistent index path. </param>
-        void Register(string storageKey, string indexPath);
+        /// <param name="dataPath"> Data path. </param>
+        void Register(string storageKey, string dataPath);
 
         /// <summary> Adds mapdata to the specific data storage. </summary>
         /// <param name="storageKey"> Storage key. </param>
@@ -83,10 +83,10 @@ namespace UtyMap.Unity.Data
         }
 
         /// <inheritdoc />
-        public void Register(string storageKey, string indexPath)
+        public void Register(string storageKey, string dataPath)
         {
             _storageKeys.Add(storageKey);
-            _mapDataLibrary.Register(storageKey, indexPath);
+            _mapDataLibrary.Register(storageKey, dataPath);
         }
 
         /// <inheritdoc />
