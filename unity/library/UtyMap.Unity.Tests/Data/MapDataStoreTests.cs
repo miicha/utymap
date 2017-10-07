@@ -88,7 +88,7 @@ namespace UtyMap.Unity.Tests.Data
             var range = new Range<int>(lod, lod);
             _compositionRoot
                 .GetService<IMapDataStore>()
-                .AddTo(TestHelper.TransientStorageKey, mapDataPath, _stylesheet, range);
+                .AddTo(TestHelper.TransientStorageKey, mapDataPath, _stylesheet, range, new CancellationToken());
         }
 
         private void TestQuadKeys(QuadKey centerQuadKey, int count, int lod)

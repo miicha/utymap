@@ -4,8 +4,8 @@
 /// Wraps Storage API.
 class Storage {
 public:
-  explicit Storage(Context& context)
-    : context_(context) {}
+  explicit Storage(Context& context) :
+    context_(context) {}
 
   /// Adds data to store for specific quadkey only.
   void addToStore(const char *key,           // store key
@@ -14,7 +14,8 @@ public:
                   int tileX,                 // tile x
                   int tileY,                 // tile y
                   int levelOfDetail,         // level of detail
-                  OnError *errorCallback) {
+                  OnError *errorCallback,    // error callback
+                  utymap::CancellationToken *cancellationToken) {
     utymap::QuadKey quadKey(levelOfDetail, tileX, tileY);
     ::safeExecute([&]() {
       context_.geoStore.add(key, path, quadKey, context_.getStyleProvider(styleFile));
@@ -31,7 +32,8 @@ public:
                   double maxLon,             // maximal longitude
                   int startLod,              // start zoom level
                   int endLod,                // end zoom level
-                  OnError *errorCallback) {
+                  OnError *errorCallback,    // error callback
+                  utymap::CancellationToken *cancellationToken) {
     utymap::BoundingBox bbox(utymap::GeoCoordinate(minLat, minLon),
                              utymap::GeoCoordinate(maxLat, maxLon));
     utymap::LodRange lodRange(startLod, endLod);
@@ -46,7 +48,8 @@ public:
                   const char *path,          // path to data
                   int startLod,              // start zoom level
                   int endLod,                // end zoom level
-                  OnError *errorCallback) {
+                  OnError *errorCallback,    // error callback
+                  utymap::CancellationToken *cancellationToken) {
     utymap::LodRange lodRange(startLod, endLod);
     ::safeExecute([&]() {
       context_.geoStore.add(key, path, lodRange, context_.getStyleProvider(styleFile));
@@ -64,7 +67,8 @@ public:
                   int tagLength,             // tag array length
                   int startLod,              // start zoom level
                   int endLod,                // end zoom level
-                  OnError *errorCallback) {
+                  OnError *errorCallback,    // error callback
+                  utymap::CancellationToken *cancellationToken) {
     utymap::LodRange lod(startLod, endLod);
     std::vector<utymap::entities::Tag> elementTags;
     elementTags.reserve(static_cast<std::size_t>(tagLength / 2));
@@ -80,7 +84,7 @@ public:
       node.id = id;
       node.tags = elementTags;
       node.coordinate = utymap::GeoCoordinate(vertices[0], vertices[1]);
-      addToStore(key, styleFile, node, lod, errorCallback);
+      addToStore(key, styleFile, node, lod, errorCallback, cancellationToken);
       return;
     }
 
@@ -96,14 +100,14 @@ public:
       area.id = id;
       area.coordinates = coordinates;
       area.tags = elementTags;
-      addToStore(key, styleFile, area, lod, errorCallback);
+      addToStore(key, styleFile, area, lod, errorCallback, cancellationToken);
     }
     else {
       utymap::entities::Way way;
       way.id = id;
       way.coordinates = coordinates;
       way.tags = elementTags;
-      addToStore(key, styleFile, way, lod, errorCallback);
+      addToStore(key, styleFile, way, lod, errorCallback, cancellationToken);
     }
   }
 
@@ -118,7 +122,8 @@ private:
                   const char *styleFile,
                   const utymap::entities::Element &element,
                   const utymap::LodRange &range,
-                  OnError *errorCallback) {
+                  OnError *errorCallback,
+                  utymap::CancellationToken *cancellationToken) {
     safeExecute([&]() {
       context_.geoStore.add(key, element, range, context_.getStyleProvider(styleFile));
     }, errorCallback);

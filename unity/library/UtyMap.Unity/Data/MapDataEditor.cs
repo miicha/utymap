@@ -36,7 +36,7 @@ namespace UtyMap.Unity.Data
         /// <inheritdoc />
         public void Add(string storageKey, Element element, Range<int> levelOfDetails)
         {
-            _mapDataLibrary.AddTo(storageKey, element, _stylesheet, levelOfDetails)
+            _mapDataLibrary.AddTo(storageKey, element, _stylesheet, levelOfDetails, new CancellationToken())
                 .Wait();
         }
 

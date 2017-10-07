@@ -10,6 +10,7 @@ using UtyMap.Unity.Infrastructure.Primitives;
 using UtyMap.Unity.Utils;
 using UtyRx;
 using Component = UtyDepend.Component;
+using CancellationToken = UtyMap.Unity.CancellationToken;
 
 namespace Assets.Scripts.Scenes.Customization
 {
@@ -63,7 +64,8 @@ namespace Assets.Scripts.Scenes.Customization
                     // stylesheet is used to import only used data and skip unused
                     _compositionRoot.GetService<Stylesheet>(),
                     // level of detail (zoom) for which map data should be imported
-                    new Range<int>(16, 16))
+                    new Range<int>(16, 16),
+                    new CancellationToken())
                 // start import and listen for events.
                 .Subscribe(
                     // NOTE progress callback is ignored

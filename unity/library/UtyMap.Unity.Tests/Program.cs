@@ -30,7 +30,9 @@ namespace UtyMap.Unity.Tests
                       // mapcss stylesheet to control what is loaded
                       stylesheet,
                       // load data only for specific LOD (alternative API is available)
-                      new Range<int>(LevelOfDetails, LevelOfDetails));
+                      new Range<int>(LevelOfDetails, LevelOfDetails),
+                      // cancellation token can be used to cancel operation
+                      new CancellationToken());
             
             // 2. start listening for processed data
             store

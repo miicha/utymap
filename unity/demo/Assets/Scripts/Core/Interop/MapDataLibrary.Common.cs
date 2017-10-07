@@ -88,35 +88,37 @@ namespace Assets.Scripts.Core.Interop
         }
 
         /// <inheritdoc />
-        public IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, Range<int> levelOfDetails)
+        public IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, Range<int> levelOfDetails, CancellationToken cancellationToken)
         {
             var dataPath = _pathResolver.Resolve(path);
             var stylePath = RegisterStylesheet(stylesheet);
             _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, storageKey);
             lock (__lockObj)
             {
-                addDataInRange(storageKey, stylePath, dataPath, levelOfDetails.Minimum,
-                    levelOfDetails.Maximum, OnErrorHandler);
+                WithCancelToken(cancellationToken, (cancelTokenHandle) => addDataInRange(
+                    storageKey, stylePath, dataPath, levelOfDetails.Minimum,
+                    levelOfDetails.Maximum, OnErrorHandler, cancelTokenHandle.AddrOfPinnedObject()));
             }
             return Observable.Return<int>(100);
         }
 
         /// <inheritdoc />
-        public IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, QuadKey quadKey)
+        public IObservable<int> AddTo(string storageKey, string path, Stylesheet stylesheet, QuadKey quadKey, CancellationToken cancellationToken)
         {
             var dataPath = _pathResolver.Resolve(path);
             var stylePath = RegisterStylesheet(stylesheet);
             _trace.Debug(TraceCategory, "Add data from {0} to {1} storage", dataPath, storageKey);
             lock (__lockObj)
             {
-                addDataInQuadKey(storageKey, stylePath, dataPath, quadKey.TileX, quadKey.TileY,
-                    quadKey.LevelOfDetail, OnErrorHandler);
+                WithCancelToken(cancellationToken, (cancelTokenHandle) => addDataInQuadKey(
+                    storageKey, stylePath, dataPath, quadKey.TileX, quadKey.TileY,
+                     quadKey.LevelOfDetail, OnErrorHandler, cancelTokenHandle.AddrOfPinnedObject()));
             }
             return Observable.Return<int>(100);
         }
 
         /// <inheritdoc />
-        public IObservable<int> AddTo(string storageKey, Element element, Stylesheet stylesheet, Range<int> levelOfDetails)
+        public IObservable<int> AddTo(string storageKey, Element element, Stylesheet stylesheet, Range<int> levelOfDetails, CancellationToken cancellationToken)
         {
             _trace.Debug(TraceCategory, "Add element to {0} storage", storageKey);
             double[] coordinates = new double[element.Geometry.Length * 2];
@@ -137,10 +139,9 @@ namespace Assets.Scripts.Core.Interop
             var stylePath = RegisterStylesheet(stylesheet);
             lock (__lockObj)
             {
-                addDataInElement(storageKey, stylePath, element.Id,
-                    coordinates, coordinates.Length,
-                    tags, tags.Length,
-                    levelOfDetails.Minimum, levelOfDetails.Maximum, OnErrorHandler);
+                WithCancelToken(cancellationToken, (cancelTokenHandle) => addDataInElement(
+                    storageKey, stylePath, element.Id, coordinates, coordinates.Length, tags, tags.Length,
+                    levelOfDetails.Minimum, levelOfDetails.Maximum, OnErrorHandler, cancelTokenHandle.AddrOfPinnedObject()));
             }
             return Observable.Return<int>(100);
         }
@@ -164,9 +165,9 @@ namespace Assets.Scripts.Core.Interop
             _trace.Debug(TraceCategory, "Get tile {0}", tile.ToString());
             var stylePath = RegisterStylesheet(tile.Stylesheet);
             var quadKey = tile.QuadKey;
-            WithCancelToken(tile.CancelationToken, (cancelTokenHandle) => getDataByQuadKey(tag, stylePath,
-                quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail, (int)tile.ElevationType,
-                meshBuiltHandler, elementLoadedHandler, errorHandler,
+            WithCancelToken(tile.CancelationToken, (cancelTokenHandle) => getDataByQuadKey(
+                tag, stylePath, quadKey.TileX, quadKey.TileY, quadKey.LevelOfDetail,
+                (int)tile.ElevationType, meshBuiltHandler, elementLoadedHandler, errorHandler,
                 cancelTokenHandle.AddrOfPinnedObject())
             );
             return Observable.Return(100);
@@ -175,12 +176,12 @@ namespace Assets.Scripts.Core.Interop
         private IObservable<int> Get(MapQuery query, int tag, OnElementLoaded elementLoadedHandler, OnError errorHandler)
         {
             _trace.Debug(TraceCategory, "Search elements");
-            WithCancelToken(new CancellationToken(), (cancelTokenHandle) =>
-                getDataByText(tag, query.NotTerms, query.AndTerms, query.OrTerms,
-                    query.BoundingBox.MinPoint.Latitude, query.BoundingBox.MinPoint.Longitude,
-                    query.BoundingBox.MaxPoint.Latitude, query.BoundingBox.MaxPoint.Longitude,
-                    query.LodRange.Minimum, query.LodRange.Maximum, elementLoadedHandler, errorHandler,
-                    cancelTokenHandle.AddrOfPinnedObject())
+            WithCancelToken(new CancellationToken(), (cancelTokenHandle) => getDataByText(
+                tag, query.NotTerms, query.AndTerms, query.OrTerms,
+                query.BoundingBox.MinPoint.Latitude, query.BoundingBox.MinPoint.Longitude,
+                query.BoundingBox.MaxPoint.Latitude, query.BoundingBox.MaxPoint.Longitude,
+                query.LodRange.Minimum, query.LodRange.Maximum, elementLoadedHandler, errorHandler,
+                cancelTokenHandle.AddrOfPinnedObject())
             );
             return Observable.Return(100);
         }
@@ -248,14 +249,16 @@ namespace Assets.Scripts.Core.Interop
         #region Storage API
 
         [DllImport("UtyMap.Shared")]
-        private static extern void addDataInRange(string key, string stylePath, string path, int startLod, int endLod, OnError errorHandler);
+        private static extern void addDataInRange(string key, string stylePath, string path, int startLod, int endLod,
+            OnError errorHandler, IntPtr cancelToken);
 
         [DllImport("UtyMap.Shared")]
-        private static extern void addDataInQuadKey(string key, string stylePath, string path, int tileX, int tileY, int lod, OnError errorHandler);
+        private static extern void addDataInQuadKey(string key, string stylePath, string path, int tileX, int tileY, int lod,
+            OnError errorHandler, IntPtr cancelToken);
 
         [DllImport("UtyMap.Shared")]
         private static extern void addDataInElement(string key, string stylePath, long id, double[] vertices, int vertexLength,
-            string[] tags, int tagLength, int startLod, int endLod, OnError errorHandler);
+            string[] tags, int tagLength, int startLod, int endLod, OnError errorHandler, IntPtr cancelToken);
 
         [DllImport("UtyMap.Shared")]
         private static extern bool hasData(int tileX, int tileY, int levelOfDetails);

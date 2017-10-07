@@ -46,24 +46,27 @@ void EXPORT_API enableMeshCache(int enabled) {
 }
 
 /************* Storage API *****************/
-void EXPORT_API addDataInRange(const char *key, const char *styleFile, const char *path, int startLod, int endLod, OnError *errorCallback) {
-  applicationPtr->getStorage().addToStore(key, styleFile, path, startLod, endLod, errorCallback);
+void EXPORT_API addDataInRange(const char *key, const char *styleFile, const char *path, int startLod, int endLod,
+                               OnError *errorCallback, utymap::CancellationToken *cancellationToken) {
+  applicationPtr->getStorage().addToStore(key, styleFile, path, startLod, endLod, errorCallback, cancellationToken);
 }
 
 void EXPORT_API addDataInBoundingBox(const char *key, const char *styleFile, const char *path,
-                                     double minLat, double minLon, double maxLat,  double maxLon,
-                                     int startLod, int endLod, OnError *errorCallback) {
-  applicationPtr->getStorage().addToStore(key, styleFile, path, minLat, minLon, maxLat, maxLon, startLod, endLod, errorCallback);
+                                     double minLat, double minLon, double maxLat,  double maxLon, int startLod, int endLod,
+                                     OnError *errorCallback, utymap::CancellationToken *cancellationToken) {
+  applicationPtr->getStorage().addToStore(key, styleFile, path, minLat, minLon, maxLat, maxLon, startLod, endLod, errorCallback, cancellationToken);
 }
 
 void EXPORT_API addDataInQuadKey(const char *key, const char *styleFile, const char *path,
-                                 int tileX, int tileY, int levelOfDetail, OnError *errorCallback) {
-  applicationPtr->getStorage().addToStore(key, styleFile, path, tileX, tileY, levelOfDetail, errorCallback);
+                                 int tileX, int tileY, int levelOfDetail,
+                                 OnError *errorCallback, utymap::CancellationToken *cancellationToken) {
+  applicationPtr->getStorage().addToStore(key, styleFile, path, tileX, tileY, levelOfDetail, errorCallback, cancellationToken);
 }
 
 void EXPORT_API addDataInElement(const char *key, const char *styleFile, std::uint64_t id, const double *vertices, int vertexLength,
-                                 const char **tags, int tagLength, int startLod, int endLod, OnError *errorCallback) {
-  applicationPtr->getStorage().addToStore(key, styleFile, id, vertices, vertexLength, tags, tagLength, startLod, endLod, errorCallback);
+                                 const char **tags, int tagLength, int startLod, int endLod,
+                                 OnError *errorCallback, utymap::CancellationToken *cancellationToken) {
+  applicationPtr->getStorage().addToStore(key, styleFile, id, vertices, vertexLength, tags, tagLength, startLod, endLod, errorCallback, cancellationToken);
 }
 
 bool EXPORT_API hasData(int tileX, int tileY, int levelOfDetail) {

@@ -26,16 +26,18 @@ namespace UtyMap.Unity.Data
         /// <param name="dataPath"> Path to mapdata. </param>
         /// <param name="stylesheet"> Stylesheet which to use during import. </param>
         /// <param name="levelOfDetails"> Which level of details to use. </param>
+        /// <param name="cancellationToken"> Cancellation token. </param>
         /// <returns> Returns progress status. </returns>
-        IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails);
+        IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails, CancellationToken cancellationToken);
 
         /// <summary> Adds mapdata to the specific data storage. </summary>
         /// <param name="storageKey"> Storage key. </param>
         /// <param name="dataPath"> Path to mapdata. </param>
         /// <param name="stylesheet"> Stylesheet which to use during import. </param>
         /// <param name="quadKey"> QuadKey to add. </param>
+        /// <param name="cancellationToken"> Cancellation token. </param>
         /// <returns> Returns progress status. </returns>
-        IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, QuadKey quadKey);
+        IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, QuadKey quadKey, CancellationToken cancellationToken);
     }
 
     /// <summary> Default implementation of map data store. </summary>
@@ -66,7 +68,7 @@ namespace UtyMap.Unity.Data
                             .Subscribe(_ => _tileObservers.ForEach(t => t.OnNext(value.Item1)));
                     else
                         // NOTE store data in the first registered store
-                        AddTo(_storageKeys.First(), value.Item2, value.Item1.Stylesheet, value.Item1.QuadKey)
+                        AddTo(_storageKeys.First(), value.Item2, value.Item1.Stylesheet, value.Item1.QuadKey, value.Item1.CancelationToken)
                             .Subscribe(progress => { }, () => _mapDataLibrary.Get(value.Item1, _dataObservers));
                 });
         }
@@ -88,17 +90,17 @@ namespace UtyMap.Unity.Data
         }
 
         /// <inheritdoc />
-        public IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails)
+        public IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, Range<int> levelOfDetails, CancellationToken cancellationToken)
         {
-            return _mapDataLibrary.AddTo(storageKey, dataPath, stylesheet, levelOfDetails);
+            return _mapDataLibrary.AddTo(storageKey, dataPath, stylesheet, levelOfDetails, cancellationToken);
         }
 
         /// <inheritdoc />
-        public IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, QuadKey quadKey)
+        public IObservable<int> AddTo(string storageKey, string dataPath, Stylesheet stylesheet, QuadKey quadKey, CancellationToken cancellationToken)
         {
             return _mapDataLibrary.Exists(quadKey)
                 ? Observable.Return<int>(100)
-                : _mapDataLibrary.AddTo(storageKey, dataPath, stylesheet, quadKey);
+                : _mapDataLibrary.AddTo(storageKey, dataPath, stylesheet, quadKey, cancellationToken);
         }
 
         /// <inheritdoc />
