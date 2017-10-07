@@ -35,7 +35,7 @@ const QuadKey quadKey = QuadKey(1, 0, 0);
 const std::string stylesheet = "node|z1[any], way|z1[any], area|z1[any], relation|z1[any] { clip: false; }";
 
 std::string getCacheDir(const StyleProvider &styleProvider) {
-  return std::string("cache/") + styleProvider.getTag() + "/1";
+  return std::string("data/cache/") + styleProvider.getTag() + "/1";
 }
 
 BuilderContext wrap(const StyleProvider &styleProvider,
@@ -66,7 +66,7 @@ struct Builders_MeshCacheFixture {
   }
 
   Builders_MeshCacheFixture() :
-      cache_("", "mesh"),
+      cache_("data", "mesh"),
       origContext(quadKey,
                   *dependencyProvider.getStyleProvider(stylesheet),
                   *dependencyProvider.getStringTable(),
