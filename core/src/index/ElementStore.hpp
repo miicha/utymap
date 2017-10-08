@@ -51,6 +51,13 @@ class ElementStore {
              const utymap::BoundingBox &bbox,
              const utymap::LodRange &range,
              const utymap::mapcss::StyleProvider &styleProvider);
+
+  /// Erases all data for given quad key.
+  virtual void erase(const utymap::QuadKey &quadKey) = 0;
+
+  /// Erases all data for given bbox and LOD range.
+  virtual void erase(const utymap::BoundingBox &bbox,
+                     const utymap::LodRange &range) = 0;
  protected:
   /// Stores element in given quadkey.
   virtual void storeImpl(const utymap::entities::Element &element, const utymap::QuadKey &quadKey) = 0;

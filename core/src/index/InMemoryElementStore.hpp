@@ -31,6 +31,11 @@ class InMemoryElementStore final : public ElementStore {
 
   bool hasData(const utymap::QuadKey &quadKey) const override;
 
+  void erase(const utymap::QuadKey &quadKey) override;
+
+  void erase(const utymap::BoundingBox &bbox,
+             const utymap::LodRange &range) override;
+
  protected:
   void storeImpl(const utymap::entities::Element &element, const utymap::QuadKey &quadKey) override;
 

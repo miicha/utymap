@@ -29,7 +29,8 @@ class GeoStore::GeoStoreImpl final {
   void add(const std::string &storeKey,
            const Element &element,
            const LodRange &range,
-           const StyleProvider &styleProvider) {
+           const StyleProvider &styleProvider,
+           const utymap::CancellationToken &cancelToken) {
     auto &elementStore = storeMap_[storeKey];
     elementStore->store(element, range, styleProvider);
   }
@@ -37,70 +38,78 @@ class GeoStore::GeoStoreImpl final {
   void add(const std::string &storeKey,
            const std::string &path,
            const QuadKey &quadKey,
-           const StyleProvider &styleProvider) {
+           const StyleProvider &styleProvider,
+           const utymap::CancellationToken &cancelToken) {
     auto &elementStore = storeMap_[storeKey];
-    add(path, styleProvider, [&](Element &element) {
+    add(path, cancelToken, [&](Element &element) {
       return elementStore->store(element, quadKey, styleProvider);
     });
+
+    if (cancelToken.isCancelled()) 
+      elementStore->erase(quadKey);
   }
 
   void add(const std::string &storeKey,
            const std::string &path,
            const LodRange &range,
-           const StyleProvider &styleProvider) {
+           const StyleProvider &styleProvider,
+           const utymap::CancellationToken &cancelToken) {
     auto &elementStore = storeMap_[storeKey];
-    add(path, styleProvider, [&](Element &element) {
+    auto bbox = add(path, cancelToken, [&](Element &element) {
       return elementStore->store(element, range, styleProvider);
     });
+
+    if (cancelToken.isCancelled())
+      elementStore->erase(bbox, range);
   }
 
   void add(const std::string &storeKey,
            const std::string &path,
            const BoundingBox &bbox,
            const LodRange &range,
-           const StyleProvider &styleProvider) {
+           const StyleProvider &styleProvider,
+           const utymap::CancellationToken &cancelToken) {
     auto &elementStore = storeMap_[storeKey];
-    add(path, styleProvider, [&](Element &element) {
+    add(path, cancelToken, [&](Element &element) {
       return elementStore->store(element, bbox, range, styleProvider);
     });
+
+    if (cancelToken.isCancelled())
+      elementStore->erase(bbox, range);
   }
 
-  void add(const std::string &path,
-           const StyleProvider &styleProvider,
+  utymap::BoundingBox add(const std::string &path,
+           const utymap::CancellationToken &cancelToken,
            const std::function<bool(Element &)> &functor) const {
     switch (getFormatTypeFromPath(path)) {
       case FormatType::Shape: {
         ShapeParser<ShapeDataVisitor> parser;
-        ShapeDataVisitor visitor(stringTable_, functor);
+        ShapeDataVisitor visitor(stringTable_, functor, cancelToken);
         parser.parse(path, visitor);
-        visitor.complete();
-        break;
+        return visitor.complete();
       }
       case FormatType::Xml: {
         OsmXmlParser<OsmDataVisitor> parser;
         std::ifstream xmlFile(path);
-        OsmDataVisitor visitor(stringTable_, functor);
+        OsmDataVisitor visitor(stringTable_, functor, cancelToken);
         parser.parse(xmlFile, visitor);
-        visitor.complete();
-        break;
+        return visitor.complete();
       }
 #ifdef PBF_SUPPORTED_ENABLED
       case FormatType::Pbf: {
         OsmPbfParser<OsmDataVisitor> parser;
         std::ifstream pbfFile(path, std::ios::in | std::ios::binary);
-        OsmDataVisitor visitor(stringTable_, functor);
+        OsmDataVisitor visitor(stringTable_, functor, cancelToken);
         parser.parse(pbfFile, visitor);
-        visitor.complete();
-        break;
+        return visitor.complete();
       }
 #endif
       case FormatType::Json: {
         OsmJsonParser<OsmDataVisitor> parser(stringTable_);
         std::ifstream jsonFile(path);
-        OsmDataVisitor visitor(stringTable_, functor);
+        OsmDataVisitor visitor(stringTable_, functor, cancelToken);
         parser.parse(jsonFile, visitor);
-        visitor.complete();
-        break;
+        return visitor.complete();
       }
       default:throw std::domain_error("Not supported.");
     }
@@ -166,30 +175,34 @@ void utymap::index::GeoStore::registerStore(const std::string &storeKey, std::un
 void utymap::index::GeoStore::add(const std::string &storeKey,
                                   const Element &element,
                                   const LodRange &range,
-                                  const StyleProvider &styleProvider) {
-  pimpl_->add(storeKey, element, range, styleProvider);
+                                  const StyleProvider &styleProvider,
+                                  const utymap::CancellationToken &cancelToken) {
+  pimpl_->add(storeKey, element, range, styleProvider, cancelToken);
 }
 
 void utymap::index::GeoStore::add(const std::string &storeKey,
                                   const std::string &path,
                                   const LodRange &range,
-                                  const StyleProvider &styleProvider) {
-  pimpl_->add(storeKey, path, range, styleProvider);
+                                  const StyleProvider &styleProvider,
+                                  const utymap::CancellationToken &cancelToken) {
+  pimpl_->add(storeKey, path, range, styleProvider, cancelToken);
 }
 
 void utymap::index::GeoStore::add(const std::string &storeKey,
                                   const std::string &path,
                                   const QuadKey &quadKey,
-                                  const StyleProvider &styleProvider) {
-  pimpl_->add(storeKey, path, quadKey, styleProvider);
+                                  const StyleProvider &styleProvider,
+                                  const utymap::CancellationToken &cancelToken) {
+  pimpl_->add(storeKey, path, quadKey, styleProvider, cancelToken);
 }
 
 void utymap::index::GeoStore::add(const std::string &storeKey,
                                   const std::string &path,
                                   const BoundingBox &bbox,
                                   const LodRange &range,
-                                  const StyleProvider &styleProvider) {
-  pimpl_->add(storeKey, path, bbox, range, styleProvider);
+                                  const StyleProvider &styleProvider,
+                                  const utymap::CancellationToken &cancelToken) {
+  pimpl_->add(storeKey, path, bbox, range, styleProvider, cancelToken);
 }
 
 void utymap::index::GeoStore::search(const QuadKey &quadKey,

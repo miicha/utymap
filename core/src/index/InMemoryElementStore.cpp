@@ -50,6 +50,10 @@ class InMemoryStringIndex : public BitmapIndex {
       elementsMap_(elementsMap),
       bitmaps_() {}
 
+  void erase(const utymap::QuadKey &quadKey) override {
+    bitmaps_.erase(quadKey);
+  }
+
  protected:
   void notify(const utymap::QuadKey& quadKey,
               const std::uint32_t order,
@@ -117,6 +121,15 @@ class InMemoryElementStore::InMemoryElementStoreImpl {
     element.accept(visitor);
   }
 
+  void erase(const utymap::QuadKey &quadKey) {
+    elementsMap_.erase(quadKey);
+    stringIndex_.erase(quadKey);
+  }
+
+  void erase(const utymap::BoundingBox &bbox, const utymap::LodRange &range) {
+    throw std::domain_error("Deletion by bounding box and lod range is not implemented.");
+  }
+
  private:
   ElementMap::const_iterator begin(const utymap::QuadKey &quadKey) const {
     return elementsMap_.find(quadKey);
@@ -161,4 +174,13 @@ void InMemoryElementStore::search(const utymap::QuadKey &quadKey,
                                   ElementVisitor &visitor,
                                   const utymap::CancellationToken &cancelToken) {
   pimpl_->search(quadKey, visitor, cancelToken);
+}
+
+void InMemoryElementStore::erase(const utymap::QuadKey &quadKey) {
+  pimpl_->erase(quadKey);
+}
+
+void InMemoryElementStore::erase(const utymap::BoundingBox &bbox,
+                                 const utymap::LodRange &range) {
+  pimpl_->erase(bbox, range);
 }

@@ -39,6 +39,8 @@ namespace {
       return registry_.find(quadKey) != registry_.end();
     }
 
+    void erase(const utymap::QuadKey &quadKey) override {}
+
     std::vector<std::shared_ptr<Element>> addedElements;
    private:
     ElementVisitor &visitor_;

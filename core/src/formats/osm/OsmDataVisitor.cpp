@@ -16,6 +16,7 @@ using namespace utymap::entities;
 using namespace utymap::index;
 
 void OsmDataVisitor::visitBounds(BoundingBox bbox) {
+  bbox_ = bbox;
 }
 
 void OsmDataVisitor::visitNode(std::uint64_t id, GeoCoordinate &coordinate, utymap::formats::Tags &tags) {
@@ -66,6 +67,7 @@ void OsmDataVisitor::visitRelation(std::uint64_t id, RelationMembers &members, u
 }
 
 void OsmDataVisitor::add(utymap::entities::Element &element) {
+  if (cancelToken_.isCancelled()) return;
   add_(element);
 }
 
@@ -76,6 +78,8 @@ bool OsmDataVisitor::hasTag(const std::string &key,
 }
 
 void OsmDataVisitor::resolve(Relation &relation) {
+  if (cancelToken_.isCancelled()) return;
+
   auto membersPair = relationMembers_.find(relation.id);
   // already resolved
   if (relation.elements.size()==membersPair->second.size())
@@ -92,7 +96,10 @@ void OsmDataVisitor::resolve(Relation &relation) {
   }
 }
 
-void OsmDataVisitor::complete() {
+utymap::BoundingBox OsmDataVisitor::complete() {
+  // TODO return actual bounding box.
+  if (cancelToken_.isCancelled()) return utymap::BoundingBox();
+
   // All relations are visited can start to resolve them
   for (auto &membersPair : relationMembers_) {
     auto relationPair = context_.relationMap.find(membersPair.first);
@@ -101,23 +108,26 @@ void OsmDataVisitor::complete() {
   }
 
   for (const auto &pair : context_.relationMap) {
-    add_(*pair.second);
+    add(*pair.second);
   }
 
   for (const auto &pair : context_.nodeMap) {
-    add_(*pair.second);
+    add(*pair.second);
   }
 
   for (const auto &pair : context_.wayMap) {
-    add_(*pair.second);
+    add(*pair.second);
   }
 
   for (const auto &pair : context_.areaMap) {
-    add_(*pair.second);
+    add(*pair.second);
   }
 
+  return bbox_;
 }
 
-OsmDataVisitor::OsmDataVisitor(const StringTable &stringTable, std::function<bool(Element &)> add)
-    : stringTable_(stringTable), add_(add), context_() {
+OsmDataVisitor::OsmDataVisitor(const StringTable &stringTable,
+                               std::function<bool(Element &)> add,
+                               const utymap::CancellationToken &cancelToken) :
+  stringTable_(stringTable), add_(add), cancelToken_(cancelToken), context_(), bbox_() {
 }

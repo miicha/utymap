@@ -17,7 +17,8 @@ struct Formats_Osm_OsmDataVisitorFixture {
   Formats_Osm_OsmDataVisitorFixture() :
       dependencyProvider(),
       visitor(*dependencyProvider.getStringTable(),
-              std::bind(&Formats_Osm_OsmDataVisitorFixture::add, this, std::placeholders::_1)) {
+              std::bind(&Formats_Osm_OsmDataVisitorFixture::add, this, std::placeholders::_1),
+              dependencyProvider.getCancellationToken()) {
   }
 
   bool add(utymap::entities::Element &) { return false; }

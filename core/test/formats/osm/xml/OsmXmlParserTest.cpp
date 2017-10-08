@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(GivenTestDummyOsmXml_WhenParserParse_ThenHasProperNodes) {
       }
     }
     return true;
-  });
+  }, dependencyProvider.getCancellationToken());
 
   parser.parse(istream, visitor);
   visitor.complete();
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(GivenTestDummyOsmXml_WhenParserParse_ThenHasProperWay) {
       }
     }
     return true;
-  });
+  }, dependencyProvider.getCancellationToken());
 
   parser.parse(istream, visitor);
   visitor.complete();

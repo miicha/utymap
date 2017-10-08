@@ -15,10 +15,10 @@ public:
                   int tileY,                 // tile y
                   int levelOfDetail,         // level of detail
                   OnError *errorCallback,    // error callback
-                  utymap::CancellationToken *cancellationToken) {
+                  utymap::CancellationToken *cancelToken) {
     utymap::QuadKey quadKey(levelOfDetail, tileX, tileY);
     ::safeExecute([&]() {
-      context_.geoStore.add(key, path, quadKey, context_.getStyleProvider(styleFile));
+      context_.geoStore.add(key, path, quadKey, context_.getStyleProvider(styleFile), *cancelToken);
     }, errorCallback);
   }
 
@@ -33,12 +33,12 @@ public:
                   int startLod,              // start zoom level
                   int endLod,                // end zoom level
                   OnError *errorCallback,    // error callback
-                  utymap::CancellationToken *cancellationToken) {
+                  utymap::CancellationToken *cancelToken) {
     utymap::BoundingBox bbox(utymap::GeoCoordinate(minLat, minLon),
                              utymap::GeoCoordinate(maxLat, maxLon));
     utymap::LodRange lodRange(startLod, endLod);
     ::safeExecute([&]() {
-      context_.geoStore.add(key, path, bbox, lodRange, context_.getStyleProvider(styleFile));
+      context_.geoStore.add(key, path, bbox, lodRange, context_.getStyleProvider(styleFile), *cancelToken);
     }, errorCallback);
   }
 
@@ -49,10 +49,10 @@ public:
                   int startLod,              // start zoom level
                   int endLod,                // end zoom level
                   OnError *errorCallback,    // error callback
-                  utymap::CancellationToken *cancellationToken) {
+                  utymap::CancellationToken *cancelToken) {
     utymap::LodRange lodRange(startLod, endLod);
     ::safeExecute([&]() {
-      context_.geoStore.add(key, path, lodRange, context_.getStyleProvider(styleFile));
+      context_.geoStore.add(key, path, lodRange, context_.getStyleProvider(styleFile), *cancelToken);
     }, errorCallback);
   }
 
@@ -123,9 +123,9 @@ private:
                   const utymap::entities::Element &element,
                   const utymap::LodRange &range,
                   OnError *errorCallback,
-                  utymap::CancellationToken *cancellationToken) {
+                  utymap::CancellationToken *cancelToken) {
     safeExecute([&]() {
-      context_.geoStore.add(key, element, range, context_.getStyleProvider(styleFile));
+      context_.geoStore.add(key, element, range, context_.getStyleProvider(styleFile), *cancelToken);
     }, errorCallback);
   }
 

@@ -34,7 +34,7 @@ BOOST_FIXTURE_TEST_SUITE(Formats_Shape_ShapeDataVisitor, Formats_Shape_ShapeData
 BOOST_AUTO_TEST_CASE(GivenDefaultXml_WhenParserParse_ThenHasExpectedElementCount) {
   ShapeDataVisitor visitor(*dependencyProvider.getStringTable(), [&](Element &element) {
     return elementStore.store(element, utymap::LodRange(1, 1), *dependencyProvider.getStyleProvider(stylesheet));
-  });
+  }, dependencyProvider.getCancellationToken());
   ShapeParser<ShapeDataVisitor> parser;
 
   parser.parse(shapeFile, visitor);

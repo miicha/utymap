@@ -47,6 +47,9 @@ class BitmapIndex {
   void search(const Query &query,
               utymap::entities::ElementVisitor &visitor);
 
+  /// Erases all data from given quad key.
+  virtual void erase(const utymap::QuadKey &quadKey) = 0;
+
  protected:
   /// Notifies that element with given store order id
   /// should be visited with visitor.

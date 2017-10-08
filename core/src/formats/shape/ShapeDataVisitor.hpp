@@ -1,6 +1,8 @@
 #ifndef INDEX_SHAPEDATAVISITOR_HPP_DEFINED
 #define INDEX_SHAPEDATAVISITOR_HPP_DEFINED
 
+#include "BoundingBox.hpp"
+#include "CancellationToken.hpp"
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
 #include "entities/Node.hpp"
@@ -26,13 +28,15 @@ struct ShapeDataVisitor final {
   int relations;
 
   ShapeDataVisitor(const utymap::index::StringTable &stringTable,
-                   std::function<bool(utymap::entities::Element &)> functor) :
+                   std::function<bool(utymap::entities::Element &)> functor,
+                   const utymap::CancellationToken &cancelToken) :
       nodes(0),
       ways(0),
       areas(0),
       relations(0),
       stringTable_(stringTable),
-      functor_(functor) {
+      functor_(functor),
+      cancelToken_(cancelToken) {
   }
 
   void visitNode(utymap::GeoCoordinate &coordinate, utymap::formats::Tags &tags) {
@@ -40,7 +44,7 @@ struct ShapeDataVisitor final {
     node.id = 0;
     node.coordinate = coordinate;
     utymap::utils::setTags(stringTable_, node, tags);
-    if (functor_(node))
+    if (add(node))
       nodes++;
   }
 
@@ -50,14 +54,14 @@ struct ShapeDataVisitor final {
       area.id = 0;
       area.coordinates = std::move(coordinates);
       utymap::utils::setTags(stringTable_, area, tags);
-      if (functor_(area))
+      if (add(area))
         areas++;
     } else {
       utymap::entities::Way way;
       way.id = 0;
       way.coordinates = std::move(coordinates);
       utymap::utils::setTags(stringTable_, way, tags);
-      if (functor_(way))
+      if (add(way))
         ways++;
     }
   }
@@ -84,15 +88,24 @@ struct ShapeDataVisitor final {
         relation.elements.push_back(way);
       }
     }
-    if (functor_(relation))
+    if (add(relation))
       relations++;
   }
 
-  void complete() {}
+  utymap::BoundingBox complete() const {
+    // TODO return actual bounding box
+    return utymap::BoundingBox();
+  }
 
  private:
+
+   bool add(utymap::entities::Element & element) const {
+     return cancelToken_.isCancelled() ? false : functor_(element);
+   }
+
   const utymap::index::StringTable &stringTable_;
   std::function<bool(utymap::entities::Element &)> functor_;
+  const utymap::CancellationToken &cancelToken_;
 };
 
 }

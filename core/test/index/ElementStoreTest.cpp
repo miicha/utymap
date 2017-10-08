@@ -42,6 +42,11 @@ class TestElementStore : public ElementStore {
 
   bool hasData(const QuadKey &) const override { return true; }
 
+  void erase(const utymap::QuadKey &quadKey) override {}
+
+  void erase(const utymap::BoundingBox &bbox,
+             const utymap::LodRange &range) {}
+
  protected:
 
   void storeImpl(const Element &element, const QuadKey &quadKey) override {

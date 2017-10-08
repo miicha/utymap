@@ -2,6 +2,7 @@
 #define FORMATS_OSM_OSMDATAVISITOR_HPP_DEFINED
 
 #include "BoundingBox.hpp"
+#include "CancellationToken.hpp"
 #include "GeoCoordinate.hpp"
 #include "entities/Element.hpp"
 #include "formats/FormatTypes.hpp"
@@ -20,7 +21,8 @@ class OsmDataVisitor final {
  public:
 
   OsmDataVisitor(const utymap::index::StringTable &stringTable,
-                 std::function<bool(utymap::entities::Element &)> add);
+                 std::function<bool(utymap::entities::Element &)> add,
+                 const utymap::CancellationToken &cancelToken);
 
   void visitBounds(utymap::BoundingBox bbox);
 
@@ -32,7 +34,7 @@ class OsmDataVisitor final {
 
   void add(utymap::entities::Element &element);
 
-  void complete();
+  utymap::BoundingBox complete();
 
  private:
 
@@ -41,7 +43,9 @@ class OsmDataVisitor final {
 
   const utymap::index::StringTable &stringTable_;
   std::function<bool(utymap::entities::Element &)> add_;
+  const utymap::CancellationToken &cancelToken_;
   utymap::formats::OsmDataContext context_;
+  utymap::BoundingBox bbox_;
   std::unordered_map<std::uint64_t, utymap::formats::RelationMembers> relationMembers_;
 };
 

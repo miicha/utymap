@@ -6,6 +6,7 @@
 #include "index/PersistentElementStore.hpp"
 #include "utils/LruCache.hpp"
 
+#include <cstdio>
 #include <fstream>
 #include <mutex>
 #include <tuple>
@@ -43,6 +44,9 @@ struct QuadKeyData {
               const std::string &bitmapPath) :
       dataFile(utymap::utils::make_unique<std::fstream>()),
       indexFile(utymap::utils::make_unique<std::fstream>()),
+      dataPath_(dataPath),
+      indexPath_(indexPath),
+      bitmapPath_(bitmapPath),
       bitmapData_(utymap::utils::make_unique<BitmapData>(bitmapPath)) {
     using std::ios;
     dataFile->open(dataPath, ios::in | ios::out | ios::binary | ios::app | ios::ate);
@@ -68,10 +72,25 @@ struct QuadKeyData {
       bitmapData_(std::move(other.bitmapData_)) {}
 
   ~QuadKeyData() {
-    if (dataFile!=nullptr && dataFile->good()) dataFile->close();
-    if (indexFile!=nullptr && indexFile->good()) indexFile->close();
+    closeAll();
   }
+
+  void erase() {
+    closeAll();
+    std::remove(dataPath_.c_str());
+    std::remove(indexPath_.c_str());
+    std::remove(bitmapPath_.c_str());
+  }
+
 private:
+  void closeAll() const {
+    if (dataFile != nullptr && dataFile->good()) dataFile->close();
+    if (indexFile != nullptr && indexFile->good()) indexFile->close();
+  }
+
+  const std::string dataPath_;
+  const std::string indexPath_;
+  const std::string bitmapPath_;
   std::unique_ptr<BitmapData> bitmapData_;
 };
 }
@@ -139,6 +158,16 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
   bool hasData(const QuadKey &quadKey) const override {
     std::ifstream file(getFilePath(quadKey, DataFileExtension));
     return file.good();
+  }
+
+  void erase(const utymap::QuadKey &quadKey) override {
+    std::lock_guard<std::mutex> lock(lock_);
+    getQuadKeyData(quadKey)->erase();
+    cache_.clear();
+  }
+
+  void erase(const utymap::BoundingBox &bbox, const utymap::LodRange &range) {
+    throw std::domain_error("Deletion by bounding box and lod range is not implemented.");
   }
 
   void flush() {
@@ -238,3 +267,11 @@ void PersistentElementStore::flush() {
   pimpl_->flush();
 }
 
+void PersistentElementStore::erase(const utymap::QuadKey &quadKey) {
+  pimpl_->erase(quadKey);
+}
+
+void PersistentElementStore::erase(const utymap::BoundingBox &bbox,
+                                   const utymap::LodRange &range) {
+  pimpl_->erase(bbox, range);
+}

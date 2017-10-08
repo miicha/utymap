@@ -7,7 +7,7 @@ namespace utymap {
 struct CancellationToken final {
  private:
   /// Non-zero value means cancellation.
-  int cancelled = 0;
+  volatile int cancelled = 0;
 
  public:
   /// Helper method to detect cancellation.
