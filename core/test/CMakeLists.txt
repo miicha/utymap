@@ -1,4 +1,5 @@
 find_package(Boost COMPONENTS unit_test_framework system filesystem REQUIRED)
+find_package(Threads REQUIRED)
 
 enable_testing()
 
@@ -37,6 +38,8 @@ set(HEADER_FILES
         )
 
 set(TEST Test)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 add_executable(${TEST}
         ${PROTO_SRCS}
@@ -88,7 +91,8 @@ add_executable(${TEST}
 target_link_libraries(${TEST} UtyMap
         ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
         ${Boost_SYSTEM_LIBRARY}
-        ${Boost_FILESYSTEM_LIBRARY})
+        ${Boost_FILESYSTEM_LIBRARY}
+        Threads::Threads)
 
 enable_testing()
 add_test(${TEST} ${TEST})

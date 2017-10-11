@@ -4,7 +4,6 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/test/unit_test.hpp>
-#include <chrono>
 #include <fstream>
 #include <thread>
 
