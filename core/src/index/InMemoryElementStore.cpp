@@ -151,7 +151,7 @@ InMemoryElementStore::InMemoryElementStore(const StringTable &stringTable) :
 InMemoryElementStore::~InMemoryElementStore() {
 }
 
-void InMemoryElementStore::storeImpl(const Element &element, const QuadKey &quadKey) {
+void InMemoryElementStore::save(const Element &element, const QuadKey &quadKey) {
   pimpl_->store(element, quadKey);
 }
 

@@ -69,6 +69,9 @@ struct QuadKeyData {
   QuadKeyData(QuadKeyData &&other) :
       dataFile(std::move(other.dataFile)),
       indexFile(std::move(other.indexFile)),
+      dataPath_(std::move(other.dataPath_)),
+      indexPath_(std::move(other.indexPath_)),
+      bitmapPath_(std::move(other.bitmapPath_)),
       bitmapData_(std::move(other.bitmapData_)) {}
 
   ~QuadKeyData() {
@@ -161,9 +164,12 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
   }
 
   void erase(const utymap::QuadKey &quadKey) override {
-    std::lock_guard<std::mutex> lock(lock_);
-    getQuadKeyData(quadKey)->erase();
-    cache_.clear();
+    auto quadKeyData = getQuadKeyData(quadKey);
+    {
+      std::lock_guard<std::mutex> lock(lock_);
+      quadKeyData->erase();
+      cache_.clear();
+    }
   }
 
   void erase(const utymap::BoundingBox &bbox, const utymap::LodRange &range) {
@@ -200,9 +206,9 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
     if (cache_.exists(quadKey))
       return cache_.get(quadKey);
 
-    cache_.put(quadKey, QuadKeyData(getFilePath(quadKey, DataFileExtension),
-                                    getFilePath(quadKey, IndexFileExtension),
-                                    getFilePath(quadKey, bitmapFileExtension)));
+    cache_.put(quadKey, std::move(QuadKeyData(getFilePath(quadKey, DataFileExtension),
+                                              getFilePath(quadKey, IndexFileExtension),
+                                              getFilePath(quadKey, bitmapFileExtension))));
 
     return cache_.get(quadKey);
   }
@@ -237,8 +243,7 @@ PersistentElementStore::PersistentElementStore(const std::string &dataPath,
 PersistentElementStore::~PersistentElementStore() {
 }
 
-void PersistentElementStore::storeImpl(const Element &element,
-                                       const QuadKey &quadKey) {
+void PersistentElementStore::save(const Element &element, const QuadKey &quadKey) {
   pimpl_->store(element, quadKey);
 }
 

@@ -3,17 +3,21 @@
 
 namespace utymap {
 
-/// Cancellation token passed from outside.
+/// Cancellation token.
 struct CancellationToken final {
- private:
+  /// Checks whether token is in cancelled state.
+  bool isCancelled() const {
+    return cancelled != 0;
+  }
+
+  /// Sets token into cancelled state.
+  void cancel() {
+    cancelled = 1;
+  }
+
+private:
   /// Non-zero value means cancellation.
   volatile int cancelled = 0;
-
- public:
-  /// Helper method to detect cancellation.
-  bool isCancelled() const {
-    return cancelled!=0;
-  }
 };
 
 }

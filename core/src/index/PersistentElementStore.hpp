@@ -13,8 +13,8 @@ namespace index {
 /// Provides API to store elements in persistent store.
 class PersistentElementStore final : public ElementStore {
  public:
-  explicit PersistentElementStore(const std::string &path,
-                                  const utymap::index::StringTable &stringTable);
+  PersistentElementStore(const std::string &path,
+                         const utymap::index::StringTable &stringTable);
 
   virtual ~PersistentElementStore();
 
@@ -30,6 +30,9 @@ class PersistentElementStore final : public ElementStore {
               utymap::entities::ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) override;
 
+  void save(const utymap::entities::Element &element,
+            const utymap::QuadKey &quadKey) override;
+
   bool hasData(const utymap::QuadKey &quadKey) const override;
 
   void erase(const utymap::QuadKey &quadKey) override;
@@ -39,9 +42,6 @@ class PersistentElementStore final : public ElementStore {
 
   /// Flushes cached internally data.
   void flush();
-
- protected:
-  void storeImpl(const utymap::entities::Element &element, const utymap::QuadKey &quadKey) override;
 
  private:
   class PersistentElementStoreImpl;

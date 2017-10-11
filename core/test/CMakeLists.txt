@@ -65,6 +65,7 @@ add_executable(${TEST}
         index/BitmapIndexTest.cpp
         index/BitmapStreamTest.cpp
         index/ElementStoreTest.cpp
+        index/GeoStoreTest.cpp
         index/InMemoryElementStoreTest.cpp
         index/PersistentElementStoreTest.cpp
         index/StringTableTest.cpp

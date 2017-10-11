@@ -64,7 +64,7 @@ bool ElementStore::store(const Element &element,
                          const Visitor &visitor) {
   ElementGeometryVisitor bboxVisitor;
   using namespace std::placeholders;
-  ElementGeometryClipper geometryClipper(std::bind(&ElementStore::storeImpl, this, _1, _2));
+  ElementGeometryClipper geometryClipper(std::bind(&ElementStore::save, this, _1, _2));
   bool wasStored = false;
   for (int lod = range.start; lod <= range.end; ++lod) {
     Style style = styleProvider.forElement(element, lod);
@@ -83,7 +83,7 @@ bool ElementStore::store(const Element &element,
         if (style.has(clipKeyId_, TrueValue))
           geometryClipper.clipAndCall(element, quadKey, quadKeyBbox);
         else
-          storeImpl(element, quadKey);
+          save(element, quadKey);
 
         wasStored = true;
       });

@@ -29,15 +29,15 @@ class InMemoryElementStore final : public ElementStore {
               utymap::entities::ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) override;
 
+  void save(const utymap::entities::Element &element,
+            const utymap::QuadKey &quadKey) override;
+
   bool hasData(const utymap::QuadKey &quadKey) const override;
 
   void erase(const utymap::QuadKey &quadKey) override;
 
   void erase(const utymap::BoundingBox &bbox,
              const utymap::LodRange &range) override;
-
- protected:
-  void storeImpl(const utymap::entities::Element &element, const utymap::QuadKey &quadKey) override;
 
  private:
   class InMemoryElementStoreImpl;

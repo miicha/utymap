@@ -47,9 +47,7 @@ class TestElementStore : public ElementStore {
   void erase(const utymap::BoundingBox &bbox,
              const utymap::LodRange &range) {}
 
- protected:
-
-  void storeImpl(const Element &element, const QuadKey &quadKey) override {
+  void save(const Element &element, const QuadKey &quadKey) override {
     times++;
     function_(element, quadKey);
   }
