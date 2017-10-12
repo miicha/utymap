@@ -209,4 +209,19 @@ BOOST_AUTO_TEST_CASE(GivenNodes_WhenSearchText_ThenOneFound) {
   assertNode(node2, *std::dynamic_pointer_cast<Node>(counter.element));
 }
 
+BOOST_AUTO_TEST_CASE(GivenElementWithNonAnsiSymbols_WhenSearchText_ThenItIsFound) {
+  LodRange range(1, 1);
+  BoundingBox bbox(GeoCoordinate(-90, -180), GeoCoordinate(90, 180));
+  auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
+  Node node = ElementUtils::createElement<Node>(
+      *dependencyProvider.getStringTable(), 1, { { "any", "ул.Ленина" } });
+  node.coordinate = { 5, -5 };
+  ElementCounter counter;
+  elementStore.store(node, range, *styleProvider);
+
+  elementStore.search({}, {"Ленина"}, {}, bbox, range, counter, CancellationToken());
+
+  BOOST_CHECK_EQUAL(counter.times, 1);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

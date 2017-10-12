@@ -22,37 +22,39 @@ const std::string stylesheet = "area|z1[any],way|z1[any],node|z1[any] { clip: tr
 struct Index_InMemoryElementStoreFixture {
   Index_InMemoryElementStoreFixture() :
       dependencyProvider(),
-      elementStore(*dependencyProvider.getStringTable()) {
-    LodRange range(1, 2);
-    auto styleProvider = dependencyProvider.getStyleProvider(stylesheet);
+      elementStore(*dependencyProvider.getStringTable()),
+      styleProvider(*dependencyProvider.getStyleProvider(stylesheet)) {}
 
+  void addTestData() {
+    LodRange range(1, 2);
     elementStore.store(ElementUtils::createElement<Way>(
-      *dependencyProvider.getStringTable(),
-      0,
-      {{"any", "true"}},
-      {{5, -5}, {5, -10}}),
-      range,
-      *styleProvider);
+        *dependencyProvider.getStringTable(),
+        0,
+        {{"any", "true"}},
+        {{5, -5}, {5, -10}}),
+                       range,
+                       styleProvider);
 
     elementStore.store(ElementUtils::createElement<Area>(
-      *dependencyProvider.getStringTable(),
-      0,
-      {{"any", "true"}, {"area", "yes"}},
-      {{5, -5}, {5, -10}, {10, -10}}),
-      range,
-      *styleProvider);
+        *dependencyProvider.getStringTable(),
+        0,
+        {{"any", "true"}, {"area", "yes"}},
+        {{5, -5}, {5, -10}, {10, -10}}),
+                       range,
+                       styleProvider);
 
     Node node = ElementUtils::createElement<Node>(
-      *dependencyProvider.getStringTable(),
-      0,
-      {{"any", "true"}});
+        *dependencyProvider.getStringTable(),
+        0,
+        {{"any", "true"}});
 
     node.coordinate = {5, -5};
-    elementStore.store(node, range, *styleProvider);
+    elementStore.store(node, range, styleProvider);
   }
 
   DependencyProvider dependencyProvider;
   InMemoryElementStore elementStore;
+  StyleProvider &styleProvider;
 };
 
 struct ElementCounter : public ElementVisitor {
@@ -70,6 +72,7 @@ BOOST_FIXTURE_TEST_SUITE(Index_InMemoryElementStore, Index_InMemoryElementStoreF
 BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_ThenAllFound) {
   QuadKey quadKey(1, 0, 0);
   ElementCounter counter;
+  addTestData();
 
   elementStore.search(quadKey, counter, CancellationToken());
 
@@ -79,6 +82,7 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_ThenAllFound) {
 BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearch_ThenAllSkipped) {
   QuadKey quadKey(2, 0, 0);
   ElementCounter counter;
+  addTestData();
 
   elementStore.search(quadKey, counter, CancellationToken());
 
@@ -89,6 +93,7 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearchText_ThenOneFound) {
   BoundingBox boundingBox(GeoCoordinate(-90, -180), GeoCoordinate(90, 180));
   LodRange lodRange(1, 1);
   ElementCounter counter;
+  addTestData();
 
   elementStore.search({}, {"area"}, {}, boundingBox, lodRange, counter, CancellationToken());
 
@@ -99,10 +104,26 @@ BOOST_AUTO_TEST_CASE(GivenNodeWayArea_WhenSearchOutside_ThenNoResults) {
   BoundingBox boundingBox(GeoCoordinate(20, -180), GeoCoordinate(90, 180));
   LodRange lodRange(1, 1);
   ElementCounter counter;
+  addTestData();
 
   elementStore.search({}, {"any"}, {}, boundingBox, lodRange, counter, CancellationToken());
 
   BOOST_CHECK_EQUAL(counter.times, 0);
+}
+
+BOOST_AUTO_TEST_CASE(GivenElementWithNonAnsiSymbols_WhenSearchText_ThenItIsFound) {
+  BoundingBox boundingBox(GeoCoordinate(-90, -180), GeoCoordinate(90, 180));
+  LodRange lodRange(1, 1);
+  ElementCounter counter;
+  elementStore.store(ElementUtils::createElement<Way>(
+      *dependencyProvider.getStringTable(), 0,
+      {{"any", "ул.Ленина"}}, {{5, -5}, {5, -10}}),
+      lodRange, styleProvider);
+
+  elementStore.search({}, {"Ленина"}, {}, boundingBox,
+                      lodRange, counter, CancellationToken());
+
+  BOOST_CHECK_EQUAL(counter.times, 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
