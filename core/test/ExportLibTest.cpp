@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(GivenTestData_WhenQuadKeyIsLoaded_ThenSearchFindsElement) {
     [](int tag, uint64_t id, const char **tags, int size, const double *vertices,
         int vertexCount, const char **style, int styleSize) {
       isCalled = true;
-      BOOST_CHECK_EQUAL(id, 2866993675);
+      BOOST_CHECK(id == 2866993675 || id == 1837885458 || id == 938213396);
     },
     [](const char *message) {
       BOOST_FAIL(message);
