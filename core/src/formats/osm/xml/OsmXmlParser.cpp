@@ -279,6 +279,7 @@ namespace utymap { namespace formats {
 
 template <typename Visitor>
 void OsmXmlParser<Visitor>::parse(std::istream& istream, Visitor& visitor) {
+  istream.unsetf(std::ios::skipws);
   boost::spirit::istream_iterator begin(istream);
   boost::spirit::istream_iterator end;
 

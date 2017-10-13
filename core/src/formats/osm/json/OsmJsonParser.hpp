@@ -50,6 +50,7 @@ class OsmJsonParser {
 
   /// Parses osm json data from stream calling visitor.
   void parse(std::istream &istream, Visitor &visitor) const {
+    istream.unsetf(std::ios::skipws);
     ptree pt;
     read_json(istream, pt);
 

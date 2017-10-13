@@ -124,16 +124,15 @@ BOOST_AUTO_TEST_CASE(GivenTestDummyOsmXml_WhenParserParse_ThenHasProperWay) {
     if (Way *way = dynamic_cast<Way *>(&element)) {
       if (way->id==32934353) {
         assertWay(*way,
-                  {
-                      utymap::GeoCoordinate(40.7033242, -74.0077787),
-                      utymap::GeoCoordinate(40.8142100, -73.9341897)
-                  },
-                  {
-                      // NOTE eating spaces is known issue
-                      createTag("alt_name", "FranklinDelanoRooseveltDrive"),
-                      createTag("lanes", "3"),
-                      createTag("tiger:reviewed", "no")
-                  });
+          {
+              utymap::GeoCoordinate(40.7033242, -74.0077787),
+              utymap::GeoCoordinate(40.8142100, -73.9341897)
+          },
+          {
+              createTag("alt_name", "Franklin Delano Roosevelt Drive"),
+              createTag("lanes", "3"),
+              createTag("tiger:reviewed", "no")
+          });
         checkList[0] = true;
       }
     }
