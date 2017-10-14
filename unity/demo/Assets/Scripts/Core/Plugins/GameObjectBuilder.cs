@@ -52,6 +52,7 @@ namespace Assets.Scripts.Core.Plugins
             gameObject.isStatic = true;
             gameObject.AddComponent<MeshFilter>().mesh = uMesh;
             gameObject.AddComponent<MeshRenderer>().sharedMaterial = _materialProvider.GetSharedMaterial(mesh.TextureIndex);
+            gameObject.AddComponent<MeshCollider>();
             gameObject.transform.parent = tile.GameObject.transform;
         }
     }

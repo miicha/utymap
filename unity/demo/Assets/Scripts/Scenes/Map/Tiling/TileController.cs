@@ -162,7 +162,7 @@ namespace Assets.Scripts.Scenes.Map.Tiling
 
             _disposedTilesCounter += tilesDisposed;
 
-            if (disposedTileThreshold > tilesDisposed)
+            if (_disposedTilesCounter > disposedTileThreshold)
             {
                 _disposedTilesCounter = 0;
                 Resources.UnloadUnusedAssets();
