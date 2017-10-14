@@ -1,0 +1,22 @@
+canvas|z16 {
+    texture-index: 1;
+
+    admin-texture-index: 1;
+    drive-texture-index: 1;
+    bridge-texture-index: 1;
+    railway-bridge-texture-index: 1;
+    railway-generic-texture-index: 1;
+    pedestrian-texture-index: 1;
+    water-generic-texture-index: 1;
+}
+
+area,relation|z16[man_made=stele],
+area,relation|z16[man_made=tower],
+area,relation|z16[construction=building],
+area,relation|z16[building],
+area,relation|z16[building:levels],
+area,relation|z16[building:shape],
+area,relation|z16[building:part] {
+    facade-texture-index: 1;
+    roof-texture-index: 1;
+}

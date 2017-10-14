@@ -31,7 +31,7 @@ public class ThirdPersonBehaviour : MonoBehaviour
         _compositionRoot = InitTask.Run((container, config) =>
         {
             container
-                .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/default/index.mapcss"))
+                .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/ground/ground.mapcss"))
                 .Register(Component.For<MaterialProvider>().Use<MaterialProvider>())
                 .Register(Component.For<GameObjectBuilder>().Use<GameObjectBuilder>())
                 .Register(Component.For<IElementBuilder>().Use<PlaceElementBuilder>().Named("place"));

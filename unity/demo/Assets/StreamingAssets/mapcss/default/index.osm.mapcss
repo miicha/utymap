@@ -8,7 +8,7 @@ canvas|z16 {
     color: #f1eee8;
     texture-index: 0;
     texture-type: background;
-    texture-scale: 100;
+    texture-scale: 10;
 }
 
 /* Handle multipolygons */
@@ -43,7 +43,7 @@ area|z16[tourism] {
 
     texture-index: 0;
     texture-type: background;
-    texture-scale: 50;
+    texture-scale: 100;
 }
 
 /* Define place builder's base properties.  */
