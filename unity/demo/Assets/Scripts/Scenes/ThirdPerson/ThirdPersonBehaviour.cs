@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Assets.Scripts.Core;
+﻿using Assets.Scripts.Core;
 using Assets.Scripts.Core.Plugins;
 using Assets.Scripts.Scenes.ThirdPerson.Tiling;
 using UnityEngine;
@@ -13,6 +12,9 @@ using Component = UtyDepend.Component;
 public class ThirdPersonBehaviour : MonoBehaviour
 {
     private const int LevelOfDetail = 16;
+    // NOTE change to Grid type for having non-flat terrain.
+    private const ElevationDataType ElevationType = ElevationDataType.Flat;
+
     public GameObject CharacterTarget;
     public GameObject TileContainer;
 
@@ -43,7 +45,7 @@ public class ThirdPersonBehaviour : MonoBehaviour
         _tileController = new TileController(
             _compositionRoot.GetService<IMapDataStore>(),
             _compositionRoot.GetService<Stylesheet>(),
-            ElevationDataType.Flat,
+            ElevationType,
             coordinate,
             LevelOfDetail);
         
@@ -55,8 +57,21 @@ public class ThirdPersonBehaviour : MonoBehaviour
             .GetService<IMapDataStore>()
             .Subscribe<Tile>(tile =>
             {
-                if (quadKey.Equals(tile.QuadKey))
-                    Observable.Start(() => rigidbody.isKinematic = false, Scheduler.MainThread).Subscribe();
+                if (!quadKey.Equals(tile.QuadKey)) return;
+
+                Observable.Start(() =>
+                {
+                    // get elevation at current position
+                    var elevation = _compositionRoot
+                        .GetService<IMapDataLibrary>()
+                        .GetElevation(ElevationType, quadKey, coordinate);
+                    // move character accordingly
+                    CharacterTarget.transform.localPosition = new Vector3(
+                        CharacterTarget.transform.localPosition.x,
+                        (float) elevation + 5f,
+                        CharacterTarget.transform.localPosition.z);
+                    rigidbody.isKinematic = false;
+                }, Scheduler.MainThread).Subscribe();
             });
     }
 
