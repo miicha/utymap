@@ -113,7 +113,8 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
   void store(const Element &element, const QuadKey &quadKey) {
     const auto &quadKeyData = getQuadKeyData(quadKey);
     auto offset = static_cast<std::uint32_t>(quadKeyData->dataFile->tellg());
-    auto order = quadKeyData->indexFile->tellg() / sizeof(element.id);
+    auto fileSize = quadKeyData->indexFile->tellg();
+    auto order = static_cast<std::uint32_t>(fileSize / (sizeof(element.id) + sizeof(offset)));
 
     // write element index
     quadKeyData->indexFile->seekg(0, std::ios::end);
@@ -125,7 +126,7 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
     ElementStream::write(*quadKeyData->dataFile, element);
 
     // write element search data
-    add(element, quadKey, static_cast<std::uint32_t>(order));
+    add(element, quadKey, order);
     // TODO we always clean/write the whole file here.
     std::fstream bitmapFile(quadKeyData->getBitmap().path, std::ios::out | std::ios::binary | std::ios::trunc);
     BitmapStream::write(bitmapFile, quadKeyData->getBitmap().data);
