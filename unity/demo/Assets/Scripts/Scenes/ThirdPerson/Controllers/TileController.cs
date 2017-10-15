@@ -6,7 +6,7 @@ using UtyMap.Unity;
 using UtyMap.Unity.Data;
 using UtyMap.Unity.Utils;
 
-namespace Assets.Scripts.Scenes.ThirdPerson.Tiling
+namespace Assets.Scripts.Scenes.ThirdPerson.Controllers
 {
     internal sealed class TileController: IDisposable
     {
@@ -21,6 +21,8 @@ namespace Assets.Scripts.Scenes.ThirdPerson.Tiling
 
         private int _disposedTilesCounter = 0;
         private Dictionary<QuadKey, Tile> _loadedQuadKeys = new Dictionary<QuadKey, Tile>();
+
+        public GeoCoordinate RelativeNullPoint { get { return _geoOrigin;  } }
 
         public TileController(IMapDataStore dataStore, Stylesheet stylesheet,
             ElevationDataType elevationDataType, GeoCoordinate origin, int levelOfDetail)

@@ -76,7 +76,7 @@ The simplest way to explore the project is to check source code of demo scenes:
     * How to use custom prefabs to replace arbitrary elements on the map
     * How to add new elements to map data and scene
 * **Search** scene demonstrates offline search API in action which can be used for exploring nearby objects by their specific characteristics (bus stops, bars, etc.)
-* **Third Person** contains default third person character from standard assets which can walk around rendered environment.
+* **Third Person** contains default third person character from standard assets which can walk around rendered environment. Another interesting part here is how text search can be used to get nearest address from OSM data.
 * **Map** scene is the most advanced one. It is designed to be a full functional map component which can be used in mobile builds. It supports zoom levels from globe overview till street view.
 
 

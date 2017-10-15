@@ -20,3 +20,8 @@ area,relation|z16[building:part] {
     facade-texture-index: 1;
     roof-texture-index: 1;
 }
+
+node,way,area,relation|z16[addr:street],
+node,way,area,relation|z16[addr:housenumber] {
+    builder:address;
+}

@@ -1,10 +1,12 @@
 ﻿using Assets.Scripts.Core;
 using Assets.Scripts.Core.Plugins;
-using Assets.Scripts.Scenes.ThirdPerson.Tiling;
+using Assets.Scripts.Scenes.ThirdPerson.Controllers;
 using UnityEngine;
+using UnityEngine.UI;
 using UtyRx;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
+using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Utils;
 using Component = UtyDepend.Component;
 
@@ -18,12 +20,15 @@ public class ThirdPersonBehaviour : MonoBehaviour
     public GameObject CharacterTarget;
     public GameObject TileContainer;
 
+    public GameObject Text;
+
     public double StartLatitude = 52.5317429;
     public double StartLongitude = 13.3871987;
 
     private CompositionRoot _compositionRoot;
 
     private TileController _tileController;
+    private AddressController _addressController;
 
     void Start()
     {
@@ -41,6 +46,13 @@ public class ThirdPersonBehaviour : MonoBehaviour
         var coordinate = new GeoCoordinate(StartLatitude, StartLongitude);
         var quadKey = GeoUtils.CreateQuadKey(coordinate, LevelOfDetail);
 
+        // init address controller which is responsible for searching address
+        _addressController = new AddressController(
+            _compositionRoot.GetService<IMapDataStore>(),
+            Text.GetComponent<Text>(),
+            LevelOfDetail,
+            _compositionRoot.GetService<ITrace>());
+
         // init tile controller which is responsible for tile processing
         _tileController = new TileController(
             _compositionRoot.GetService<IMapDataStore>(),
@@ -55,28 +67,27 @@ public class ThirdPersonBehaviour : MonoBehaviour
         // TODO unsubscribe listener
         _compositionRoot
             .GetService<IMapDataStore>()
-            .Subscribe<Tile>(tile =>
+            .ObserveOn<Tile>(Scheduler.MainThread)
+            .Subscribe(tile =>
             {
                 if (!quadKey.Equals(tile.QuadKey)) return;
 
-                Observable.Start(() =>
-                {
-                    // get elevation at current position
-                    var elevation = _compositionRoot
-                        .GetService<IMapDataLibrary>()
-                        .GetElevation(ElevationType, quadKey, coordinate);
-                    // move character accordingly
-                    CharacterTarget.transform.localPosition = new Vector3(
-                        CharacterTarget.transform.localPosition.x,
-                        (float) elevation + 5f,
-                        CharacterTarget.transform.localPosition.z);
-                    rigidbody.isKinematic = false;
-                }, Scheduler.MainThread).Subscribe();
+                // get elevation at current position
+                var elevation = _compositionRoot
+                    .GetService<IMapDataLibrary>()
+                    .GetElevation(ElevationType, quadKey, coordinate);
+                // move character accordingly
+                CharacterTarget.transform.localPosition = new Vector3(
+                    CharacterTarget.transform.localPosition.x,
+                    (float) elevation + 5f,
+                    CharacterTarget.transform.localPosition.z);
+                rigidbody.isKinematic = false;
             });
     }
 
     void Update()
     {
         _tileController.Update(TileContainer.transform, CharacterTarget.transform.localPosition);
+        _addressController.Update(CharacterTarget.transform.localPosition, _tileController.RelativeNullPoint);
     }
 }
