@@ -1,45 +1,30 @@
-﻿using UtyRx;
+﻿using System;
+using UtyRx;
 
 namespace UtyMap.Unity.Geocoding
 {
-    /// <summary> Defines reverse geocoder API. </summary>
-    public interface IGeocoder
+    /// <summary> Defines geocoder API (including reverse). </summary>
+    public interface IGeocoder :
+        IObservable<GeocoderResult>,
+        IObserver<Tuple<string, BoundingBox>>, // place description and bbox restriction
+        IObserver<Tuple<GeoCoordinate, float>>, // place coordinate and surrounding bbox size restriction (in meters)
+        IDisposable
     {
-        /// <summary> Performs geocoding for given place. </summary>
-        IObservable<GeocoderResult> Search(string name);
-
-        /// <summary> Performs geocoding for given place and area. </summary>
-        IObservable<GeocoderResult> Search(string name, BoundingBox area);
-
-        /// <summary> Performs reverse geocodin for given geocoordinate. </summary>
-        IObservable<GeocoderResult> Search(GeoCoordinate coordinate);
     }
 
     /// <summary> Represents geocoding results. </summary>
-    public class GeocoderResult
+    public struct GeocoderResult
     {
-        /// <summary> Gets or sets place id.</summary>
-        public long PlaceId { get; set; }
-
-        /// <summary> Gets or sets osm id.</summary>
-        public long OsmId { get; set; }
-
-        /// <summary> Gets or sets osm type.</summary>
-        public string OsmType { get; set; }
-
-        /// <summary> Gets or sets formatted name of search result.</summary>
-        public string DisplayName { get; set; }
-
-        /// <summary> Gets or sets class of object.</summary>
-        public string Class { get; set; }
-
-        /// <summary> Gets or sets type of object.</summary>
-        public string Type { get; set; }
+        /// <summary> Gets or sets element id.</summary>
+        public long ElementId;
 
         /// <summary> Gets or sets geo coordinate of search result center.</summary>
-        public GeoCoordinate Coordinate { get; set; }
+        public GeoCoordinate Coordinate;
 
-        /// <summary> Gets or sets earch's bounding box.</summary>
-        public BoundingBox BoundginBox { get; set; }
+        /// <summary> Gets or sets element's bounding box.</summary>
+        public BoundingBox BoundingBox;
+
+        /// <summary> Gets or sets formatted name of search result.</summary>
+        public string DisplayName;
     }
 }

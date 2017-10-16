@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UtyRx;
 using UtyMap.Unity;
 using UtyMap.Unity.Data;
+using UtyMap.Unity.Geocoding;
 using UtyMap.Unity.Infrastructure.Diagnostic;
 using UtyMap.Unity.Utils;
 using Component = UtyDepend.Component;
@@ -39,6 +40,7 @@ public class ThirdPersonBehaviour : MonoBehaviour
                 .Register(Component.For<Stylesheet>().Use<Stylesheet>(@"mapcss/ground/ground.mapcss"))
                 .Register(Component.For<MaterialProvider>().Use<MaterialProvider>())
                 .Register(Component.For<GameObjectBuilder>().Use<GameObjectBuilder>())
+                .Register(Component.For<IGeocoder>().Use<UtyMapGeocoder>())
                 .Register(Component.For<IElementBuilder>().Use<PlaceElementBuilder>().Named("place"));
         });
 
@@ -48,10 +50,8 @@ public class ThirdPersonBehaviour : MonoBehaviour
 
         // init address controller which is responsible for searching address
         _addressController = new AddressController(
-            _compositionRoot.GetService<IMapDataStore>(),
-            Text.GetComponent<Text>(),
-            LevelOfDetail,
-            _compositionRoot.GetService<ITrace>());
+            _compositionRoot.GetService<IGeocoder>(),
+            Text.GetComponent<Text>());
 
         // init tile controller which is responsible for tile processing
         _tileController = new TileController(

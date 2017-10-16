@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UtyMap.Unity;
-using UtyMap.Unity.Data;
-using UtyMap.Unity.Infrastructure.Diagnostic;
-using UtyMap.Unity.Infrastructure.Primitives;
+using UtyMap.Unity.Geocoding;
 using UtyMap.Unity.Utils;
 
 using UtyRx;
@@ -14,36 +10,26 @@ using UtyRx;
 namespace Assets.Scripts.Scenes.ThirdPerson.Controllers
 {
     /// <summary> Searches for address using cached locally data. </summary>
-    internal sealed class AddressController
+    internal sealed class AddressController: IDisposable
     {
-        private const int SearchSize = 100;
+        private const float SearchSize = 100;
 
-        /// <summary> Expected address tags. </summary>
-        /// <see cref="http://wiki.openstreetmap.org/wiki/Key:addr"/>
-        private readonly List<string> _addressTags = new List<string>()
-        {
-            "addr:country", "addr:city", "addr:suburb", "addr:state", "addr:province",
-            "addr:district","addr:postcode", "addr:place", "addr:street", "addr:housenumber", "addr:name"
-        };
-
-        private readonly IMapDataStore _dataStore;
+        private readonly IGeocoder _geocoder;
         private readonly Text _text;
-        private readonly int _levelOfDetail;
-        private readonly ITrace _trace;
+        private readonly IDisposable _subscription;
 
         private GeoCoordinate _coordinate;
         private Vector3 _position;
 
         private GeoCoordinate? _currentLocation;
 
-        public AddressController(IMapDataStore dataStore, Text text, int levelOfDetail, ITrace trace)
+        public AddressController(IGeocoder geocoder, Text text)
         {
-            _dataStore = dataStore;
+            _geocoder = geocoder;
             _text = text;
-            _levelOfDetail = levelOfDetail;
-            _trace = trace;
-            _dataStore
-                .ObserveOn<Element>(Scheduler.MainThread)
+
+            _subscription = _geocoder
+                .ObserveOn(Scheduler.MainThread)
                 .Subscribe(ProcessResult);
         }
 
@@ -53,17 +39,15 @@ namespace Assets.Scripts.Scenes.ThirdPerson.Controllers
                 return;
 
             _position = position;
-
             _coordinate = GeoUtils.ToGeoCoordinate(relativeNullPoint, position.x, position.z);
-            _dataStore.OnNext(CreateQuery(_coordinate));
+
+            _geocoder.OnNext(new Tuple<GeoCoordinate, float>(_coordinate, SearchSize));
         }
 
-        private void ProcessResult(Element element)
+        private void ProcessResult(GeocoderResult result)
         {
-            var location = GetLocation(element);
-
-            var distanceToNewPlace = location.HasValue
-                ? GeoUtils.Distance(location.Value, _coordinate)
+            var distanceToNewPlace = IsValidCoordinate(result.Coordinate)
+                ? GeoUtils.Distance(result.Coordinate, _coordinate)
                 : 50; // NOTE give element some weight as we don't know its geometry
 
             var distanceToOldPlace = _currentLocation.HasValue
@@ -72,66 +56,21 @@ namespace Assets.Scripts.Scenes.ThirdPerson.Controllers
 
             if (distanceToNewPlace <= distanceToOldPlace)
             {
-                _text.text = GetAddress(element);
-                _currentLocation = location;
+                _text.text = result.DisplayName;
+                _currentLocation = result.Coordinate;
             }
         }
 
-        /// <summary> Creates search query. </summary>
-        /// <param name="coordinate"> Current geo position. </param>
-        private MapQuery CreateQuery(GeoCoordinate coordinate)
+        private static bool IsValidCoordinate(GeoCoordinate coordinate)
         {
-            if (_levelOfDetail != 16)
-                _trace.Warn("address", "Search query is designed for raw OSM data schema" +
-                                       " which is used only for LOD 16 with default mapcss.");
-            return new MapQuery(
-                // NOT terms
-                "",
-                // AND terms
-                "addr street housenumber",
-                // OR terms
-                "",
-                // limit search results by bounding box
-                BoundingBox.Create(coordinate, SearchSize),
-                // search only for given LOD
-                new Range<int>(_levelOfDetail, _levelOfDetail));
+            return Math.Abs(coordinate.Latitude) > double.Epsilon &&
+                   Math.Abs(coordinate.Longitude) > Double.Epsilon;
         }
 
-        /// <summary> Gets element location. </summary>
-        private GeoCoordinate? GetLocation(Element element)
+        /// <inheritdoc />
+        public void Dispose()
         {
-            if (element.Geometry.Length == 1)
-            {
-                var location = element.Geometry[0];
-                // NOTE Relations are not processed yet fully.
-                if (Math.Abs(location.Latitude) < double.Epsilon &&
-                    Math.Abs(location.Longitude) < double.Epsilon)
-                    return null;
-                return location;
-            }
-
-            double lat = 0, lon = 0;
-            foreach (var coordinate in element.Geometry)
-            {
-                lat += coordinate.Latitude;
-                lon += coordinate.Longitude;
-            }
-
-            return new GeoCoordinate(lat / element.Geometry.Length, lon / element.Geometry.Length);
-        }
-
-        /// <summary> Gets address string from element tags. </summary>
-        private string GetAddress(Element element)
-        {
-            // TODO string manipulations can be optimized
-            var tags = new List<string>();
-            foreach (var tag in _addressTags)
-            {
-                if (element.Tags.ContainsKey(tag))
-                    tags.Add(element.Tags[tag]);
-            }
-
-            return String.Join(", ", tags.ToArray());
+            _subscription.Dispose();
         }
     }
 }

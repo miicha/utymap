@@ -66,6 +66,7 @@
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Data\MapDataLibrary.cs" />
+    <Compile Include="Geocoding\UtyMapGeocoder.cs" />
     <Compile Include="GeoCoordinate.cs" />
     <Compile Include="Infrastructure\Primitives\RangeTree.cs" />
     <Compile Include="Infrastructure\Primitives\SafeDictionary.cs" />

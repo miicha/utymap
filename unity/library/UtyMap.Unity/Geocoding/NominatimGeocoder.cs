@@ -11,10 +11,9 @@ using UtyRx;
 
 namespace UtyMap.Unity.Geocoding
 {
-    /// <summary> Geocoder which uses osm nominatim. </summary>
+    /// <summary> Online geocoder which uses remote osm nominatim server. </summary>
     internal class NominatimGeocoder : IGeocoder, IConfigurable
     {
-
         private const string DefaultSearchServer = @"http://nominatim.openstreetmap.org/search?";
         private const string DefaultReverseSearchServer = @"http://nominatim.openstreetmap.org/reverse?";
 
@@ -29,6 +28,8 @@ namespace UtyMap.Unity.Geocoding
         private string _searchPath;
         private string _reverseSearchPath;
 
+        private List<IObserver<GeocoderResult>> _observers = new List<IObserver<GeocoderResult>>();
+
         [Dependency]
         public NominatimGeocoder(INetworkService networkService)
         {
@@ -36,14 +37,42 @@ namespace UtyMap.Unity.Geocoding
         }
 
         /// <inheritdoc />
-        public IObservable<GeocoderResult> Search(string name)
+        public IDisposable Subscribe(IObserver<GeocoderResult> observer)
         {
-            return Search(name, null);
+            _observers.Add(observer);
+            return Disposable.Empty;
         }
 
         /// <inheritdoc />
-        public IObservable<GeocoderResult> Search(string name, BoundingBox area)
+        void IObserver<Tuple<string, BoundingBox>>.OnCompleted()
         {
+            _observers.Clear();
+        }
+
+        /// <inheritdoc />
+        void IObserver<Tuple<string, BoundingBox>>.OnError(Exception error)
+        {
+            // Ignore
+        }
+
+        /// <inheritdoc />
+        void IObserver<Tuple<GeoCoordinate, float>>.OnCompleted()
+        {
+            _observers.Clear();
+        }
+
+        /// <inheritdoc />
+        void IObserver<Tuple<GeoCoordinate, float>>.OnError(Exception error)
+        {
+            // Ignore
+        }
+
+        /// <inheritdoc />
+        public void OnNext(Tuple<string, BoundingBox> value)
+        {
+            var name = value.Item1;
+            var area = value.Item2;
+
             var sb = new StringBuilder(128);
             sb.Append(_searchPath);
             if (area != null)
@@ -57,23 +86,26 @@ namespace UtyMap.Unity.Geocoding
             }
             sb.AppendFormat("q={0}&format=json", Uri.EscapeDataString(name));
 
-            return _networkService.Get(sb.ToString(), _headers)
+            _networkService.Get(sb.ToString(), _headers)
                 .Take(1)
                 .SelectMany(r => (
                     from JSONNode json in JSON.Parse(r).AsArray
-                    select ParseGeocoderResult(json)));
+                    select ParseGeocoderResult(json)))
+                .Subscribe(r => _observers.ForEach(o => o.OnNext(r)));
         }
 
         /// <inheritdoc />
-        public IObservable<GeocoderResult> Search(GeoCoordinate coordinate)
+        public void OnNext(Tuple<GeoCoordinate, float> value)
         {
+            var coordinate = value.Item1;
             var url = String.Format("{0}format=json&lat={1}&lon={2}",
                 _reverseSearchPath, coordinate.Latitude, coordinate.Longitude);
 
-            return _networkService
+            _networkService
                 .Get(url, _headers)
                 .Take(1)
-                .Select(r => ParseGeocoderResult(JSON.Parse(r)));
+                .Select(r => ParseGeocoderResult(JSON.Parse(r)))
+                .Subscribe(r => _observers.ForEach(o => o.OnNext(r)));
         }
 
         private GeocoderResult ParseGeocoderResult(JSONNode resultNode)
@@ -82,20 +114,16 @@ namespace UtyMap.Unity.Geocoding
             string[] bboxArray = resultNode["boundingbox"].Value.Split(',');
             if (bboxArray.Length == 4)
             {
-                bbox = new BoundingBox(ParseGeoCoordinate(bboxArray[0], bboxArray[2]), 
+                bbox = new BoundingBox(ParseGeoCoordinate(bboxArray[0], bboxArray[2]),
                     ParseGeoCoordinate(bboxArray[1], bboxArray[3]));
             }
 
             return new GeocoderResult()
             {
-                PlaceId = long.Parse(resultNode["place_id"].Value),
-                OsmId = long.Parse(resultNode["osm_id"].Value),
-                OsmType = resultNode["osm_type"].Value,
+                ElementId = long.Parse(resultNode["osm_id"].Value),
                 DisplayName = resultNode["display_name"].Value,
-                Class = resultNode["class"].Value,
-                Type = resultNode["type"].Value,
                 Coordinate = ParseGeoCoordinate(resultNode["lat"].Value, resultNode["lon"].Value),
-                BoundginBox = bbox,
+                BoundingBox = bbox,
             };
         }
 
@@ -112,6 +140,13 @@ namespace UtyMap.Unity.Geocoding
         {
             _searchPath = configSection.GetString("geocoding", DefaultSearchServer);
             _reverseSearchPath = configSection.GetString("reverse_geocoding", DefaultReverseSearchServer);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _observers.ForEach(o => o.OnCompleted());
+            _observers.Clear();
         }
     }
 }
