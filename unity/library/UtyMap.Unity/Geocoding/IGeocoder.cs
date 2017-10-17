@@ -15,11 +15,8 @@ namespace UtyMap.Unity.Geocoding
     /// <summary> Represents geocoding results. </summary>
     public struct GeocoderResult
     {
-        /// <summary> Gets or sets element id.</summary>
-        public long ElementId;
-
-        /// <summary> Gets or sets geo coordinate of search result center.</summary>
-        public GeoCoordinate Coordinate;
+        /// <summary> Gets or sets element.</summary>
+        public Element Element;
 
         /// <summary> Gets or sets element's bounding box.</summary>
         public BoundingBox BoundingBox;

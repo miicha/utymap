@@ -46,25 +46,44 @@ namespace Assets.Scripts.Scenes.ThirdPerson.Controllers
 
         private void ProcessResult(GeocoderResult result)
         {
-            var distanceToNewPlace = IsValidCoordinate(result.Coordinate)
-                ? GeoUtils.Distance(result.Coordinate, _coordinate)
+            var location = GetLocation(result.Element);
+
+            var distanceToNewPlace = location.HasValue
+                ? GeoUtils.Distance(location.Value, _coordinate)
                 : 50; // NOTE give element some weight as we don't know its geometry
 
             var distanceToOldPlace = _currentLocation.HasValue
                 ? GeoUtils.Distance(_currentLocation.Value, _coordinate)
                 : float.MaxValue;
 
-            if (distanceToNewPlace <= distanceToOldPlace)
+            if (location.HasValue && distanceToNewPlace <= distanceToOldPlace)
             {
                 _text.text = result.DisplayName;
-                _currentLocation = result.Coordinate;
+                _currentLocation = location.Value;
             }
         }
 
-        private static bool IsValidCoordinate(GeoCoordinate coordinate)
+        /// <summary> Gets element location. </summary>
+        private GeoCoordinate? GetLocation(Element element)
         {
-            return Math.Abs(coordinate.Latitude) > double.Epsilon &&
-                   Math.Abs(coordinate.Longitude) > Double.Epsilon;
+            if (element.Geometry.Length == 1)
+            {
+                var location = element.Geometry[0];
+                // NOTE Relations are not processed yet fully.
+                if (Math.Abs(location.Latitude) < double.Epsilon &&
+                    Math.Abs(location.Longitude) < double.Epsilon)
+                    return null;
+                return location;
+            }
+
+            double lat = 0, lon = 0;
+            foreach (var coordinate in element.Geometry)
+            {
+                lat += coordinate.Latitude;
+                lon += coordinate.Longitude;
+            }
+
+            return new GeoCoordinate(lat / element.Geometry.Length, lon / element.Geometry.Length);
         }
 
         /// <inheritdoc />

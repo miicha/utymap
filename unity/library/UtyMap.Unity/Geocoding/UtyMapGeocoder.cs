@@ -83,38 +83,13 @@ namespace UtyMap.Unity.Geocoding
 
         private void ProcessResult(Element element)
         {
-            var location = GetLocation(element) ?? new GeoCoordinate(0, 0);
             var address = GetAddress(element);
 
             _observers.ForEach(o => o.OnNext(new GeocoderResult()
             {
-                ElementId = element.Id,
-                Coordinate = location,
+                Element = element,
                 DisplayName = address,
             }));
-        }
-
-        /// <summary> Gets element location. </summary>
-        private GeoCoordinate? GetLocation(Element element)
-        {
-            if (element.Geometry.Length == 1)
-            {
-                var location = element.Geometry[0];
-                // NOTE Relations are not processed yet fully.
-                if (Math.Abs(location.Latitude) < double.Epsilon &&
-                    Math.Abs(location.Longitude) < double.Epsilon)
-                    return null;
-                return location;
-            }
-
-            double lat = 0, lon = 0;
-            foreach (var coordinate in element.Geometry)
-            {
-                lat += coordinate.Latitude;
-                lon += coordinate.Longitude;
-            }
-
-            return new GeoCoordinate(lat / element.Geometry.Length, lon / element.Geometry.Length);
         }
 
         /// <summary> Gets address string from element tags. </summary>

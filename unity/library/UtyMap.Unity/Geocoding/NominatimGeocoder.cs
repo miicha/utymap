@@ -118,11 +118,13 @@ namespace UtyMap.Unity.Geocoding
                     ParseGeoCoordinate(bboxArray[1], bboxArray[3]));
             }
 
+            var id = long.Parse(resultNode["osm_id"].Value);
+            var coordinate = ParseGeoCoordinate(resultNode["lat"].Value, resultNode["lon"].Value);
+
             return new GeocoderResult()
             {
-                ElementId = long.Parse(resultNode["osm_id"].Value),
+                Element = new Element(id, new [] { coordinate }, null, null, null),
                 DisplayName = resultNode["display_name"].Value,
-                Coordinate = ParseGeoCoordinate(resultNode["lat"].Value, resultNode["lon"].Value),
                 BoundingBox = bbox,
             };
         }
