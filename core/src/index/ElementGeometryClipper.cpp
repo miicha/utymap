@@ -213,18 +213,16 @@ std::shared_ptr<Element> clipRelation(ClipperLib::ClipperEx &clipper,
 namespace utymap {
 namespace index {
 
-ElementGeometryClipper::ElementGeometryClipper(Callback callback) :
-    callback_(callback), quadKey_(), quadKeyBbox_(), clipper_() {
+ElementGeometryClipper::ElementGeometryClipper(const utymap::QuadKey &quadKey,
+                                               const utymap::BoundingBox &quadKeyBbox,
+                                               Callback callback) :
+ callback_(callback), quadKey_(quadKey), quadKeyBbox_(quadKeyBbox), clipper_() {
+  clipper_.AddPath(createPathFromBoundingBox(quadKeyBbox_), ClipperLib::ptClip, true);
 }
 
-void ElementGeometryClipper::clipAndCall(const Element &element,
-                                         const QuadKey &quadKey,
-                                         const BoundingBox &quadKeyBbox) {
-  quadKey_ = quadKey;
-  quadKeyBbox_ = quadKeyBbox;
-  clipper_.Clear();
-  clipper_.AddPath(createPathFromBoundingBox(quadKeyBbox_), ClipperLib::ptClip, true);
+void ElementGeometryClipper::clipAndCall(const Element &element) {
   element.accept(*this);
+  clipper_.removeSubject();
 }
 
 void ElementGeometryClipper::visitNode(const Node &node) {

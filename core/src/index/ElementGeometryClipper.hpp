@@ -20,9 +20,11 @@ class ElementGeometryClipper final : private utymap::entities::ElementVisitor {
   /// Defines polygon points location relative to current quadkey.
   enum class PointLocation { AllInside, AllOutside, Mixed };
 
-  explicit ElementGeometryClipper(Callback callback);
+  ElementGeometryClipper(const utymap::QuadKey &quadKey,
+                         const utymap::BoundingBox &quadKeyBbox,
+                         Callback callback);
 
-  void clipAndCall(const utymap::entities::Element &element, const QuadKey &quadKey, const BoundingBox &quadKeyBbox);
+  void clipAndCall(const utymap::entities::Element &element);
 
  private:
 

@@ -64,7 +64,7 @@ bool ElementStore::store(const Element &element,
                          const Visitor &visitor) {
   ElementGeometryVisitor bboxVisitor;
   using namespace std::placeholders;
-  ElementGeometryClipper geometryClipper(std::bind(&ElementStore::save, this, _1, _2));
+  std::map<utymap::QuadKey, std::unique_ptr<ElementGeometryClipper>, utymap::QuadKey::Comparator> geometryClippers;
   bool wasStored = false;
   for (int lod = range.start; lod <= range.end; ++lod) {
     Style style = styleProvider.forElement(element, lod);
@@ -80,8 +80,17 @@ bool ElementStore::store(const Element &element,
         if (!visitor(bboxVisitor.boundingBox, quadKeyBbox))
           return;
 
-        if (style.has(clipKeyId_, TrueValue))
-          geometryClipper.clipAndCall(element, quadKey, quadKeyBbox);
+        if (style.has(clipKeyId_, TrueValue)) {
+          auto geometryClipperEntry = geometryClippers.find(quadKey);
+          if (geometryClipperEntry == geometryClippers.end()) {
+            geometryClipperEntry = geometryClippers.emplace(quadKey, utymap::utils::make_unique<ElementGeometryClipper>(
+              quadKey,
+              quadKeyBbox,
+              std::bind(&ElementStore::save, this, _1, _2))
+            ).first;
+          }
+          geometryClipperEntry->second->clipAndCall(element);
+        }
         else
           save(element, quadKey);
 
