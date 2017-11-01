@@ -117,6 +117,7 @@ set(HEADER_FILES
         mapcss/TextureAtlasParser.hpp
         math/LineLinear.hpp
         math/Mesh.hpp
+        math/PolyClip.hpp
         math/Polygon.hpp
         math/Quaternion.hpp
         math/Rectangle.hpp

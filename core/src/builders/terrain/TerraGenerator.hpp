@@ -16,7 +16,7 @@ class TerraGenerator {
  public:
   TerraGenerator(const utymap::builders::BuilderContext &context,
                  const utymap::mapcss::Style &style,
-                 const ClipperLib::Path &tileRect,
+                 const utymap::math::IntPath &tileRect,
                  const std::string &meshName);
 
   /// Called when new region is added to layer collection.
@@ -33,9 +33,9 @@ class TerraGenerator {
  protected:
   /// Adds geometry to mesh.
   void addGeometry(int level,
-                   ClipperLib::Paths &paths,
+                   utymap::math::IntPaths &paths,
                    const RegionContext &regionContext,
-                   const std::function<void(const ClipperLib::Path &)> &geometryVisitor);
+                   const std::function<void(const utymap::math::IntPath &)> &geometryVisitor);
 
   /// Adds geometry to mesh.
   virtual void addGeometry(int level,
@@ -44,7 +44,7 @@ class TerraGenerator {
 
   const utymap::builders::BuilderContext &context_;
   const utymap::mapcss::Style &style_;
-  const ClipperLib::Path &tileRect_;
+  const utymap::math::IntPath &tileRect_;
   utymap::math::Mesh mesh_;
 
  private:
@@ -56,7 +56,7 @@ class TerraGenerator {
   void buildHeightOffset(const std::vector<utymap::math::Vector2> &points, const RegionContext &regionContext);
 
   /// Restores geometry from clipper format.
-  std::vector<utymap::math::Vector2> restoreGeometry(const ClipperLib::Path &geometry) const;
+  std::vector<utymap::math::Vector2> restoreGeometry(const utymap::math::IntPath &geometry) const;
 
   const utymap::math::Rectangle rect_;
   utymap::builders::LineGridSplitter splitter_;

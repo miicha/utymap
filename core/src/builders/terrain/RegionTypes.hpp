@@ -1,10 +1,10 @@
 #ifndef BUILDERS_TERRAIN_REGIONTYPES_HPP_DEFINED
 #define BUILDERS_TERRAIN_REGIONTYPES_HPP_DEFINED
 
-#include "clipper/clipper.hpp"
 #include "builders/MeshBuilder.hpp"
 #include "mapcss/Style.hpp"
 #include "mapcss/StyleConsts.hpp"
+#include "math/PolyClip.hpp"
 
 #include <memory>
 
@@ -96,7 +96,7 @@ struct Region final {
   std::shared_ptr<const RegionContext> context;
 
   /// Geometry of region.
-  ClipperLib::Paths geometry;
+  utymap::math::IntPaths geometry;
 };
 
 /// Represents terrain regions grouped by sort order.

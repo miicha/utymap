@@ -1,6 +1,5 @@
 #include "builders/terrain/SurfaceGenerator.hpp"
 
-using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::mapcss;
 using namespace utymap::math;
@@ -19,7 +18,7 @@ const std::unordered_map<std::string, TerraExtras::ExtrasFunc> ExtrasFuncs =
     };
 };
 
-SurfaceGenerator::SurfaceGenerator(const BuilderContext &context, const Style &style, const Path &tileRect) :
+SurfaceGenerator::SurfaceGenerator(const BuilderContext &context, const Style &style, const IntPath &tileRect) :
     TerraGenerator(context, style, tileRect, TerrainMeshName) {
 }
 
@@ -44,14 +43,14 @@ void SurfaceGenerator::buildForeground(const std::vector<Layer> &layers) {
 }
 
 void SurfaceGenerator::buildBackground() {
-  Paths background;
-  backgroundClipper_.AddPath(tileRect_, ptSubject, true);
-  backgroundClipper_.Execute(ctDifference, background, pftNonZero, pftNonZero);
+  IntPaths background;
+  addSubject(backgroundClipper_, tileRect_);
+  executeDifference(backgroundClipper_, background);
   backgroundClipper_.Clear();
 
   if (!background.empty())
     TerraGenerator::addGeometry(Level, background, RegionContext::create(context_, style_, ""),
-                                [](const Path &path) {});
+                                [](const IntPath &path) {});
 }
 
 void SurfaceGenerator::buildLayer(const Layer &layer) {
@@ -63,13 +62,13 @@ void SurfaceGenerator::buildLayer(const Layer &layer) {
 }
 
 void SurfaceGenerator::buildRegion(const Region &region) {
-  Paths solution;
-  foregroundClipper_.AddPaths(region.geometry, ptSubject, true);
-  foregroundClipper_.Execute(ctDifference, solution, pftNonZero, pftNonZero);
+  IntPaths solution;
+  addSubjects(foregroundClipper_, region.geometry);
+  executeDifference(foregroundClipper_, solution);
   foregroundClipper_.moveSubjectToClip();
 
-  TerraGenerator::addGeometry(Level, solution, *region.context, [&](const Path &path) {
-    backgroundClipper_.AddPath(path, ptClip, true);
+  TerraGenerator::addGeometry(Level, solution, *region.context, [&](const IntPath &path) {
+    addClip(backgroundClipper_, path);
   });
 }
 

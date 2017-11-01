@@ -2,8 +2,8 @@
 #define BUILDERS_BUILDINGS_ROOFS_MANSARDROOFBUILDER_HPP_DEFINED
 
 #include "builders/buildings/roofs/FlatRoofBuilder.hpp"
-#include "clipper/clipper.hpp"
 #include "builders/MeshBuilder.hpp"
+#include "math/PolyClip.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -22,8 +22,8 @@ class MansardRoofBuilder final : public FlatRoofBuilder {
   }
 
   void build(utymap::math::Polygon &polygon) override {
-    ClipperLib::ClipperOffset offset;
-    ClipperLib::Path path;
+    utymap::math::ClipperOffset offset;
+    utymap::math::IntPath path;
     path.reserve(polygon.points.size()/2);
 
     auto lastPointIndex = polygon.points.size() - 2;
@@ -36,13 +36,13 @@ class MansardRoofBuilder final : public FlatRoofBuilder {
 
       min = std::min(min, utymap::math::Vector2::distance(v1, v2));
 
-      path.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(v1.x*Scale),
-                                          static_cast<ClipperLib::cInt>(v1.y*Scale)));
+      path.push_back(utymap::math::IntPoint(static_cast<utymap::math::cInt>(v1.x*Scale),
+                                            static_cast<utymap::math::cInt>(v1.y*Scale)));
     }
 
-    offset.AddPath(path, ClipperLib::JoinType::jtMiter, ClipperLib::EndType::etClosedPolygon);
+    utymap::math::addMiter(offset, path);
 
-    ClipperLib::Paths solution;
+    utymap::math::IntPaths solution;
     // NOTE: use minimal side value as reference for offsetting.
     offset.Execute(solution, -(min/10)*Scale);
 
@@ -56,8 +56,10 @@ class MansardRoofBuilder final : public FlatRoofBuilder {
 
  private:
 
-  void build(const utymap::math::Polygon &polygon, ClipperLib::Path &offsetShape, std::size_t index) {
-    if (!ClipperLib::Orientation(offsetShape))
+  void build(const utymap::math::Polygon &polygon,
+             utymap::math::IntPath &offsetShape,
+             std::size_t index) {
+    if (!utymap::math::getOrientation(offsetShape))
       std::reverse(offsetShape.begin(), offsetShape.end());
 
     // build top
@@ -113,7 +115,8 @@ class MansardRoofBuilder final : public FlatRoofBuilder {
     }
   }
 
-  std::size_t findFirstIndex(const ClipperLib::IntPoint &p, const utymap::math::Polygon &polygon) const {
+  std::size_t findFirstIndex(const utymap::math::IntPoint &p,
+                             const utymap::math::Polygon &polygon) const {
     utymap::math::Vector2 point(p.X/Scale, p.Y/Scale);
 
     std::size_t index = 0, size = polygon.points.size()/2;

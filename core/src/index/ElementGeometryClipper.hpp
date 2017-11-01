@@ -1,11 +1,11 @@
 #ifndef INDEX_ELEMENTGEOMETRYCLIPPER_HPP_DEFINED
 #define INDEX_ELEMENTGEOMETRYCLIPPER_HPP_DEFINED
 
-#include "clipper/clipper.hpp"
 #include "BoundingBox.hpp"
 #include "QuadKey.hpp"
 #include "entities/Element.hpp"
 #include "entities/ElementVisitor.hpp"
+#include "math/PolyClip.hpp"
 
 #include <functional>
 
@@ -39,7 +39,7 @@ class ElementGeometryClipper final : private utymap::entities::ElementVisitor {
   Callback callback_;
   QuadKey quadKey_;
   BoundingBox quadKeyBbox_;
-  ClipperLib::ClipperEx clipper_;
+  utymap::math::Clipper clipper_;
 };
 
 }

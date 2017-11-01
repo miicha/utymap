@@ -10,8 +10,8 @@
 
 using namespace utymap;
 using namespace utymap::entities;
-
 using namespace utymap::mapcss;
+using namespace utymap::math;
 
 namespace {
 /// Max precision for Lat/Lon
@@ -30,7 +30,7 @@ bool areConnected(const BoundingBox &quadKeyBbox, const BoundingBox &elementBbox
 }
 
 template<typename T>
-PointLocation checkElement(const BoundingBox &quadKeyBbox, const T &element, ClipperLib::Path &elementShape) {
+PointLocation checkElement(const BoundingBox &quadKeyBbox, const T &element, IntPath &elementShape) {
   elementShape.reserve(element.coordinates.size());
   bool allInside = true;
   bool allOutside = true;
@@ -41,9 +41,9 @@ PointLocation checkElement(const BoundingBox &quadKeyBbox, const T &element, Cli
     allOutside &= !contains;
     elementBbox.expand(coord);
 
-    auto x = static_cast<ClipperLib::cInt>(coord.longitude*Scale);
-    auto y = static_cast<ClipperLib::cInt>(coord.latitude*Scale);
-    elementShape.push_back(ClipperLib::IntPoint(x, y));
+    auto x = static_cast<cInt>(coord.longitude*Scale);
+    auto y = static_cast<cInt>(coord.latitude*Scale);
+    elementShape.push_back(IntPoint(x, y));
   }
 
   return allInside ? PointLocation::AllInside :
@@ -51,37 +51,37 @@ PointLocation checkElement(const BoundingBox &quadKeyBbox, const T &element, Cli
 }
 
 template<typename T>
-void setCoordinates(T &t, const ClipperLib::Path &path) {
+void setCoordinates(T &t, const IntPath &path) {
   t.coordinates.reserve(path.size());
   for (const auto &c : path) {
     t.coordinates.push_back(GeoCoordinate(c.Y/Scale, c.X/Scale));
   }
 }
 
-ClipperLib::Path createPathFromBoundingBox(const BoundingBox &quadKeyBbox) {
+IntPath createPathFromBoundingBox(const BoundingBox &quadKeyBbox) {
   double xMin = quadKeyBbox.minPoint.longitude, yMin = quadKeyBbox.minPoint.latitude,
       xMax = quadKeyBbox.maxPoint.longitude, yMax = quadKeyBbox.maxPoint.latitude;
-  ClipperLib::Path rect;
-  rect.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(xMin*Scale),
-                                      static_cast<ClipperLib::cInt>(yMin*Scale)));
+  IntPath rect;
+  rect.push_back(IntPoint(static_cast<cInt>(xMin*Scale),
+                                      static_cast<cInt>(yMin*Scale)));
 
-  rect.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(xMax*Scale),
-                                      static_cast<ClipperLib::cInt>(yMin*Scale)));
+  rect.push_back(IntPoint(static_cast<cInt>(xMax*Scale),
+                                      static_cast<cInt>(yMin*Scale)));
 
-  rect.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(xMax*Scale),
-                                      static_cast<ClipperLib::cInt>(yMax*Scale)));
+  rect.push_back(IntPoint(static_cast<cInt>(xMax*Scale),
+                                      static_cast<cInt>(yMax*Scale)));
 
-  rect.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(xMin*Scale),
-                                      static_cast<ClipperLib::cInt>(yMax*Scale)));
+  rect.push_back(IntPoint(static_cast<cInt>(xMin*Scale),
+                                      static_cast<cInt>(yMax*Scale)));
   return std::move(rect);
 }
 
 template<typename T>
-std::shared_ptr<Element> clipElement(ClipperLib::ClipperEx &clipper,
+std::shared_ptr<Element> clipElement(Clipper &clipper,
                                      const BoundingBox &bbox,
                                      const T &element,
                                      bool isClosed) {
-  ClipperLib::Path elementShape;
+  IntPath elementShape;
   PointLocation pointLocation = checkElement(bbox, element, elementShape);
   // 1. all geometry inside current quadkey: no need to truncate.
   if (pointLocation==PointLocation::AllInside) {
@@ -93,9 +93,9 @@ std::shared_ptr<Element> clipElement(ClipperLib::ClipperEx &clipper,
     return nullptr;
   }
 
-  ClipperLib::PolyTree solution;
-  clipper.AddPath(elementShape, ClipperLib::ptSubject, isClosed);
-  clipper.Execute(ClipperLib::ctIntersection, solution);
+  PolyTree solution;
+  addSubject(clipper, elementShape, isClosed);
+  executeIntersection(clipper, solution);
   clipper.removeSubject();
 
   std::size_t count = static_cast<std::size_t>(solution.Total());
@@ -114,7 +114,7 @@ std::shared_ptr<Element> clipElement(ClipperLib::ClipperEx &clipper,
     auto relation = std::make_shared<Relation>();
     relation->id = element.id;
     relation->elements.reserve(count);
-    ClipperLib::PolyNode *polyNode = solution.GetFirst();
+    PolyNode *polyNode = solution.GetFirst();
     while (polyNode) {
       auto clippedElement = std::make_shared<T>();
       clippedElement->id = 0;
@@ -130,21 +130,21 @@ std::shared_ptr<Element> clipElement(ClipperLib::ClipperEx &clipper,
   return nullptr;
 }
 
-std::shared_ptr<Element> clipWay(ClipperLib::ClipperEx &clipper, const BoundingBox &bbox, const Way &way) {
+std::shared_ptr<Element> clipWay(Clipper &clipper, const BoundingBox &bbox, const Way &way) {
   return clipElement(clipper, bbox, way, false);
 }
 
-std::shared_ptr<Element> clipArea(ClipperLib::ClipperEx &clipper, const BoundingBox &bbox, const Area &area) {
+std::shared_ptr<Element> clipArea(Clipper &clipper, const BoundingBox &bbox, const Area &area) {
   return clipElement(clipper, bbox, area, true);
 }
 
-std::shared_ptr<Element> clipRelation(ClipperLib::ClipperEx &clipper,
+std::shared_ptr<Element> clipRelation(Clipper &clipper,
                                       const BoundingBox &bbox,
                                       const Relation &relation);
 
 /// Visits relation and collects clipped elements
 struct RelationVisitor : public ElementVisitor {
-  RelationVisitor(ClipperLib::ClipperEx &clipper, const BoundingBox &quadKeyBbox) :
+  RelationVisitor(Clipper &clipper, const BoundingBox &quadKeyBbox) :
       relation(nullptr), clipper_(clipper), bbox_(quadKeyBbox) {
   }
 
@@ -184,11 +184,11 @@ struct RelationVisitor : public ElementVisitor {
     relation->elements.push_back(element);
   }
 
-  ClipperLib::ClipperEx &clipper_;
+  Clipper &clipper_;
   const BoundingBox &bbox_;
 };
 
-std::shared_ptr<Element> clipRelation(ClipperLib::ClipperEx &clipper,
+std::shared_ptr<Element> clipRelation(Clipper &clipper,
                                       const BoundingBox &bbox,
                                       const Relation &relation) {
   RelationVisitor visitor(clipper, bbox);
@@ -217,7 +217,7 @@ ElementGeometryClipper::ElementGeometryClipper(const utymap::QuadKey &quadKey,
                                                const utymap::BoundingBox &quadKeyBbox,
                                                Callback callback) :
  callback_(callback), quadKey_(quadKey), quadKeyBbox_(quadKeyBbox), clipper_() {
-  clipper_.AddPath(createPathFromBoundingBox(quadKeyBbox_), ClipperLib::ptClip, true);
+  addClip(clipper_, createPathFromBoundingBox(quadKeyBbox_));
 }
 
 void ElementGeometryClipper::clipAndCall(const Element &element) {

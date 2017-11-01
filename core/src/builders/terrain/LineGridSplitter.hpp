@@ -1,7 +1,7 @@
 #ifndef BUILDERS_TERRAIN_LINEGRIDSPLITTER_HPP_DEFINED
 #define BUILDERS_TERRAIN_LINEGRIDSPLITTER_HPP_DEFINED
 
-#include "clipper/clipper.hpp"
+#include "math/PolyClip.hpp"
 #include "math/Vector2.hpp"
 
 #include <algorithm>
@@ -43,7 +43,9 @@ class LineGridSplitter final {
   }
 
   /// Splits line to segments.
-  void split(const ClipperLib::IntPoint &start, const ClipperLib::IntPoint &end, Points &result) const {
+  void split(const utymap::math::IntPoint &start,
+             const utymap::math::IntPoint &end,
+             Points &result) const {
     Point s(start.X/scale_, start.Y/scale_);
     Point e(end.X/scale_, end.Y/scale_);
 

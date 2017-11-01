@@ -1,6 +1,5 @@
 #include "builders/terrain/ExteriorGenerator.hpp"
 
-using namespace ClipperLib;
 using namespace utymap;
 using namespace utymap::builders;
 using namespace utymap::entities;
@@ -15,7 +14,9 @@ class ExteriorGenerator::ExteriorGeneratorImpl {
   // TODO
 };
 
-ExteriorGenerator::ExteriorGenerator(const BuilderContext &context, const Style &style, const Path &tileRect) :
+ExteriorGenerator::ExteriorGenerator(const BuilderContext &context,
+                                     const Style &style,
+                                     const IntPath &tileRect) :
     TerraGenerator(context, style, tileRect, TerrainMeshName),
     p_impl(utymap::utils::make_unique<ExteriorGeneratorImpl>()) {
 }

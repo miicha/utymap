@@ -4,6 +4,7 @@
 #include "builders/terrain/TerraExtras.hpp"
 #include "builders/terrain/TerraGenerator.hpp"
 #include "math/Mesh.hpp"
+#include "math/PolyClip.hpp"
 #include "math/Polygon.hpp"
 #include "math/Vector2.hpp"
 
@@ -15,7 +16,7 @@ class SurfaceGenerator final : public TerraGenerator {
  public:
   SurfaceGenerator(const BuilderContext &context,
                    const utymap::mapcss::Style &style,
-                   const ClipperLib::Path &tileRect);
+                   const utymap::math::IntPath &tileRect);
 
   void onNewRegion(const std::string &type,
                    const utymap::entities::Element &element,
@@ -46,8 +47,8 @@ class SurfaceGenerator final : public TerraGenerator {
                             TerraExtras::Context &extrasContext,
                             const RegionContext &regionContext) const;
 
-  ClipperLib::ClipperEx foregroundClipper_;
-  ClipperLib::ClipperEx backgroundClipper_;
+  utymap::math::Clipper foregroundClipper_;
+  utymap::math::Clipper backgroundClipper_;
 };
 
 }

@@ -1,5 +1,4 @@
 #include "BoundingBox.hpp"
-#include "clipper/clipper.hpp"
 #include "builders/BuilderContext.hpp"
 #include "builders/terrain/TerraBuilder.hpp"
 #include "builders/terrain/SurfaceGenerator.hpp"
@@ -12,12 +11,12 @@
 
 #include <numeric>
 
-using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::entities;
 using namespace utymap::index;
 using namespace utymap::heightmap;
 using namespace utymap::mapcss;
+using namespace utymap::math;
 using namespace utymap::utils;
 
 namespace {
@@ -57,7 +56,7 @@ struct RelationVisitor : public ElementVisitor {
   void visitWay(const utymap::entities::Way &w) override { w.accept(builder); }
 
   void visitArea(const utymap::entities::Area &a) override {
-    Path path;
+    IntPath path;
     path.reserve(a.coordinates.size());
     for (const utymap::GeoCoordinate &c : a.coordinates)
       path.push_back(toIntPoint(c.longitude, c.latitude));
@@ -81,7 +80,7 @@ class TerraBuilder::TerraBuilderImpl final : public ElementBuilder {
     tileRect_.push_back(toIntPoint(context.boundingBox.maxPoint.longitude, context.boundingBox.maxPoint.latitude));
     tileRect_.push_back(toIntPoint(context.boundingBox.minPoint.longitude, context.boundingBox.maxPoint.latitude));
 
-    clipper_.AddPath(tileRect_, ptClip, true);
+    addClip(clipper_, tileRect_);
 
     // NOTE order is important due to propagation of region changes from top to bottom.
     generators_.push_back(utymap::utils::make_unique<ExteriorGenerator>(context, style_, tileRect_));
@@ -96,16 +95,16 @@ class TerraBuilder::TerraBuilderImpl final : public ElementBuilder {
     auto region = createRegion(style, way.coordinates);
     double width = getWidth(style)*Scale;
 
-    Paths solution;
+    IntPaths solution;
     // make polygon from line by offsetting it using width specified
     // NOTE: we should limit round shape precision due to performance reasons.
     offset_.ArcTolerance = width*0.05;
-    offset_.AddPaths(region->geometry, jtRound, etOpenRound);
+    addRoundOpenRound(offset_, region->geometry);
     offset_.Execute(solution, width);
     offset_.Clear();
 
-    clipper_.AddPaths(solution, ptSubject, true);
-    clipper_.Execute(ctIntersection, solution);
+    addSubjects(clipper_, solution);
+    executeIntersection(clipper_, solution);
     clipper_.removeSubject();
 
     region->geometry = solution;
@@ -208,7 +207,7 @@ class TerraBuilder::TerraBuilderImpl final : public ElementBuilder {
   /// Creates region from given geometry and style.
   std::shared_ptr<Region> createRegion(const Style &style, const std::vector<GeoCoordinate> &coordinates) const {
     auto region = std::make_shared<Region>();
-    Path path;
+    IntPath path;
     path.reserve(coordinates.size());
     for (const GeoCoordinate &c : coordinates)
       path.push_back(toIntPoint(c.longitude, c.latitude));
@@ -233,16 +232,16 @@ class TerraBuilder::TerraBuilderImpl final : public ElementBuilder {
         mapPair->second.first->level = current->level;
         mapPair->second.first->context = regionContext;
       }
-      mapPair->second.second->AddPaths(current->geometry, ptSubject, true);
+      addSubjects(*mapPair->second.second, current->geometry);
     }
 
     layer.regions.clear();
     for (auto &pair : regionMap) {
-      Paths result;
-      pair.second.second->Execute(ctUnion, result, pftNonZero, pftNonZero);
+      IntPaths result;
+      executeUnion(*pair.second.second, result);
       pair.second.first->area = std::accumulate(result.begin(), result.end(), 0.,
-                                                [](double acc, const Path &path) {
-                                                  return acc + std::abs(ClipperLib::Area(path));
+                                                [](double acc, const IntPath &path) {
+                                                  return acc + std::abs(getArea(path));
                                                 })/(Scale*Scale);
 
       pair.second.first->geometry = std::move(result);
@@ -251,11 +250,11 @@ class TerraBuilder::TerraBuilderImpl final : public ElementBuilder {
   }
 
   const Style style_;
-  ClipperEx clipper_;
+  Clipper clipper_;
   ClipperOffset offset_;
   std::vector<std::unique_ptr<TerraGenerator>> generators_;
   std::unordered_map<std::string, Layer> layers_;
-  Path tileRect_;
+  IntPath tileRect_;
   std::uint32_t dimenstionKey_;
 };
 

@@ -13,7 +13,7 @@ class ExteriorGenerator final : public TerraGenerator {
  public:
   ExteriorGenerator(const BuilderContext &context,
                     const utymap::mapcss::Style &style,
-                    const ClipperLib::Path &tileRect);
+                    const utymap::math::IntPath &tileRect);
 
   void onNewRegion(const std::string &type,
                    const utymap::entities::Element &element,

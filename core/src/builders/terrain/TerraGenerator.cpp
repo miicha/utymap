@@ -1,6 +1,5 @@
 #include "builders/terrain/TerraGenerator.hpp"
 
-using namespace ClipperLib;
 using namespace utymap::builders;
 using namespace utymap::mapcss;
 using namespace utymap::math;
@@ -12,9 +11,9 @@ const double AreaTolerance = 1000;
 const double Scale = 1E7;
 }
 
-TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext &context,
-                               const utymap::mapcss::Style &style,
-                               const ClipperLib::Path &tileRect,
+TerraGenerator::TerraGenerator(const BuilderContext &context,
+                               const Style &style,
+                               const IntPath &tileRect,
                                const std::string &meshName) :
     context_(context), style_(style),
     tileRect_(tileRect),
@@ -33,11 +32,11 @@ TerraGenerator::TerraGenerator(const utymap::builders::BuilderContext &context,
 }
 
 void TerraGenerator::addGeometry(int level,
-                                 Paths &geometry,
+                                 IntPaths &geometry,
                                  const RegionContext &regionContext,
-                                 const std::function<void(const Path &)> &geometryVisitor) {
-  ClipperLib::SimplifyPolygons(geometry);
-  ClipperLib::CleanPolygons(geometry);
+                                 const std::function<void(const IntPath &)> &geometryVisitor) {
+  utymap::math::simplifyPolygons(geometry);
+  utymap::math::cleanPolygons(geometry);
 
   bool hasHeightOffset = std::abs(regionContext.geometryOptions.heightOffset) > 0;
   // calculate approximate size of overall points
@@ -46,8 +45,8 @@ void TerraGenerator::addGeometry(int level,
     size += geometry[i].size()*1.5;
 
   Polygon polygon(static_cast<std::size_t>(size));
-  for (const Path &path : geometry) {
-    double area = ClipperLib::Area(path);
+  for (const IntPath &path : geometry) {
+    double area = utymap::math::getArea(path);
     bool isHole = area < 0;
     if (std::abs(area) < AreaTolerance)
       continue;
@@ -84,7 +83,7 @@ void TerraGenerator::buildHeightOffset(const std::vector<Vector2> &points, const
   }
 }
 
-std::vector<Vector2> TerraGenerator::restoreGeometry(const Path &geometry) const {
+std::vector<Vector2> TerraGenerator::restoreGeometry(const IntPath &geometry) const {
   auto lastItemIndex = geometry.size() - 1;
   std::vector<utymap::math::Vector2> points;
   points.reserve(geometry.size());

@@ -2,8 +2,7 @@
 #define UTILS_SVGBUILDER_HPP_DEFINED
 
 #include "mapcss/Color.hpp"
-
-#include "clipper/clipper.hpp"
+#include "math/PolyClip.hpp"
 
 #include <cstdint>
 #include <cstdarg>
