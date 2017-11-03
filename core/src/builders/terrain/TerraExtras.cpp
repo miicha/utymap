@@ -14,12 +14,10 @@ const std::string TreeChunkSize = "tree-chunk-size";
 void TerraExtras::addForest(const BuilderContext &builderContext, TerraExtras::Context &extrasContext) {
   // generate tree mesh
   auto center = builderContext.boundingBox.center();
-  const auto &lsystem = builderContext.styleProvider
-      .getLsystem(extrasContext.style.getString(StyleConsts::LSystemKey()));
   Mesh treeMesh("");
-  LSystemGenerator(builderContext, extrasContext.style, treeMesh)
-      .setPosition(center, 0) // NOTE we will override coordinates later
-      .run(lsystem);
+
+  // NOTE we will override coordinates later
+  LSystemGenerator::generate(builderContext, extrasContext.style,  treeMesh, center, 0);
 
   // forest mesh contains all trees belong to one chunk.
   Mesh forestMesh("forest");

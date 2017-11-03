@@ -22,13 +22,11 @@ const std::string LampStep = "lamp-step";
 void LampBuilder::visitNode(const utymap::entities::Node &node) {
   Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
 
-  const auto &lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
   const auto elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
 
   Mesh lampMesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
-  LSystemGenerator(context_, style, lampMesh)
-      .setPosition(node.coordinate, elevation)
-      .run(lsystem);
+
+  LSystemGenerator::generate(context_, style, lampMesh, node.coordinate, elevation);
 
   context_.meshCallback(lampMesh);
 }
@@ -37,16 +35,13 @@ void LampBuilder::visitWay(const utymap::entities::Way &way) {
   Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
 
   const auto center = context_.boundingBox.center();
-  const auto &lsystem = context_.styleProvider.getLsystem(style.getString(StyleConsts::LSystemKey()));
   const auto width = style.getValue(StyleConsts::WidthKey(), context_.boundingBox);
   const auto stepInMeters = style.getValue(LampStep);
 
   Mesh lampMesh("");
   Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));
 
-  LSystemGenerator(context_, style, lampMesh)
-      .setPosition(center, 0)
-      .run(lsystem);
+  LSystemGenerator::generate(context_, style, lampMesh, center, 0);
 
   for (std::size_t i = 0; i < way.coordinates.size() - 1; ++i) {
     const auto &p0 = way.coordinates[i];

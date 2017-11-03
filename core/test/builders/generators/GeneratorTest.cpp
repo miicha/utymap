@@ -99,9 +99,7 @@ BOOST_AUTO_TEST_CASE(GivenLSystemGeneratorWithSimpleData_WhenGenerate_ThenCanGen
   std::ifstream file(TEST_MAPCSS_PATH "tree.lsys");
   auto lsystem = utymap::lsys::LSystemParser().parse(file);
 
-  LSystemGenerator(builderContext, style, mesh)
-      .setPosition(center, 0)
-      .run(lsystem);
+  LSystemGenerator::generate(builderContext, style, lsystem, mesh, center, 0);
 
   BOOST_CHECK_GT(mesh.vertices.size(), 0);
   BOOST_CHECK_GT(mesh.triangles.size(), 0);
