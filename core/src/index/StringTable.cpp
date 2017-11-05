@@ -1,6 +1,7 @@
 #include "hashing/MurmurHash3.h"
 #include "index/StringTable.hpp"
 #include "utils/CoreUtils.hpp"
+#include "utils/LruCache.hpp"
 
 #include <fstream>
 #include <mutex>
@@ -22,7 +23,8 @@ class StringTable::StringTableImpl {
       seed_(seed),
       nextId_(0),
       map_(),
-      offsets_() {
+      offsets_(),
+      cache_(1024) {
     nextId_ = static_cast<std::uint32_t>(indexFile_.tellg()/(sizeof(std::uint32_t)*2));
     if (nextId_ > 0) {
       std::uint32_t count = nextId_;
@@ -65,11 +67,15 @@ class StringTable::StringTableImpl {
   }
 
   std::shared_ptr<std::string> getString(std::uint32_t id) {
-    auto str = std::make_shared<std::string>();
-    // TODO avoid lock there
     std::lock_guard<std::mutex> lock(lock_);
-    readString(id, *str);
-    return str;
+    if (cache_.exists(id))
+      return cache_.get(id);
+
+    std::string str;
+    readString(id, str);
+    cache_.put(id, std::move(str));
+
+    return cache_.get(id);
   }
 
  private:
@@ -112,6 +118,7 @@ class StringTable::StringTableImpl {
   std::vector<std::uint32_t> offsets_;
 
   std::mutex lock_;
+  utymap::utils::LruCache<std::uint32_t, std::string> cache_;
 };
 
 StringTable::StringTable(const std::string &path) :
