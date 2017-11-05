@@ -28,6 +28,7 @@ const std::string stylesheet =
 struct Builders_Terrain_TerraBuilderFixture {
   DependencyProvider dependencyProvider;
   std::unique_ptr<BuilderContext> context = nullptr;
+  CancellationToken cancelToken;
 
   std::unique_ptr<TerraBuilder> create(const QuadKey &quadKey,
                                        std::function<void(const utymap::math::Mesh &)> meshCallback) {
@@ -37,7 +38,7 @@ struct Builders_Terrain_TerraBuilderFixture {
                                                          *dependencyProvider.getElevationProvider(),
                                                          meshCallback,
                                                          nullptr,
-                                                         CancellationToken());
+                                                         cancelToken);
     return utymap::utils::make_unique<TerraBuilder>(*context);
   }
 };
