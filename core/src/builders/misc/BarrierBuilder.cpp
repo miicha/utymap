@@ -16,7 +16,6 @@ using namespace utymap::math;
 using namespace utymap::utils;
 
 namespace {
-const double Scale = 1E7;
 const std::string MeshNamePrefix = "barrier:";
 const std::string PillarType = "pillar";
 }

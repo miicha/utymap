@@ -78,17 +78,6 @@ class AbstractGenerator {
                                             meshContext_->appearanceOptions);
   }
 
-  void addPlane(const utymap::math::Vector2 &v0,
-                const utymap::math::Vector2 &v1,
-                double bottom,
-                double top) const {
-    meshContext_->geometryOptions.elevation = bottom;
-    meshContext_->geometryOptions.heightOffset = top - bottom;
-
-    builderContext_.meshBuilder.addPlane(meshContext_->mesh, v0, v1,
-                                         meshContext_->geometryOptions, meshContext_->appearanceOptions);
-  }
-
   void addPlane(const utymap::math::Vector3 &v0,
                 const utymap::math::Vector3 &v1,
                 double heightOffset) const {

@@ -20,8 +20,6 @@ namespace builders {
 class MeshBuilder final {
  public:
 
-  typedef const std::function<double(const utymap::GeoCoordinate &)> &EleInterpolator;
-
   struct GeometryOptions final {
     GeometryOptions(double area, double eleNoiseFreq, double elevation, double heightOffset, int segmentSplit = 0) :
         area(area),

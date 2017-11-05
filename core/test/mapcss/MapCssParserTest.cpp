@@ -9,7 +9,6 @@
 using namespace utymap::mapcss;
 
 namespace {
-typedef std::string::const_iterator StringIterator;
 
 struct MapCss_MapCssParserFixture {
   MapCss_MapCssParserFixture() :

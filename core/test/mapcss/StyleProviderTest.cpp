@@ -31,7 +31,7 @@ struct Index_StyleProviderFixture {
       selector.conditions.push_back(condition);
     }
 
-    Rule rule;
+    auto rule = Rule();
     for (const auto &declaration : declarations) {
       rule.declarations.push_back(declaration);
     }

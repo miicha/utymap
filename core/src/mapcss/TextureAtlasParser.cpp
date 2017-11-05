@@ -81,7 +81,7 @@ struct AtlasGrammar : qi::grammar<Iterator, Atlas(), qi::space_type> {
 
 template<typename Iterator>
 TextureAtlas parse(Iterator begin, Iterator end) {
-  Atlas atlas;
+  auto atlas = Atlas();
   AtlasGrammar<Iterator> grammar;
 
   if (!phrase_parse(begin, end, grammar, qi::space, atlas))

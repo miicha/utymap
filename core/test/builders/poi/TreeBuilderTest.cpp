@@ -50,7 +50,7 @@ struct Builders_Poi_TreeBuilderFixture {
 
   StyleSheet createStyleSheet() const {
     auto stylesheet = utymap::mapcss::MapCssParser().parse(stylesheetStr);
-    LSystem lsystem;
+    auto lsystem = LSystem();
     lsystem.axiom.push_back(std::make_shared<MoveForwardRule>());
     stylesheet.lsystems.emplace("tree", lsystem);
     return stylesheet;

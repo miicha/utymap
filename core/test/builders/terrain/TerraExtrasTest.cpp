@@ -27,7 +27,7 @@ const std::string stylesheetStr = "area|z16[amenity=forest] {"
 
 StyleSheet createStyleSheet() {
   auto stylesheet = utymap::mapcss::MapCssParser().parse(stylesheetStr);
-  LSystem lsystem;
+  auto lsystem = LSystem();
   lsystem.axiom.push_back(std::make_shared<MoveForwardRule>());
   stylesheet.lsystems.emplace("tree", lsystem);
   return stylesheet;

@@ -27,7 +27,7 @@ class SrtmElevationProvider final : public ElevationProvider {
     HgtCellKey(int lat, int lon) : lat(lat), lon(lon) {}
 
     bool operator<(const HgtCellKey &other) const {
-      return lat < other.lat || (!(other.lat < lat) && lon < other.lon);
+      return lat < other.lat || (other.lat >= lat && lon < other.lon);
     }
   };
 

@@ -24,8 +24,8 @@ inline std::string getFileNameWithoutExtension(const std::string &filename) {
     path = path.substr(sep + 1, path.size() - sep - 1);
 
   size_t dot = path.find_last_of(".");
-  return dot != std::string::npos 
-    ? path.substr(0, dot) 
+  return dot != std::string::npos
+    ? path.substr(0, dot)
     : path;
 }
 
