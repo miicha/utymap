@@ -55,6 +55,11 @@ class StringTable::StringTableImpl {
     if (hashLookupResult!=map_.end()) {
       std::string data;
       for (std::uint32_t id : hashLookupResult->second) {
+        // first check string in cache
+        if (cache_.exists(id) && *cache_.peek(id) == str) {
+          cache_.promote(id);
+          return id;
+        }
         data.clear();
         readString(id, data);
         if (str==data)
