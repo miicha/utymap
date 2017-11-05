@@ -159,8 +159,10 @@ class StyleBuilder final : public ElementVisitor {
   /// Compares two raw string values using double conversion.
   template<typename Func>
   bool compareDoubles(std::uint32_t left, std::uint32_t right, Func binaryOp) {
-    double leftValue = utymap::utils::parseDouble(stringTable_.getString(left));
-    double rightValue = utymap::utils::parseDouble(stringTable_.getString(right));
+    auto leftStr = stringTable_.getString(left);
+    auto rightStr = stringTable_.getString(right);
+    double leftValue = utymap::utils::parseDouble(*leftStr);
+    double rightValue = utymap::utils::parseDouble(*rightStr);
 
     return binaryOp(leftValue, rightValue);
   }

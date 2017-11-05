@@ -27,7 +27,7 @@ class StringTable final {
   std::uint32_t getId(const std::string &str) const;
 
   /// Gets original string by id.
-  std::string getString(std::uint32_t id) const;
+  std::shared_ptr<std::string> getString(std::uint32_t id) const;
 
  private:
   class StringTableImpl;

@@ -64,11 +64,11 @@ class StringTable::StringTableImpl {
     return nextId_++;
   }
 
-  std::string getString(std::uint32_t id) {
-    std::string str;
+  std::shared_ptr<std::string> getString(std::uint32_t id) {
+    auto str = std::make_shared<std::string>();
     // TODO avoid lock there
     std::lock_guard<std::mutex> lock(lock_);
-    readString(id, str);
+    readString(id, *str);
     return str;
   }
 
@@ -124,6 +124,6 @@ std::uint32_t StringTable::getId(const std::string &str) const {
   return pimpl_->getId(str);
 }
 
-std::string StringTable::getString(std::uint32_t id) const {
+std::shared_ptr<std::string> StringTable::getString(std::uint32_t id) const {
   return pimpl_->getString(id);
 }

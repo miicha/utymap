@@ -96,7 +96,8 @@ struct StyleEvaluator final {
 
     double operator()(const Tag &tag) const {
       auto keyId = stringTable_.getId(tag.key);
-      return utymap::utils::parseDouble(utymap::utils::getTagValue(keyId, tags_, stringTable_));
+      auto value = utymap::utils::getTagValue(keyId, tags_, stringTable_);
+      return utymap::utils::parseDouble(*value);
     }
 
     double operator()(const Signed &s) const {
@@ -147,7 +148,7 @@ struct StyleEvaluator final {
     }
 
     std::string operator()(const Tag &tag) const {
-      return utymap::utils::getTagValue(stringTable_.getId(tag.key), tags_, stringTable_);
+      return *utymap::utils::getTagValue(stringTable_.getId(tag.key), tags_, stringTable_);
     }
 
     std::string operator()(const Signed &s) const {

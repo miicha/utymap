@@ -80,8 +80,10 @@ std::vector<std::uint32_t> BitmapIndex::tokenize(const Element &element) {
   Ids tokens;
   tokens.reserve(element.tags.size() * 2 + 4);
   for (const auto &tag : element.tags) {
-    tokenize(stringTable_.getString(tag.key), tokens);
-    tokenize(stringTable_.getString(tag.value), tokens);
+    auto key = stringTable_.getString(tag.key);
+    auto value = stringTable_.getString(tag.value);
+    tokenize(*key, tokens);
+    tokenize(*value, tokens);
   }
   return tokens;
 }

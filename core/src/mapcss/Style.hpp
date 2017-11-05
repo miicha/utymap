@@ -61,8 +61,10 @@ struct Style final {
 
   const StyleDeclaration &get(std::uint32_t key) const {
     auto it = declarations_.find(key);
-    if (it==declarations_.end())
-      throw MapCssException(std::string("Cannot find declaration with the key: ") + stringTable_.getString(key));
+    if (it == declarations_.end()) {
+      auto tag = stringTable_.getString(key);
+      throw MapCssException("Cannot find declaration with the key: " + *tag);
+    }
 
     return *it->second;
   }

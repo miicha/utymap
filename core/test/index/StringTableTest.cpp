@@ -45,9 +45,9 @@ BOOST_AUTO_TEST_CASE(GivenThreeStrings_WhenGetStringOfSecond_ThenReturnValidStri
   dependencyProvider.getStringTable()->getId("string2");
   dependencyProvider.getStringTable()->getId("string3");
 
-  std::string str = dependencyProvider.getStringTable()->getString(1);
+  auto str = dependencyProvider.getStringTable()->getString(1);
 
-  BOOST_CHECK_EQUAL(str, "string2");
+  BOOST_CHECK_EQUAL(*str, "string2");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

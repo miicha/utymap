@@ -147,8 +147,10 @@ private:
       ctags.reserve(element.tags.size() * 2);
       for (std::size_t i = 0; i < element.tags.size(); ++i) {
         const utymap::entities::Tag &tag = element.tags[i];
-        tagStrings_.push_back(stringTable_.getString(tag.key));
-        tagStrings_.push_back(stringTable_.getString(tag.value));
+        auto key = stringTable_.getString(tag.key);
+        auto value = stringTable_.getString(tag.value);
+        tagStrings_.push_back(*key);
+        tagStrings_.push_back(*value);
         ctags.push_back(tagStrings_[tagStrings_.size() - 2].c_str());
         ctags.push_back(tagStrings_[tagStrings_.size() - 1].c_str());
       }
@@ -167,7 +169,8 @@ private:
       styleStrings_.reserve(declarations.size() * 2);
       cstyles.reserve(declarations.size());
       for (const auto &declaration : declarations) {
-        styleStrings_.push_back(stringTable_.getString(declaration->key()));
+        auto decKey = stringTable_.getString(declaration->key());
+        styleStrings_.push_back(*decKey);
         styleStrings_.push_back(declaration->value());
         cstyles.push_back(styleStrings_[styleStrings_.size() - 2].c_str());
         cstyles.push_back(styleStrings_[styleStrings_.size() - 1].c_str());

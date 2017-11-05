@@ -76,15 +76,17 @@ inline bool hasIgnore(const std::vector<utymap::entities::Tag> &tags) {
   return hasTag(IgnoreKey, IgnoreValue, tags);
 }
 
-inline std::string getTagValue(std::uint32_t key,
-                               const std::vector<utymap::entities::Tag> &tags,
-                               const utymap::index::StringTable &stringTable) {
+inline std::shared_ptr<std::string> getTagValue(std::uint32_t key,
+                                                const std::vector<utymap::entities::Tag> &tags,
+                                                const utymap::index::StringTable &stringTable) {
   return stringTable.getString(getTagValue(
       key, tags,
       std::numeric_limits<std::uint32_t>::max(),
       [&](const std::uint32_t v) {
-        if (v==std::numeric_limits<std::uint32_t>::max())
-          throw std::domain_error("Cannot find tag:" + stringTable.getString(key));
+        if (v == std::numeric_limits<std::uint32_t>::max()) {
+          auto tag = stringTable.getString(key);
+          throw std::domain_error("Cannot find tag:" + *tag);
+        }
         return v;
       }));
 }

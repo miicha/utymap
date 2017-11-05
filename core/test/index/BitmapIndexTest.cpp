@@ -67,7 +67,7 @@ namespace {
     }
 
     std::string getString(std::uint32_t id) {
-      return dependencyProvider.getStringTable()->getString(id);
+      return *dependencyProvider.getStringTable()->getString(id);
     }
 
     void addThreeElements() {
