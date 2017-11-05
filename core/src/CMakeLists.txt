@@ -37,6 +37,7 @@ set(HEADER_FILES
         builders/MeshBuilder.hpp
         builders/MeshCache.hpp
         builders/MeshContext.hpp
+        builders/MeshPool.hpp
         builders/QuadKeyBuilder.hpp
         builders/buildings/BuildingBuilder.hpp
         builders/buildings/facades/CylinderFacadeBuilder.hpp

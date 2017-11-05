@@ -47,6 +47,7 @@ add_executable(${TEST}
         BoundingBoxTest.cpp
         ExportLibTest.cpp
         builders/MeshCacheTest.cpp
+        builders/MeshPoolTest.cpp
         builders/buildings/BuildingBuilderTest.cpp
         builders/buildings/RoofBuildersTest.cpp
         builders/generators/GeneratorTest.cpp
