@@ -52,10 +52,10 @@ class DickTurtle : public Turtle3d {
   static std::unordered_map<std::string, void (DickTurtle::*)()> WordMap;
  public:
   DickTurtle(const BuilderContext &builderContext,
-                       const Style &style,
-                       Mesh &mesh,
-                       const utymap::GeoCoordinate &position,
-                       double minHeight) :
+             const Style &style,
+             Mesh &mesh,
+             const utymap::GeoCoordinate &position,
+             double minHeight) :
       builderContext_(builderContext),
       appearances_(createAppearances(builderContext, style)),
       cylinderContext_(utymap::utils::make_unique<MeshContext>(mesh, style, getAppearanceByIndex(0, appearances_))),
@@ -64,7 +64,7 @@ class DickTurtle : public Turtle3d {
       icoSphereGenerator_(builderContext, *icoSphereContext_),
       translationFunc_(std::bind(&DickTurtle::translate, this, std::placeholders::_1)),
       position_(position),
-      minHeight_(minHeight_) {
+      minHeight_(minHeight) {
     cylinderGenerator_
         .setMaxSegmentHeight(0)
         .setRadialSegments(7);

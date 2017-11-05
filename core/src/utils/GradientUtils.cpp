@@ -247,7 +247,7 @@ std::unique_ptr<const ColorGradient> GradientUtils::parseGradient(const std::str
       gradientStr.begin() + (gradientStr.compare(0, prefix.size(), prefix) ? 0 : prefix.size()),
       gradientStr.end(),
       gradientRegEx);
-  std::sregex_iterator end;
+  auto end = std::sregex_iterator();
 
   ColorGradient::GradientData data;
   data.reserve(static_cast<std::size_t>(std::distance(begin, end)));

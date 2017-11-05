@@ -59,7 +59,9 @@ class MeshCache::MeshCacheImpl {
         // NOTE no guarantee that all data was processed and saved.
         // So it is better to delete the whole file
         entry->second->close();
-        std::remove(getFilePath(context).c_str());
+        // TODO any smarter option?
+        if (!entry->second->fail())
+          std::remove(getFilePath(context).c_str());
       } else {
         entry->second->seekg(0, std::ios::beg);
         *entry->second << static_cast<char>(1);

@@ -86,7 +86,7 @@ class InMemoryElementStore::InMemoryElementStoreImpl {
       elementsMap_(),
       stringIndex_(stringTable, elementsMap_) {}
 
-  void search(const BitmapIndex::Query query,
+  void search(const BitmapIndex::Query &query,
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
     ElementVisitorFilter filter(visitor, [&](const Element &element) {

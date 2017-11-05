@@ -80,15 +80,19 @@ struct QuadKeyData {
 
   void erase() {
     closeAll();
-    std::remove(dataPath_.c_str());
-    std::remove(indexPath_.c_str());
-    std::remove(bitmapPath_.c_str());
+    if (std::remove(dataPath_.c_str())) logEraseError(dataPath_);
+    if (std::remove(indexPath_.c_str())) logEraseError(indexPath_);
+    if (std::remove(bitmapPath_.c_str())) logEraseError(bitmapPath_);
   }
 
 private:
   void closeAll() const {
     if (dataFile != nullptr && dataFile->good()) dataFile->close();
     if (indexFile != nullptr && indexFile->good()) indexFile->close();
+  }
+
+  static void logEraseError(const std::string &path) {
+    std::cerr << "Cannot erase " << path << std::endl;
   }
 
   const std::string dataPath_;
@@ -132,7 +136,7 @@ class PersistentElementStore::PersistentElementStoreImpl : BitmapIndex {
     BitmapStream::write(bitmapFile, quadKeyData->getBitmap().data);
   }
 
-  void search(const BitmapIndex::Query query,
+  void search(const BitmapIndex::Query &query,
               ElementVisitor &visitor,
               const utymap::CancellationToken &cancelToken) {
     ElementVisitorFilter filter(visitor, [&](const Element &element) {
