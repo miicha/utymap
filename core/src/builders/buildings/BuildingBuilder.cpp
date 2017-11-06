@@ -231,7 +231,8 @@ class BuildingBuilder::BuildingBuilderImpl : public ElementBuilder {
       polygon_ = utymap::utils::make_unique<Polygon>(1, 0);
 
     if (mesh_==nullptr) {
-      mesh_ = utymap::utils::make_unique<Mesh>(utymap::utils::getMeshName(MeshNamePrefix, element));
+      auto mesh = context_.meshPool.getSmall(utymap::utils::getMeshName(MeshNamePrefix, element));
+      mesh_ = std::unique_ptr<Mesh>(new Mesh(std::move(mesh)));
       id_ = element.id;
       return true;
     }
@@ -242,6 +243,7 @@ class BuildingBuilder::BuildingBuilderImpl : public ElementBuilder {
   void completeIfNecessary(bool justCreated) {
     if (justCreated) {
       context_.meshCallback(*mesh_);
+      context_.meshPool.release(std::move(*mesh_));
       mesh_.reset();
     }
   }
