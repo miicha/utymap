@@ -34,6 +34,7 @@ class MeshPool final {
   /// Returns mesh to pool.
   void release(utymap::math::Mesh&& mesh) {
     mesh.clear();
+    mesh.name.clear();
     std::lock_guard<std::mutex> lock(lock_);
     pool_.emplace(mesh.vertices.capacity(), std::move(mesh));
   }
