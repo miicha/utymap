@@ -14,13 +14,13 @@ const std::string TreeChunkSize = "tree-chunk-size";
 void TerraExtras::addForest(const BuilderContext &builderContext, TerraExtras::Context &extrasContext) {
   // generate tree mesh
   auto center = builderContext.boundingBox.center();
-  Mesh treeMesh("");
+  auto treeMesh = builderContext.meshPool.getSmall("");
 
   // NOTE we will override coordinates later
   LSystemGenerator::generate(builderContext, extrasContext.style,  treeMesh, center, 0);
 
   // forest mesh contains all trees belong to one chunk.
-  Mesh forestMesh("forest");
+  auto forestMesh = builderContext.meshPool.getLarge("forest");
 
   // go through mesh region triangles and insert copy of the tree
   std::size_t step = 3*static_cast<std::size_t>(std::max(extrasContext.style.getValue(TreeFrequencyKey), 1.));
@@ -54,6 +54,9 @@ void TerraExtras::addForest(const BuilderContext &builderContext, TerraExtras::C
   // complete last iteration
   if (treesProcessed > 0)
     builderContext.meshCallback(forestMesh);
+
+  builderContext.meshPool.release(std::move(treeMesh));
+  builderContext.meshPool.release(std::move(forestMesh));
 }
 
 void TerraExtras::addWater(const BuilderContext &builderContext, TerraExtras::Context &eeshContext) {
