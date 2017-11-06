@@ -14,10 +14,10 @@ const double Scale = 1E7;
 TerraGenerator::TerraGenerator(const BuilderContext &context,
                                const Style &style,
                                const IntPath &tileRect,
-                               const std::string &meshName) :
+                               Mesh &&mesh) :
     context_(context), style_(style),
     tileRect_(tileRect),
-    mesh_(meshName),
+    mesh_(std::move(mesh)),
     rect_(context.boundingBox.minPoint.longitude,
           context.boundingBox.minPoint.latitude,
           context.boundingBox.maxPoint.longitude,

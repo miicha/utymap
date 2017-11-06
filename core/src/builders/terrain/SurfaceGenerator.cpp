@@ -19,7 +19,7 @@ const std::unordered_map<std::string, TerraExtras::ExtrasFunc> ExtrasFuncs =
 };
 
 SurfaceGenerator::SurfaceGenerator(const BuilderContext &context, const Style &style, const IntPath &tileRect) :
-    TerraGenerator(context, style, tileRect, TerrainMeshName) {
+    TerraGenerator(context, style, tileRect, context.meshPool.getLarge(TerrainMeshName)) {
 }
 
 void SurfaceGenerator::onNewRegion(const std::string &type,
@@ -35,6 +35,7 @@ void SurfaceGenerator::generateFrom(const std::vector<Layer> &layers) {
   buildBackground();
 
   context_.meshCallback(mesh_);
+  context_.meshPool.release(std::move(mesh_));
 }
 
 void SurfaceGenerator::buildForeground(const std::vector<Layer> &layers) {

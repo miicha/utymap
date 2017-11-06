@@ -17,7 +17,7 @@ class TerraGenerator {
   TerraGenerator(const utymap::builders::BuilderContext &context,
                  const utymap::mapcss::Style &style,
                  const utymap::math::IntPath &tileRect,
-                 const std::string &meshName);
+                 utymap::math::Mesh &&mesh);
 
   /// Called when new region is added to layer collection.
   virtual void onNewRegion(const std::string &type,

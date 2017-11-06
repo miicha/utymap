@@ -17,7 +17,7 @@ class ExteriorGenerator::ExteriorGeneratorImpl {
 ExteriorGenerator::ExteriorGenerator(const BuilderContext &context,
                                      const Style &style,
                                      const IntPath &tileRect) :
-    TerraGenerator(context, style, tileRect, TerrainMeshName),
+    TerraGenerator(context, style, tileRect, context.meshPool.getSmall(TerrainMeshName)),
     p_impl(utymap::utils::make_unique<ExteriorGeneratorImpl>()) {
 }
 
@@ -29,6 +29,7 @@ void ExteriorGenerator::onNewRegion(const std::string &type,
 
 void ExteriorGenerator::generateFrom(const std::vector<Layer> &layers) {
   // TODO
+  context_.meshPool.release(std::move(mesh_));
 }
 
 ExteriorGenerator::~ExteriorGenerator() {
