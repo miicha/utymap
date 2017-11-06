@@ -18,11 +18,11 @@ struct Mesh final {
   std::vector<int> uvMap;
 
   explicit Mesh(const std::string &name) : name(name) {
-    vertices.reserve(512);
-    triangles.reserve(512);
-    colors.reserve(512);
-    uvs.reserve(512);
-    uvMap.reserve(8);
+    vertices.reserve(4096);
+    triangles.reserve(4096);
+    colors.reserve(4096);
+    uvs.reserve(4096);
+    uvMap.reserve(128);
   }
 
   Mesh(Mesh &&other) :
