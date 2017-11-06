@@ -61,6 +61,12 @@ class DependencyProvider {
     return styleProvider_;
   }
 
+  std::shared_ptr<utymap::builders::MeshPool> getMeshPool() {
+    if (meshPool_ == nullptr)
+      meshPool_ = std::make_shared<utymap::builders::MeshPool>();
+    return meshPool_;
+  }
+
   std::shared_ptr<utymap::builders::BuilderContext> createBuilderContext(
       const utymap::QuadKey &quadKey,
       const std::string &stylesheet,
@@ -70,6 +76,7 @@ class DependencyProvider {
         quadKey,
         *getStyleProvider(stylesheet),
         *getStringTable(),
+        *getMeshPool(),
         *getElevationProvider(),
         meshCallback,
         elementCallback,
@@ -84,6 +91,7 @@ class DependencyProvider {
   std::shared_ptr<utymap::heightmap::FlatElevationProvider> eleProvider_;
   std::shared_ptr<utymap::index::StringTable> stringTable_;
   std::shared_ptr<utymap::mapcss::StyleProvider> styleProvider_;
+  std::shared_ptr<utymap::builders::MeshPool> meshPool_;
   const utymap::CancellationToken cancelToken;
 };
 

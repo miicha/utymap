@@ -37,6 +37,7 @@ struct Builders_Poi_TreeBuilderFixture {
           QuadKey(16, 35204, 21494),
           *dependencyProvider.getStyleProvider(createStyleSheet()),
           *dependencyProvider.getStringTable(),
+          *dependencyProvider.getMeshPool(),
           *dependencyProvider.getElevationProvider(),
           [&](const Mesh &mesh) {
             isCalled = true;

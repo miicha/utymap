@@ -35,6 +35,7 @@ struct Builders_Terrain_TerraBuilderFixture {
     context = utymap::utils::make_unique<BuilderContext>(quadKey,
                                                          *dependencyProvider.getStyleProvider(stylesheet),
                                                          *dependencyProvider.getStringTable(),
+                                                         *dependencyProvider.getMeshPool(),
                                                          *dependencyProvider.getElevationProvider(),
                                                          meshCallback,
                                                          nullptr,

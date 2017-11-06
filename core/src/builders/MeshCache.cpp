@@ -106,6 +106,7 @@ class MeshCache::MeshCacheImpl {
         context.quadKey,
         context.styleProvider,
         context.stringTable,
+        context.meshPool,
         context.eleProvider,
         wrap(*file, context.meshCallback, context.cancelToken),
         wrap(*file, context.elementCallback, context.cancelToken),

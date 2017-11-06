@@ -19,7 +19,8 @@ typedef std::unordered_map<std::string, QuadKeyBuilder::ElementBuilderFactory> B
 class BuilderElementVisitor : public ElementVisitor {
  public:
   BuilderElementVisitor(const BuilderContext &context, BuilderFactoryMap &builderFactoryMap) :
-    context_(context), builderFactoryMap_(builderFactoryMap) { }
+    context_(context),
+    builderFactoryMap_(builderFactoryMap) { }
 
   void visitNode(const Node &node) override {
     visitElement(node);
@@ -95,7 +96,10 @@ class BuilderElementVisitor : public ElementVisitor {
 class QuadKeyBuilder::QuadKeyBuilderImpl {
  public:
   QuadKeyBuilderImpl(GeoStore &geoStore, StringTable &stringTable) :
-      geoStore_(geoStore), stringTable_(stringTable), builderFactory_() {}
+      geoStore_(geoStore),
+      stringTable_(stringTable),
+      meshPool_(),
+      builderFactory_() {}
 
   void registerElementVisitor(const std::string &name, ElementBuilderFactory factory) {
     builderFactory_[name] = factory;
@@ -107,8 +111,9 @@ class QuadKeyBuilder::QuadKeyBuilderImpl {
              const BuilderContext::MeshCallback &meshCallback,
              const BuilderContext::ElementCallback &elementCallback,
              const utymap::CancellationToken &cancelToken) {
-    auto context = BuilderContext(quadKey, styleProvider, stringTable_, eleProvider,
-      meshCallback, elementCallback, cancelToken);
+    auto context = BuilderContext(quadKey, styleProvider, stringTable_,
+                                  meshPool_, eleProvider, meshCallback,
+                                  elementCallback, cancelToken);
     auto visitor = BuilderElementVisitor(context, builderFactory_);
     geoStore_.search(quadKey, styleProvider, visitor, cancelToken);
     visitor.complete();
@@ -117,6 +122,7 @@ class QuadKeyBuilder::QuadKeyBuilderImpl {
  private:
   GeoStore &geoStore_;
   StringTable &stringTable_;
+  MeshPool meshPool_;
   BuilderFactoryMap builderFactory_;
 };
 

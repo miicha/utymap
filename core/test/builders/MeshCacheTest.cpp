@@ -70,6 +70,7 @@ struct Builders_MeshCacheFixture {
       origContext(quadKey,
                   *dependencyProvider.getStyleProvider(stylesheet),
                   *dependencyProvider.getStringTable(),
+                  *dependencyProvider.getMeshPool(),
                   *dependencyProvider.getElevationProvider(),
                   std::bind(&Builders_MeshCacheFixture::meshCallback, this, std::placeholders::_1),
                   std::bind(&Builders_MeshCacheFixture::elementCallback, this, std::placeholders::_1),

@@ -5,6 +5,7 @@
 #include "CancellationToken.hpp"
 #include "QuadKey.hpp"
 #include "builders/MeshBuilder.hpp"
+#include "builders/MeshPool.hpp"
 #include "heightmap/ElevationProvider.hpp"
 #include "mapcss/StyleProvider.hpp"
 #include <math/Mesh.hpp>
@@ -28,6 +29,8 @@ struct BuilderContext final {
   const utymap::mapcss::StyleProvider &styleProvider;
   /// String table.
   utymap::index::StringTable &stringTable;
+  // Mesh pool.
+  utymap::builders::MeshPool &meshPool;
   /// Current elevation provider.
   const utymap::heightmap::ElevationProvider &eleProvider;
   /// Mesh callback should be called once mesh is constructed.
@@ -42,6 +45,7 @@ struct BuilderContext final {
   BuilderContext(const utymap::QuadKey &quadKey,
                  const utymap::mapcss::StyleProvider &styleProvider,
                  utymap::index::StringTable &stringTable,
+                 utymap::builders::MeshPool &meshPool,
                  const utymap::heightmap::ElevationProvider &eleProvider,
                  const MeshCallback &meshCallback,
                  const ElementCallback &elementCallback,
@@ -49,6 +53,7 @@ struct BuilderContext final {
       quadKey(quadKey),
       boundingBox(utymap::utils::GeoUtils::quadKeyToBoundingBox(quadKey)),
       styleProvider(styleProvider),
+      meshPool(meshPool),
       stringTable(stringTable),
       eleProvider(eleProvider),
       meshCallback(meshCallback),

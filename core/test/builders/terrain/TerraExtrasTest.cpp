@@ -41,6 +41,7 @@ struct Builders_Terrain_TerraExtrasFixture {
           quadKey,
           *dependencyProvider.getStyleProvider(createStyleSheet()),
           *dependencyProvider.getStringTable(),
+          *dependencyProvider.getMeshPool(),
           *dependencyProvider.getElevationProvider(),
           std::bind(&Builders_Terrain_TerraExtrasFixture::verifyMesh, this, std::placeholders::_1),
           nullptr,

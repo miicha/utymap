@@ -46,6 +46,7 @@ struct Builders_Generators_GeneratorFixture {
           QuadKey(1, 35205, 21489),
           *dependencyProvider.getStyleProvider(stylesheet),
           *dependencyProvider.getStringTable(),
+          *dependencyProvider.getMeshPool(),
           *dependencyProvider.getElevationProvider(),
           [](const Mesh &) {},
           [](const Element &) {},
