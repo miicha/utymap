@@ -60,7 +60,7 @@ template<typename T>
 void BarrierBuilder::build(const T &element, Iterator begin, Iterator end) {
   bool isSet = setStyle(element);
 
-  Mesh mesh(utymap::utils::getMeshName(MeshNamePrefix, element));
+  auto mesh = context_.meshPool.getSmall(utymap::utils::getMeshName(MeshNamePrefix, element));
   MeshContext meshContext = MeshContext::create(mesh, *style_, context_.styleProvider, element.id);
 
   if (style_->getString(StyleConsts::TypeKey())==PillarType)
@@ -69,6 +69,8 @@ void BarrierBuilder::build(const T &element, Iterator begin, Iterator end) {
     buildWall(element, begin, end, meshContext);
 
   resetStyle(isSet);
+
+  context_.meshPool.release(std::move(mesh));
 }
 
 template<typename T>

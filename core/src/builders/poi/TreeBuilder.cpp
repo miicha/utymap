@@ -21,7 +21,7 @@ const std::string TreeStepKey = "tree-step";
 }
 
 void TreeBuilder::visitNode(const utymap::entities::Node &node) {
-  Mesh mesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
+  auto mesh = context_.meshPool.getSmall(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
   Style style = context_.styleProvider.forElement(node, context_.quadKey.levelOfDetail);
 
   double elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
@@ -29,11 +29,12 @@ void TreeBuilder::visitNode(const utymap::entities::Node &node) {
   LSystemGenerator::generate(context_, style, mesh, node.coordinate, elevation);
 
   context_.meshCallback(mesh);
+  context_.meshPool.release(std::move(mesh));
 }
 
 void TreeBuilder::visitWay(const utymap::entities::Way &way) {
-  Mesh treeMesh("");
-  Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));
+  auto treeMesh = context_.meshPool.getSmall("");
+  auto newMesh = context_.meshPool.getLarge(utymap::utils::getMeshName(WayMeshNamePrefix, way));
 
   Style style = context_.styleProvider.forElement(way, context_.quadKey.levelOfDetail);
   const auto center = context_.boundingBox.center();
@@ -56,6 +57,8 @@ void TreeBuilder::visitWay(const utymap::entities::Way &way) {
   }
 
   context_.meshCallback(newMesh);
+  context_.meshPool.release(std::move(treeMesh));
+  context_.meshPool.release(std::move(newMesh));
 }
 
 void TreeBuilder::visitRelation(const utymap::entities::Relation &relation) {

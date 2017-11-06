@@ -24,11 +24,12 @@ void LampBuilder::visitNode(const utymap::entities::Node &node) {
 
   const auto elevation = context_.eleProvider.getElevation(context_.quadKey, node.coordinate);
 
-  Mesh lampMesh(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
+  auto lampMesh = context_.meshPool.getSmall(utymap::utils::getMeshName(NodeMeshNamePrefix, node));
 
   LSystemGenerator::generate(context_, style, lampMesh, node.coordinate, elevation);
 
   context_.meshCallback(lampMesh);
+  context_.meshPool.release(std::move(lampMesh));
 }
 
 void LampBuilder::visitWay(const utymap::entities::Way &way) {
@@ -38,8 +39,8 @@ void LampBuilder::visitWay(const utymap::entities::Way &way) {
   const auto width = style.getValue(StyleConsts::WidthKey(), context_.boundingBox);
   const auto stepInMeters = style.getValue(LampStep);
 
-  Mesh lampMesh("");
-  Mesh newMesh(utymap::utils::getMeshName(WayMeshNamePrefix, way));
+  auto lampMesh = context_.meshPool.getSmall("");
+  auto newMesh = context_.meshPool.getLarge(utymap::utils::getMeshName(WayMeshNamePrefix, way));
 
   LSystemGenerator::generate(context_, style, lampMesh, center, 0);
 
@@ -90,6 +91,9 @@ void LampBuilder::visitWay(const utymap::entities::Way &way) {
 
   if (!newMesh.vertices.empty())
     context_.meshCallback(newMesh);
+
+  context_.meshPool.release(std::move(newMesh));
+  context_.meshPool.release(std::move(lampMesh));
 }
 
 void LampBuilder::visitRelation(const utymap::entities::Relation &relation) {
