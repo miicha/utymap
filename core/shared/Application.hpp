@@ -16,11 +16,7 @@ class Application {
  public:
 
   explicit Application(const char *indexPath) :
-    stringTable_(indexPath),
-    geoStore_(stringTable_),
     context_(indexPath,
-             stringTable_,
-             geoStore_,
              std::bind(&Application::getStyleProvider, this, std::placeholders::_1),
              std::bind(&Application::getElevationProvider, this, std::placeholders::_1, std::placeholders::_2)),
     flatEleProvider_(), srtmEleProvider_(indexPath), gridEleProvider_(indexPath),
@@ -73,9 +69,6 @@ class Application {
       default: return flatEleProvider_;
     }
   }
-
-  utymap::index::StringTable stringTable_;
-  utymap::index::GeoStore geoStore_;
 
   Context context_;
 

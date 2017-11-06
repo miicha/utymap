@@ -41,20 +41,18 @@ struct Context {
   using ElevationProviderGetter = std::function<const utymap::heightmap::ElevationProvider&(const utymap::QuadKey&, const ElevationDataType&)>;
 
   Context(const std::string& indexPath,
-          utymap::index::StringTable& stringTable,
-          utymap::index::GeoStore& geoStore,
           const StyleProviderGetter& styleProviderGetter,
           const ElevationProviderGetter& elevationProviderGetter) :
     indexPath(indexPath),
-    stringTable(stringTable),
-    geoStore(geoStore),
+    stringTable(indexPath),
+    geoStore(stringTable),
     quadKeyBuilder(geoStore, stringTable),
     getStyleProvider(styleProviderGetter),
     getElevationProvider(elevationProviderGetter) { }
 
   const std::string indexPath;
-  utymap::index::StringTable &stringTable;
-  utymap::index::GeoStore &geoStore;
+  utymap::index::StringTable stringTable;
+  utymap::index::GeoStore geoStore;
   utymap::builders::QuadKeyBuilder quadKeyBuilder;
   StyleProviderGetter getStyleProvider;
   ElevationProviderGetter getElevationProvider;
