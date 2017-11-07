@@ -12,7 +12,7 @@ namespace builders {
 /// Provides the way to use pool of meshes instead of
 /// building them each time which might be expensive.
 class MeshPool final {
-  const std::size_t ThresholdSize = 1024 * 10;
+  const std::size_t ThresholdSize = 1024 * 10 * 2;
  public:
 
   MeshPool() {}
