@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("UtyMap for Unity3D")]
 [assembly: AssemblyProduct("UtyMap.Unity")]
 [assembly: AssemblyCopyright("Copyright © Ilya Builuk, 2014-2017")]
-[assembly: AssemblyVersion("2.2.*")]
+[assembly: AssemblyVersion("2.3.*")]
 
 [assembly: ComVisible(false)]
 

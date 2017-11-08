@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Utymap.UnityLib.Tests")]
 [assembly: AssemblyProduct("Utymap.UnityLib.Tests")]
-[assembly: AssemblyVersion("2.1.*")]
+[assembly: AssemblyVersion("2.3.*")]
 
 [assembly: ComVisible(false)]
 
