@@ -21,13 +21,12 @@ namespace Assets.Scripts.Environment
 
             try
             {
-// NOTE On unity editor is easier for development to use original files.
-#if !UNITY_EDITOR
                 trace.Info(TraceCategory, "creating directories..");
                 Directory.CreateDirectory(Path.Combine(EnvironmentApi.ExternalDataPath, "index/cache"));
                 Directory.CreateDirectory(Path.Combine(EnvironmentApi.ExternalDataPath, "index/data"));
                 Directory.CreateDirectory(Path.Combine(EnvironmentApi.ExternalDataPath, "index/import"));
-                
+// NOTE On unity editor is easier for development to use original files.
+#if !UNITY_EDITOR
                 trace.Info(TraceCategory, "copying assets..");
                 CopyFiles(GetMapCssFileNames(), trace);
 #endif
