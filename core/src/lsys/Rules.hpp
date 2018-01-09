@@ -80,16 +80,16 @@ class WordRule final : public Rule {
 /// Defines rule comparator which can distinguish different rules taking care about specific word rule.
 struct RuleComparator {
   bool operator()(const std::shared_ptr<Rule> &left, const std::shared_ptr<Rule> &right) const {
-    auto leftType = std::type_index(typeid(*left));
-    auto rightType = std::type_index(typeid(*right));
+    static const auto wordRuleTypeIndex = std::type_index(typeid(WordRule));
 
-    if (leftType==wordRuleTypeIndex_ && rightType==wordRuleTypeIndex_)
+    const auto leftType = std::type_index(typeid(*left));
+    const auto rightType = std::type_index(typeid(*right));
+
+    if (leftType==wordRuleTypeIndex && rightType==wordRuleTypeIndex)
       return static_cast<const WordRule &>(*left).word < static_cast<const WordRule &>(*right).word;
 
     return leftType < rightType;
   }
- private:
-  const std::type_index wordRuleTypeIndex_ = std::type_index(typeid(WordRule));
 };
 
 }
