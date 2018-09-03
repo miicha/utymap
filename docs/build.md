@@ -126,7 +126,7 @@ Tested on 10.11.6
     brew install cmake boost protobuf
 
     # set up a clean build directory
-    mkdir code/build
+    mkdir core/build
     cd core/build
 
     # in ./core/build use cmake to generate an .xcodeproj file
