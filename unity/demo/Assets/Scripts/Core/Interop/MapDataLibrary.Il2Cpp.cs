@@ -13,8 +13,8 @@ namespace Assets.Scripts.Core.Interop
     partial class MapDataLibrary
     {
 #if ENABLE_IL2CPP
-        private static IList<IObserver<MapData>> _tileObservers;
-        private static IList<IObserver<Element>> _queryObservers;
+        private static IList<UtyRx.IObserver<MapData>> _tileObservers;
+        private static IList<UtyRx.IObserver<Element>> _queryObservers;
         private static MaterialProvider _sMaterialProvider;
 
         private static readonly SafeDictionary<int, Tile> Tiles = new SafeDictionary<int, Tile>();
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Core.Interop
         private static ITrace _trace;
 
         /// <inheritdoc />
-        public IObservable<int> Get(Tile tile, IList<IObserver<MapData>> observers)
+        public UtyRx.IObservable<int> Get(Tile tile, IList<UtyRx.IObserver<MapData>> observers)
         {
             // NOTE workaround for static methods requirement
             if (_sMaterialProvider == null)
@@ -43,7 +43,7 @@ namespace Assets.Scripts.Core.Interop
         }
 
         /// <inheritdoc />
-        public IObservable<int> Get(MapQuery query, IList<IObserver<Element>> observers)
+        public UtyRx.IObservable<int> Get(MapQuery query, IList<UtyRx.IObserver<Element>> observers)
         {
             lock (this)
             {
